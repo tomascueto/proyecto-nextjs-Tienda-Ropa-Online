@@ -17,7 +17,6 @@ export async function POST(request: NextRequest) {
   const paymentInfo = await payment.get({id: body.data.id})
     .then(paymentInfo => {
          
-
         if (paymentInfo) {
             items = paymentInfo.additional_info?.items;
             payerEmail = paymentInfo.payer?.email!

@@ -8,7 +8,6 @@ const {
 
 const bcrypt = require('bcrypt');
 
-
 async function seedUsers(client) {
     try {
         await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
@@ -210,6 +209,8 @@ async function createPurchasesDetailTable(client){
     console.log
   }
 }
+
+
 
 async function main() {
   const client = await db.connect();
