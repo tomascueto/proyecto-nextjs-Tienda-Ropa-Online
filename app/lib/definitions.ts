@@ -8,11 +8,15 @@ export type Product = {
     id : string,
     name: string,
     description: string,
+    features: string[],
     brand_name : string,
     category_name : string,
     price : number,
+    originalPrice? : number,
     image : string,
     cloudinary_public_id : string
+    inStock : boolean
+    
 }
 
 export type Category = {

@@ -134,6 +134,8 @@ async function seedProducts(client){
             brand_name VARCHAR(255),
             category_name VARCHAR(255),
             price INT NOT NULL,
+            original_price INT,
+            features TEXT[],
             image TEXT,
             cloudinary_public_id TEXT
           );
@@ -144,13 +146,15 @@ async function seedProducts(client){
         const insertedProducts= await Promise.all(
           products.map(async (product) => {
             return client.sql`
-            INSERT INTO products (name,description,brand_name,category_name,price,image,cloudinary_public_id)
+            INSERT INTO products (name,description,brand_name,category_name,price,original_price,features,image,cloudinary_public_id)
             VALUES ( 
               ${product.name},
               ${product.description},
               ${product.brandname},
               ${product.categoryname},
               ${product.price},
+              ${product.originalPrice ?? null},
+              ${product.features ?? []},
               ${product.image},
               ${product.cloudinary_public_id}
             );
