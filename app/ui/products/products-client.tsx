@@ -9,8 +9,11 @@ import Image from "next/image";
 import { ShoppingCart } from "lucide-react";
 import { Product, CartItem, Category, Brand } from "@/app/lib/definitions";
 import Filters from "@/app/ui/products/filters";
+import { useCartStore } from "@/app/lib/store/cart-store"
+
 
 const PRODUCTS_PER_PAGE = 12;
+
 
 export default function ProductsClient({
   products,
@@ -37,28 +40,16 @@ export default function ProductsClient({
 
   const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
   const endIndex = startIndex + PRODUCTS_PER_PAGE;
+  const { addItem } = useCartStore()
+  const handleAddToCart = (product: any) => {
+    addItem({
+      id: product.id,
+      brandName: product.brand,
+      productName: product.name,
+      unitCost: product.price,
+    })
+  }
 
-  const handleAddToCart = (product: Product) => {
-    const savedCartItems = localStorage.getItem("cartItems");
-    const cartItems = savedCartItems ? JSON.parse(savedCartItems) : [];
-    const indexId = cartItems.findIndex(
-      (item: { id: string }) => item.id === product.id
-    );
-    if (indexId === -1) {
-      const item: CartItem = {
-        id: product.id,
-        productName: product.name,
-        brandName: product.brand_name,
-        quantity: 1,
-        unitCost: product.price,
-      };
-      cartItems.push(item);
-    } else {
-      cartItems[indexId].quantity += 1;
-    }
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
-    window.dispatchEvent(new Event("storage"));
-  };
 
   return (
     <>
