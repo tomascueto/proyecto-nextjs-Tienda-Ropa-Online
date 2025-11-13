@@ -1,55 +1,65 @@
-'use client'
+"use client"
 
-import { useFormState, useFormStatus } from 'react-dom';
-import { authenticate } from '@/app/lib/actions';
+import { useFormState, useFormStatus } from "react-dom"
+import { authenticate } from "@/app/lib/actions"
+import { Button } from "@/app/ui/button"
+import { Input } from "@/app/ui/home/input"
 
-export  function Login (){
-  const [errorMessage, dispatch] = useFormState(authenticate,undefined);
-  const { pending } = useFormStatus();
-  
+export function Login() {
+  const [errorMessage, dispatch] = useFormState(authenticate, undefined)
+  const { pending } = useFormStatus()
+
   return (
-    <div className="flex justify-center items-center  bg-gray-50">
-      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold text-center">Login</h2>
-        <form className="space-y-6" action={dispatch}>
-          <div className="space-y-1">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            />
-          </div>
-          <div className="space-y-1">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              required
-              minLength={5}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full px-4 py-2 text-white bg-gray-900 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            aria-disabled={pending}
-          >
-            Log in
-          </button>
-        
-         <div className="flex h-8 items-end space-x-1" aria-live="polite" aria-atomic="true">
-         {errorMessage && (
-          <>
-            <p className="text-sm text-red-500">{errorMessage}</p>
-          </>
-         )}
+    <form className="space-y-5" action={dispatch}>
+      {/* Email Field */}
+      <div className="space-y-2">
+        <label htmlFor="email" className="block text-sm font-medium text-foreground">
+          Email
+        </label>
+        <Input type="email" id="email" name="email" placeholder="tu@email.com" required className="w-full" />
       </div>
-        </form>
+
+      {/* Password Field */}
+      <div className="space-y-2">
+        <label htmlFor="password" className="block text-sm font-medium text-foreground">
+          Contraseña
+        </label>
+        <Input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="••••••••"
+          required
+          minLength={5}
+          className="w-full"
+        />
       </div>
-    </div>
-  );
-};
+
+      {errorMessage && (
+        <div className="flex items-start space-x-2 p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+          <div className="flex-1">
+            <p className="text-sm text-destructive font-medium">{errorMessage}</p>
+          </div>
+        </div>
+      )}
+
+      <Button type="submit" disabled={pending} className="w-full h-10 mt-6 font-semibold" variant="default">
+        {pending ? (
+          <span className="flex items-center gap-2">
+            <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent"></span>
+            Iniciando sesión...
+          </span>
+        ) : (
+          "Inicia Sesión"
+        )}
+      </Button>
+
+      {/* Forgotten Password Link */}
+      <div className="text-center">
+        <a href="#" className="text-xs text-primary hover:underline font-medium">
+          ¿Olvidaste tu contraseña?
+        </a>
+      </div>
+    </form>
+  )
+}
