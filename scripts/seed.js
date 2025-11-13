@@ -137,8 +137,7 @@ async function seedProducts(client){
             original_price INT,
             features TEXT[],
             image TEXT,
-            cloudinary_public_id TEXT,
-            inStock BOOLEAN DEFAULT TRUE
+            cloudinary_public_id TEXT
           );
         `;
     
@@ -147,7 +146,7 @@ async function seedProducts(client){
         const insertedProducts= await Promise.all(
           products.map(async (product) => {
             return client.sql`
-            INSERT INTO products (name,description,brand_name,category_name,price,original_price,features,image,cloudinary_public_id,inStock)
+            INSERT INTO products (name,description,brand_name,category_name,price,original_price,features,image,cloudinary_public_id)
             VALUES ( 
               ${product.name},
               ${product.description},
@@ -157,8 +156,7 @@ async function seedProducts(client){
               ${product.originalPrice ?? null},
               ${product.features ?? []},
               ${product.image},
-              ${product.cloudinary_public_id},
-              ${product.instock ?? true} 
+              ${product.cloudinary_public_id}
             );
           `;
           }),

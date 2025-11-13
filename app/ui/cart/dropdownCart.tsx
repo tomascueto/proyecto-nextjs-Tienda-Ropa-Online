@@ -6,21 +6,15 @@ import { useCartStore } from "@/app/lib/store/cart-store"
 import { Button } from "@/app/ui/button"
 import Link from "next/link"
 
-// 🧩 Helper para formatear precios
-const formatPrice = (price: number) =>
-  new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    minimumFractionDigits: 2,
-  }).format(price)
-
 export default function DropdownCart() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   const { items, removeItem, incrementQuantity, decrementQuantity, getTotalItems, getTotalPrice } = useCartStore()
 
-  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen)
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen)
+  }
 
   // Cerrar dropdown al hacer click fuera
   useEffect(() => {
@@ -31,7 +25,9 @@ export default function DropdownCart() {
     }
 
     document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
   }, [])
 
   const totalAmount = getTotalPrice()
@@ -73,15 +69,11 @@ export default function DropdownCart() {
                       <span className="font-semibold text-sm">
                         {item.brandName} {item.productName}
                       </span>
-                      <span className="text-sm text-gray-600">
-                        {formatPrice(item.unitCost)} c/u
-                      </span>
+                      <span className="text-sm text-gray-600">€{item.unitCost.toFixed(2)} c/u</span>
                     </div>
 
                     <div className="flex flex-col items-end gap-2">
-                      <span className="font-semibold text-sm">
-                        {formatPrice(item.quantity * item.unitCost)}
-                      </span>
+                      <span className="font-semibold text-sm">€{(item.quantity * item.unitCost).toFixed(2)}</span>
 
                       <div className="flex items-center gap-2">
                         <Button
@@ -124,7 +116,7 @@ export default function DropdownCart() {
             <div className="p-4 border-t bg-gray-50 border-gray-200">
               <div className="flex justify-between items-center mb-4">
                 <span className="font-semibold">Total</span>
-                <span className="font-semibold text-lg">{formatPrice(totalAmount)}</span>
+                <span className="font-semibold text-lg">€{totalAmount.toFixed(2)}</span>
               </div>
               <Link href="/checkout" onClick={() => setIsDropdownOpen(false)}>
                 <Button className="w-full bg-black hover:bg-gray-800 text-white">Ir a pagar</Button>

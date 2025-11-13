@@ -18,20 +18,8 @@ const config = {
       },
     },
     extend: {
-      colors: {
-        "customCream": "#FFF5E4",
-        destructive: {
-          DEFAULT: "#ef4444",
-          foreground: "#f8fafc"
-        },
-        primary: {
-          DEFAULT: "#0f172a",
-          foreground: "#f8fafc"
-        },
-        secondary: {
-          DEFAULT: "#475569",
-          foreground: "#f8fafc"
-        }
+      colors :{
+        "customCream" : "#FFF5E4"  
       },
       keyframes: {
         "accordion-down": {

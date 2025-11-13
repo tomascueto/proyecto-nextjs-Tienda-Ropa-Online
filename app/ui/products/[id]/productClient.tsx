@@ -76,22 +76,12 @@ export default function ProductClient({
               </p>
             </div>
 
+            {/* Precio */}
             <div className="flex items-center gap-4">
-              <span className="text-4xl font-bold">
-                {new Intl.NumberFormat("es-AR", {
-                  style: "currency",
-                  currency: "ARS",
-                  minimumFractionDigits: 2,
-                }).format(product.price)}
-              </span>
-
+              <span className="text-4xl font-bold">€{product.price}</span>
               {product.originalPrice && (
                 <span className="text-2xl text-gray-400 line-through">
-                  {new Intl.NumberFormat("es-AR", {
-                    style: "currency",
-                    currency: "ARS",
-                    minimumFractionDigits: 2,
-                  }).format(product.originalPrice)}
+                  €{product.originalPrice}
                 </span>
               )}
             </div>

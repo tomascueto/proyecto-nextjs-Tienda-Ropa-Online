@@ -1,100 +1,43 @@
-"use client"
+import { fetchBrands } from '@/app/lib/data'
+import Link  from 'next/link'
+import DropdownCart from '@/app/ui/cart/dropdownCart';
+import { logOut } from '@/app/lib/actions';
+import Topnav from '@/app/ui/admin/topnav'
 
-import Link from "next/link"
-import { LayoutDashboard, Package, Grid3x3, ShoppingBag, LogOut } from "lucide-react"
-import { Button } from "@/app/ui/button"
-import { usePathname } from "next/navigation"
-import { useTransition } from "react"
-import { logOut } from "@/app/lib/actions"
+export default async function Navbar(){
 
-export default function Navbar() {
-  const [isPending, startTransition] = useTransition()
-  const pathname = usePathname()
+    const brands = await fetchBrands();
 
-  const navigation = [
-    {
-      name: "Overview",
-      href: "/admin",
-      icon: LayoutDashboard,
-    },
-    {
-      name: "Productos",
-      href: "/admin/products",
-      icon: Package,
-    },
-    {
-      name: "Categorías",
-      href: "/admin/categories",
-      icon: Grid3x3,
-    },
-    {
-      name: "Compras Aprobadas",
-      href: "/admin/compras",
-      icon: ShoppingBag,
-    },
-  ]
-
-  const handleLogout = () => {
-    startTransition(async () => {
-      await logOut()
-    })
-  }
-
-  return (
-    <>
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-white">
-        <div className="container flex h-16 items-center justify-between px-4 md:px-6">
-          <Link href="/admin" className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-full bg-black flex items-center justify-center">
-              <span className="text-white font-bold text-sm">T</span>
-            </div>
-            <span className="font-bold text-xl">TNDA Admin</span>
-          </Link>
-
-          <div className="flex items-center gap-4">
-            <Link href="/">
-              <Button variant="outline" size="sm">
-                Ver tienda
-              </Button>
-            </Link>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleLogout}
-              disabled={isPending}
-              className="hover:bg-red-50 hover:text-red-600"
-            >
-              <LogOut className="h-5 w-5" />
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      {/* Navigation Tabs */}
-      <div className="border-b bg-white">
-        <div className="container px-4 md:px-6">
-          <nav className="flex gap-6 overflow-x-auto">
-            {navigation.map((item) => {
-              const isActive = pathname === item.href
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`flex items-center gap-2 border-b-2 py-4 text-sm font-medium transition-colors whitespace-nowrap ${
-                    isActive
-                      ? "border-black text-black"
-                      : "border-transparent text-gray-600 hover:text-black hover:border-gray-300"
-                  }`}
-                >
-                  <item.icon className="h-4 w-4" />
-                  {item.name}
+    return(
+        <div className="navbar bg-customCream">
+            <div className="navbar-start">
+                <Link href={"/"}>
+                    <div className= "btn btn-ghost text-xl font-bold tracking-widest ml-10">T N D A.</div>
                 </Link>
-              )
-            })}
-          </nav>
+                <h1 className="text-xl font-bold tracking-widest ml-10">Admin Dashboard</h1>
+            </div>
+
+            <div className="navbar-center font-bold ml-10">                    
+                <Topnav />
+            </div>
+
+
+            <div className="navbar-end mr-10">
+                <DropdownCart/>
+            </div> 
+                
+                <form action={ async () => { 
+                    'use server'
+                    const callResponse = await logOut()                                            
+                }}> 
+                    
+                <button
+                    type="submit"
+                    className="w-full px-4 py-2 text-white bg-gray-800 rounded-md hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"                        >
+                        Cerrar Sesión
+                </button>
+                </form>
+            
         </div>
-      </div>
-    </>
-  )
+    )
 }

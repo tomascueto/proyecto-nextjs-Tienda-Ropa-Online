@@ -78,8 +78,7 @@ const products = [
             'Cuero premium',
             'Amortiguación Air-Sole',
             'Diseño icónico'
-        ],
-        instock: true
+        ]
     },
     {
         name : 'Air Jordan 4 Retro Black Cat',
@@ -95,8 +94,7 @@ const products = [
             'Cuero premium',
             'Black Cat',
             'Diseño icónico'
-        ],
-        instock: true       
+        ]       
     },
     {
         name : 'Air Jordan 1 Retro High OG Latte',
@@ -112,8 +110,7 @@ const products = [
             'Cuero premium',
             'Colores neutros',
             'Diseño icónico'
-        ],
-        instock: true
+        ]
     },
     {
         name : 'Air Jordan 4 Retro Oxidized Green',
@@ -129,8 +126,7 @@ const products = [
             'Cuero premium',
             'Colores metálicos',
             'Diseño icónico'
-        ],
-        instock: true    
+        ]    
     },
     {
         name : 'Air Jordan Retro 11 Retro Low',
@@ -147,8 +143,7 @@ const products = [
             'Suela con tracción duradera',
             'Entresuela con buena amortiguación',
             'Diseño clásico y reconocible'
-        ],
-        instock: true
+        ]
     },
     {
         name : 'Botines Nike Mercurial Superfly 9 Elite',
@@ -165,8 +160,7 @@ const products = [
             'Corte alto y ceñido (Flyknit)',
             'Placa con tracción para terreno firme (FG)',
             'Ajuste de precisión para velocidad'
-        ],
-        instock: true
+        ]
     },
     {
         name : 'Botines Nike Mercurial Superfly 9 Elite',
@@ -183,8 +177,7 @@ const products = [
             'Corte Flyknit para ajuste dinámico',
             'Placa FG para máxima aceleración',
             'Perfil de corte alto para soporte'
-        ],
-        instock: true
+        ]
     },
     {
         name : 'Botines Adidas Messi Freestyle',
@@ -201,8 +194,7 @@ const products = [
             'Material sintético ligero',
             'Diseño pensado para control de balón',
             'Agarre y contacto precisos'
-        ],
-        instock: true
+        ]
     },
     {
         name : 'Botines Adidas Nemezis 19.2',
@@ -219,8 +211,7 @@ const products = [
             'Corte ajustado para control',
             'Tracción optimizada para terreno firme',
             'Construcción ligera y adaptable'
-        ],
-        instock: true
+        ]
     },
     {
         name : 'Botines Adidas Copa 19.3',
@@ -237,8 +228,7 @@ const products = [
             'Pala de cuero premium para toque clásico',
             'Ajuste cómodo y conformado',
             'Suela con agarre equilibrado'
-        ],
-        instock: true
+        ]
     },
     {
         name : 'Sabrina 2 Court Vision',
@@ -255,8 +245,7 @@ const products = [
             'Suela con agarre multidireccional',
             'Amortiguación en talón para saltos',
             'Estilo retro inspirado en el baloncesto'
-        ],
-        instock: true
+        ]
     },
     {
         name : 'Nike Lebron XXII',
@@ -273,8 +262,7 @@ const products = [
             'Amortiguación máxima para aterrizajes',
             'Soporte de tobillo avanzado',
             'Tracción diseñada para cancha indoor'
-        ],
-        instock: true
+        ]
     },
     {
         name : 'Nike Kevin Durant 17 x Alchemist',
@@ -291,8 +279,7 @@ const products = [
             'Diseño ligero para movilidad',
             'Respuesta rápida en la entresuela',
             'Tracción multidireccional para cambios de ritmo'
-        ],
-        instock: true
+        ]
     },
     {
         name : 'New Balance 574',
@@ -309,8 +296,7 @@ const products = [
             'Comodidad para uso diario',
             'Entresuela ENCAP para soporte',
             'Diseño clásico versátil'
-        ],
-        instock: true
+        ]
     },
     {
         name : 'Reebok Nano X',
@@ -327,8 +313,7 @@ const products = [
             'Estabilidad lateral para levantamientos',
             'Suela antideslizante multiuso',
             'Construcción duradera para entrenamientos intensos'
-        ],
-        instock: true
+        ]
     },
     {
         name : 'Reebok Nano X3 Gum Bottoms',
@@ -345,8 +330,7 @@ const products = [
             'Suela gum para mejor agarre',
             'Refuerzo en zonas de alto desgaste',
             'Estabilidad y confort para WODs'
-        ],
-        instock: true
+        ]
     },
     {
         name : 'Nike Metcon 9 AMP',
@@ -363,8 +347,7 @@ const products = [
             'Suela estable para levantamientos',
             'Amortiguación para sprints cortos',
             'Refuerzo en puntera para durabilidad'
-        ],
-        instock: true
+        ]
     },
     {
         name : 'Adidas Adilette Slides',
@@ -381,8 +364,7 @@ const products = [
             'Plantilla acolchada para comodidad',
             'Fáciles de poner y quitar',
             'Secado rápido y uso casual'
-        ],
-        instock: true
+        ]
     },
     {
         name : 'Nike More Uptempo Slides',
@@ -399,8 +381,7 @@ const products = [
             'Correa acolchada para confort',
             'Suela antideslizante',
             'Estilo urbano y cómodo'
-        ],
-        instock: true
+        ]
     },
     {
         name : 'Adidas Yeezy Slides',
@@ -417,8 +398,7 @@ const products = [
             'Espuma EVA ultra suave',
             'Diseño minimalista y moderno',
             'Confort para uso prolongado'
-        ],
-        instock: true
+        ]
     },
 ];
 

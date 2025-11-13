@@ -12,10 +12,10 @@ export type Product = {
     brand_name : string,
     category_name : string,
     price : number,
-    original_price? : number,
+    originalPrice? : number,
     image : string,
     cloudinary_public_id : string
-    instock : boolean
+    inStock : boolean
     
 }
 
