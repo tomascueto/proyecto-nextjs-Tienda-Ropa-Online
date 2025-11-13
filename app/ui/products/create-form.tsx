@@ -1,202 +1,350 @@
-'use client'
+"use client"
 
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectItem } from "@/app/ui/products/select"
-import { Button } from "@/app/ui/button"
+import type React from "react"
+
+import { useState } from "react"
+import { useFormState } from "react-dom"
+import Link from "next/link"
 import { createProduct } from "@/app/lib/actions"
-import { Brand, Category } from '@/app/lib/definitions';
-import { useFormState } from 'react-dom';
-import Link from 'next/link'
+import type { Brand, Category } from "@/app/lib/definitions"
+import { Button } from "@/app/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/ui/products/card"
+import { Input } from "@/app/ui/products/input"
+import { Label } from "@/app/ui/products/label"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/app/ui/products/select"
+import { Textarea } from "@/app/ui/products/textarea"
+import { Switch } from "@/app/ui/products/switch"
+import { Upload } from "lucide-react"
 
-export default function CreateForm({
-  brands,
-  categories
-} : {
-  brands : Brand[],
-  categories : Category[]
-}){
-  const initialState = { message: "", errors: {} };
-  const [state, dispatch] = useFormState(createProduct, initialState);
-  
+export default function CreateProductForm({ brands, categories }: { brands: Brand[]; categories: Category[] }) {
+  const initialState = { message: "", errors: {} }
+  const [state, dispatch] = useFormState(createProduct, initialState)
+  const [inStock, setInStock] = useState(true)
+  const [fileName, setFileName] = useState<string>("")
+  const [features, setFeatures] = useState<string[]>(["", "", ""])
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setFileName(file.name)
+    }
+  }
+
+  const handleFeatureChange = (index: number, value: string) => {
+    if (value.length <= 40) {
+      const newFeatures = [...features]
+      newFeatures[index] = value
+      setFeatures(newFeatures)
+    }
+  }
+
   return (
     <form action={dispatch}>
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Nombre
-        </label>
-        <div className="mt-1" >
-          <input
-            id="productName"
-            name="productName"
-            type="text"
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm dark:bg-gray-950 dark:border-gray-700 dark:text-gray-50"          
-            aria-describedby="productname-error"
-            />
-        </div>
+      <div className="grid gap-6">
+        {/* Información básica */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Información Básica</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Nombre */}
+            <div className="space-y-2">
+              <Label htmlFor="productName">
+                Nombre del Producto <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="productName"
+                name="productName"
+                type="text"
+                placeholder="Ej: Air Max 90"
+                aria-describedby="productname-error"
+              />
+              <div id="productname-error" aria-live="polite" aria-atomic="true">
+                {state.errors?.productName &&
+                  state.errors.productName.map((error: string) => (
+                    <p className="text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  ))}
+              </div>
+            </div>
 
-        <div id="productname-error" aria-live="polite" aria-atomic="true">
-          {state.errors?.productName &&
-            state.errors.productName.map((error: string) => (
-              <p className="mt-2 text-sm text-red-500" key={error}>
-                {error}
-              </p>
-            ))}
-        </div>
+            {/* Descripción */}
+            <div className="space-y-2">
+              <Label htmlFor="description">
+                Descripción <span className="text-red-500">*</span>
+              </Label>
+              <Textarea
+                id="description"
+                name="description"
+                placeholder="Describe el producto..."
+                rows={4}
+                aria-describedby="description-error"
+              />
+              <div id="description-error" aria-live="polite" aria-atomic="true">
+                {state.errors?.description &&
+                  state.errors.description.map((error: string) => (
+                    <p className="text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  ))}
+              </div>
+            </div>
 
-      </div>
-
-      <div>
-        <label htmlFor="price" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Precio
-        </label>
-        <div className="mt-1">
-          <input
-            id="price"
-            name="price"
-            type="number"
-            maxLength={20}
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm dark:bg-gray-950 dark:border-gray-700 dark:text-gray-50"
-            aria-describedby="price-error"
-            placeholder="$"
-          />
-        </div>
-        <div id="price-error" aria-live="polite" aria-atomic="true">
-              {state.errors?.price &&
-                state.errors.price.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
-                  </p>
-                ))
-              }
-        </div>
-      </div>
-
-      <div>
-        <label htmlFor="brand" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Marca
-        </label>
-        <div className="mt-1">
-          <Select 
-            name="brandName"
-            aria-describedby="brand-error">
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Selecciona una marca" />
-            </SelectTrigger>
-            <SelectContent
-            >
-              <SelectGroup>
-                {brands.map( (brand) => (
-                  <SelectItem key={brand.name} value={brand.name}>{brand.name}</SelectItem>
+            {/* Features */}
+            <div className="space-y-2">
+              <Label>
+                Características <span className="text-red-500">*</span>
+              </Label>
+              <p className="text-xs text-gray-500 mb-2">Agrega hasta 3 características (máx. 40 caracteres cada una)</p>
+              <div className="space-y-3">
+                {features.map((feature, index) => (
+                  <div key={index} className="flex gap-2 items-start">
+                    <div className="flex-1">
+                      <div className="relative">
+                        <Input
+                          name={`feature-${index}`}
+                          value={feature}
+                          onChange={(e) => handleFeatureChange(index, e.target.value)}
+                          placeholder={`Característica ${index + 1}`}
+                          maxLength={40}
+                          aria-describedby={`feature-${index}-error`}
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+                          {feature.length}/40
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        <div id="brand-error" aria-live="polite" aria-atomic="true">
-              {state.errors?.brandName &&
-                state.errors.brandName.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
+              </div>
+              {/* Hidden inputs para enviar al servidor */}
+              {features.map((feature, index) => (
+                <input key={`hidden-${index}`} type="hidden" name="features[]" value={feature} />
+              ))}
+              <div id="features-error" aria-live="polite" aria-atomic="true">
+                {state.errors?.features &&
+                  state.errors.features.map((error: string) => (
+                    <p className="text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Categorización */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Categorización</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid md:grid-cols-2 gap-4">
+              {/* Marca */}
+              <div className="space-y-2">
+                <Label htmlFor="brandName">
+                  Marca <span className="text-red-500">*</span>
+                </Label>
+                <Select name="brandName">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona una marca" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {brands.map((brand) => (
+                        <SelectItem key={brand.name} value={brand.name}>
+                          {brand.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <div id="brand-error" aria-live="polite" aria-atomic="true">
+                  {state.errors?.brandName &&
+                    state.errors.brandName.map((error: string) => (
+                      <p className="text-sm text-red-500" key={error}>
+                        {error}
+                      </p>
+                    ))}
+                </div>
+              </div>
+
+              {/* Categoría */}
+              <div className="space-y-2">
+                <Label htmlFor="categoryName">
+                  Categoría <span className="text-red-500">*</span>
+                </Label>
+                <Select name="categoryName">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona una categoría" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {categories.map((category) => (
+                        <SelectItem key={category.name} value={category.name}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <div id="category-error" aria-live="polite" aria-atomic="true">
+                  {state.errors?.categoryName &&
+                    state.errors.categoryName.map((error: string) => (
+                      <p className="text-sm text-red-500" key={error}>
+                        {error}
+                      </p>
+                    ))}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Precios y Stock */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Precios y Disponibilidad</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid md:grid-cols-2 gap-4">
+              {/* Precio Original */}
+              <div className="space-y-2">
+                <Label htmlFor="originalPrice">Precio Original</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                  <Input
+                    id="originalPrice"
+                    name="originalPrice"
+                    type="number"
+                    min="0"
+                    placeholder="0.00"
+                    className="pl-7"
+                    aria-describedby="originalprice-error"
+                  />
+                </div>
+                <p className="text-xs text-gray-500">Opcional - Precio sin descuento</p>
+                <div id="originalprice-error" aria-live="polite" aria-atomic="true">
+                  {state.errors?.originalPrice &&
+                    state.errors.originalPrice.map((error: string) => (
+                      <p className="text-sm text-red-500" key={error}>
+                        {error}
+                      </p>
+                    ))}
+                </div>
+              </div>
+
+              {/* Precio Actual */}
+              <div className="space-y-2">
+                <Label htmlFor="price">
+                  Precio Actual <span className="text-red-500">*</span>
+                </Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                  <Input
+                    id="price"
+                    name="price"
+                    type="number"
+                    min="0"
+                    placeholder="0.00"
+                    className="pl-7"
+                    aria-describedby="price-error"
+                  />
+                </div>
+                <p className="text-xs text-gray-500">Precio de venta del producto</p>
+                <div id="price-error" aria-live="polite" aria-atomic="true">
+                  {state.errors?.price &&
+                    state.errors.price.map((error: string) => (
+                      <p className="text-sm text-red-500" key={error}>
+                        {error}
+                      </p>
+                    ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Estado de Stock */}
+            <div className="space-y-2">
+              <Label htmlFor="inStock">Disponibilidad</Label>
+              <div className="flex items-center gap-4 p-4 border rounded-lg">
+                <Switch
+                  id="inStock-switch"
+                  checked={inStock}
+                  onCheckedChange={setInStock}
+                  className="data-[state=checked]:bg-green-500"
+                />
+                {/* Hidden input para enviar el valor en el form */}
+                <input type="hidden" name="inStock" value={inStock ? "true" : "false"} />
+                <div className="flex-1">
+                  <p className={`font-medium ${inStock ? "text-green-600" : "text-red-600"}`}>
+                    {inStock ? "En Stock" : "Sin Stock"}
                   </p>
-                ))
-              }
-        </div>
-      </div>
-      
-      <div>
-        <label htmlFor="categoryName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Categoría
-        </label>
-        <div className="mt-1">
-          <Select
-            name="categoryName"  
-            >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Selecciona una categoría" />
-            </SelectTrigger>
-            <SelectContent>
-            <SelectGroup>
-                {categories.map( (category) => (
-                  <SelectItem key={category.name} value={category.name}>{category.name}</SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div id="category-error" aria-live="polite" aria-atomic="true">
-              {state.errors?.categoryName &&
-                state.errors.categoryName.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
+                  <p className="text-sm text-gray-500">
+                    {inStock ? "El producto está disponible para la venta" : "El producto no está disponible"}
                   </p>
-                ))
-              }
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Imagen */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Imagen del Producto</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="image">
+                Imagen Principal <span className="text-red-500">*</span>
+              </Label>
+              <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-gray-400 transition-colors">
+                <input
+                  id="image"
+                  name="image"
+                  type="file"
+                  accept=".jpg,.jpeg,.png"
+                  onChange={handleFileChange}
+                  className="hidden"
+                  aria-describedby="image-error"
+                />
+                <label htmlFor="image" className="cursor-pointer">
+                  <Upload className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                  {fileName ? (
+                    <p className="text-sm font-medium text-gray-700">{fileName}</p>
+                  ) : (
+                    <>
+                      <p className="text-sm font-medium text-gray-700">Haz clic para subir una imagen</p>
+                      <p className="text-xs text-gray-500 mt-1">JPG, JPEG o PNG (máx. 5MB)</p>
+                    </>
+                  )}
+                </label>
+              </div>
+              <div id="image-error" aria-live="polite" aria-atomic="true">
+                {state.errors?.image &&
+                  state.errors.image.map((error: string) => (
+                    <p className="text-sm text-red-500" key={error}>
+                      {error}
+                    </p>
+                  ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Botones de Acción */}
+        <div className="flex justify-end gap-4">
+          <Link href="/admin/productos">
+            <Button type="button" variant="outline">
+              Cancelar
+            </Button>
+          </Link>
+          <Button type="submit" className="bg-black hover:bg-gray-800">
+            Crear Producto
+          </Button>
         </div>
-
-      </div>
-
-      <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Descripción
-        </label>
-        
-        <div className="mt-1">
-          <input
-            id="description"
-            name="description"
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm dark:bg-gray-950 dark:border-gray-700 dark:text-gray-50"
-            aria-describedby="description-error"
-          />
-        </div>
-
-        <div id="description-error" aria-live="polite" aria-atomic="true">
-              {state.errors?.description &&
-                state.errors.description.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
-                  </p>
-                ))
-              }
-        </div>
-      </div>
-
-      <div className="py-10 px-10 mt-1">   
-        <input 
-          className="w-full max-w-[370px] bg-gray-900 hover:bg-gray-800 text-white"
-          id="image"
-          name="image"
-          type="file" 
-          accept=".jpg,.jpeg,.png"
-          aria-describedby="image-error"
-        />
-
-        <div id="image-error" aria-live="polite" aria-atomic="true">
-              {state.errors?.image &&
-                state.errors.image.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
-                  </p>
-                ))
-              }
-        </div>        
-      </div>
-
-
-      <div className="mt-6 flex justify-end gap-4">
-        <Link
-          href="/admin/products"
-          className="flex h-10 items-center rounded-lg bg-white px-4 text-sm font-medium text-black-600 transition-colors hover:bg-gray-200"
-        >
-          Cancel
-        </Link>
-        
-        <Button type="submit" className="w-full">
-          Crear producto
-        </Button>
       </div>
     </form>
   )
-
 }
-
-  

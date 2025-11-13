@@ -1,96 +1,116 @@
 import { fetchProducts } from "@/app/lib/data"
-import { Button } from "@/app/ui/button"
-import  DeleteButton  from '@/app/ui/products/deletebutton'
+import { Plus } from "lucide-react"
 import Link from "next/link"
+import { Button } from "@/app/ui/button"
+import { Card, CardContent } from "@/app/ui/admin/card"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/ui/admin/table"
+import { Badge } from "@/app/ui/admin/badge"
 import EditProductButton from "@/app/ui/products/editproduct"
+import DeleteButton from "@/app/ui/products/deletebutton"
+import ProductsPagination from "@/app/ui/admin/products-pagination"
 
+const ITEMS_PER_PAGE = 8
 
+export default async function ProductosPage({
+  searchParams,
+}: {
+  searchParams?: {
+    page?: string
+  }
+}) {
+  const currentPage = Number(searchParams?.page) || 1
+  const products = await fetchProducts()
 
-export default async function Page(){
-    const products = await fetchProducts()
-    
-    return(
-        <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold">Lista de Productos</h2>
-                    <Link 
-                        href = {"/admin/products/create"}
-                    >
-                        <Button variant="outline" size="sm" className="bg-black text-white">
-                            <PlusIcon/>
-                                Agregar producto
-                        </Button>
-                    </Link>
-                </div>
-            <table className="w-full">
-                <thead>
-                    <tr className="bg-gray-100 text-gray-600 font-medium">
-                    <th className="py-3 px-4 text-left">ID</th>
-                    <th className="py-3 px-4 text-left">Nombre</th>
-                    <th className="py-3 px-4 text-left">Marca</th>
-                    <th className="py-3 px-4 text-left">Categoría</th>
-                    <th className="py-3 px-4 text-left">Precio</th>
-                    <th className="py-3 px-4 text-center">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {products.map((product) => (
+  // Paginación
+  const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE)
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+  const endIndex = startIndex + ITEMS_PER_PAGE
+  const currentProducts = products.slice(startIndex, endIndex)
 
-                    <tr key={product.id} className="border-b">
-                        <td className="py-3 px-4">{product.id}</td>
-                        <td className="py-3 px-4">{product.name}</td>
-                        <td className="py-3 px-4">{product.brand_name}</td>
-                        <td className="py-3 px-4">{product.category_name}</td>
-                        <td className="py-3 px-4">${product.price.toFixed(2)}</td>
-                        <td className="py-3 px-4 flex justify-center gap-2">
-                        <EditProductButton id={product.id} />
-                        <DeleteButton id={product.id} cloudinary_public_id={product.cloudinary_public_id} />
-                        </td>
-                    </tr>
-                    )
-                    )}
-                </tbody>
-            </table>
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-3xl font-bold">Productos</h1>
+          <p className="text-gray-600 mt-2">Gestiona todos los productos de la tienda ({products.length} productos)</p>
         </div>
-    )
-}
-function DeleteIcon() {
-    return (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M20 5H9l-7 7 7 7h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Z" />
-        <line x1="18" x2="12" y1="9" y2="15" />
-        <line x1="12" x2="18" y1="9" y2="15" />
-      </svg>
-    )
-}
+        <Link href="/admin/products/create">
+          <Button className="bg-black hover:bg-gray-800">
+            <Plus className="h-4 w-4 mr-2" />
+            Agregar Producto
+          </Button>
+        </Link>
+      </div>
 
-  function PlusIcon() {
-    return (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M5 12h14" />
-        <path d="M12 5v14" />
-      </svg>
-    )
-}
+      <Card>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>ID</TableHead>
+                <TableHead>Nombre</TableHead>
+                <TableHead>Marca</TableHead>
+                <TableHead>Categoría</TableHead>
+                <TableHead>Precio</TableHead>
+                <TableHead>Precio Original</TableHead>
+                <TableHead>Stock</TableHead>
+                <TableHead className="text-right">Acciones</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {currentProducts.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell className="font-mono text-sm text-gray-600">{product.id}</TableCell>
+                  <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableCell>{product.brand_name}</TableCell>
+                  <TableCell>{product.category_name}</TableCell>
+                  <TableCell className="font-semibold">${product.price.toFixed(2)}</TableCell>
+                  <TableCell>
+                    {product.original_price ? (
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-500 line-through text-sm">${product.original_price.toFixed(2)}</span>
+                        <Badge variant="destructive" className="text-xs">
+                          {Math.round(((product.original_price - product.price) / product.original_price) * 100)}% OFF
+                        </Badge>
+                      </div>
+                    ) : (
+                      <span className="text-gray-400 text-sm">-</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {product.instock ? (
+                      <Badge variant="default" className="bg-green-100 text-green-800 hover:bg-green-100">
+                        En stock
+                      </Badge>
+                    ) : (
+                      <Badge variant="default" className="bg-red-100 text-red-800 hover:bg-red-100">
+                        Sin stock
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <EditProductButton id={product.id} />
+                      <DeleteButton id={product.id} cloudinary_public_id={product.cloudinary_public_id} />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
 
-  
+          {/* Paginación */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between px-6 py-4 border-t">
+              <div className="text-sm text-gray-600">
+                Mostrando {startIndex + 1} - {Math.min(endIndex, products.length)} de {products.length} productos
+              </div>
+
+              <ProductsPagination totalPages={totalPages} />
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
