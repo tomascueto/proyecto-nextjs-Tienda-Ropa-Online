@@ -32,7 +32,7 @@ export default function ProductClient({
   const handleAddToCart = (product: Product) => {
     addItem({
       id: product.id,
-      brandName: product.brand_name,
+      brand_name: product.brand_name,
       productName: product.name,
       unitCost: product.price,
       image: product.image || "",
