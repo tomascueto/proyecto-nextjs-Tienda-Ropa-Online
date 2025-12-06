@@ -5,6 +5,8 @@ import { ShoppingCart, X, Plus, Minus } from "lucide-react"
 import { useCartStore } from "@/app/lib/store/cart-store"
 import { Button } from "@/app/ui/button"
 import Link from "next/link"
+import Image from "next/image"
+
 
 // 🧩 Helper para formatear precios
 const formatPrice = (price: number) =>
@@ -20,7 +22,9 @@ export default function DropdownCart() {
 
   const { items, removeItem, incrementQuantity, decrementQuantity, getTotalItems, getTotalPrice } = useCartStore()
 
-  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen)
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen)
+  }
 
   // Cerrar dropdown al hacer click fuera
   useEffect(() => {
@@ -31,7 +35,9 @@ export default function DropdownCart() {
     }
 
     document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
   }, [])
 
   const totalAmount = getTotalPrice()
@@ -69,9 +75,22 @@ export default function DropdownCart() {
               <div className="space-y-4">
                 {items.map((item) => (
                   <div key={item.id} className="flex gap-3 py-3 border-b border-gray-100 last:border-b-0">
+                    <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                      <Image
+                        src={item.image}
+                        alt={item.productName}
+                        fill
+                        className="object-cover"
+                        crossOrigin="anonymous"
+                        onError={(e) => {
+                          console.log("[v0] Image failed to load:", item.image, "Error:", e)
+                        }}
+                      />
+                    </div>
+
                     <div className="flex flex-col flex-1">
                       <span className="font-semibold text-sm">
-                        {item.brandName} {item.productName}
+                        {item.brand_name} {item.productName}
                       </span>
                       <span className="text-sm text-gray-600">
                         {formatPrice(item.unitCost)} c/u

@@ -37,11 +37,13 @@ export default function ProductsClient({
   const endIndex = startIndex + PRODUCTS_PER_PAGE
   const { addItem } = useCartStore()
   const handleAddToCart = (product: any) => {
+    console.log("[v0] Handle add to cart for product:", product)
     addItem({
       id: product.id,
-      brandName: product.brand,
+      brand_name: product.brand_name,
       productName: product.name,
       unitCost: product.price,
+      image: product.image,
     })
   }
 

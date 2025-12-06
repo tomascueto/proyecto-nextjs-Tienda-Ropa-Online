@@ -273,13 +273,19 @@ export async function fetchPurchases(){
   noStore();
   try {
     const data = await sql<Purchase>`
-    SELECT
-        purchaseID,
-        to_char(timestamp, 'YYYY-MM-DD HH24:MI:SS') as timestamp,
-        buyerEmail,
-        totalCost 
-    FROM purchase`;
+      SELECT 
+        p.purchaseID,
+        p.timestamp,
+        p.buyerEmail,
+        p.totalCost
+      FROM purchase p
+      LEFT JOIN purchaseDetail pd ON p.purchaseID = pd.purchase_id
+      GROUP BY p.purchaseid
+      ORDER BY p.timestamp DESC
+    `;
+    console.log(data.rows);
     return data.rows;
+
   } catch (error) {
     console.error('Failed to fetch purchase:', error);
     throw new Error('Failed to fetch purchases.');
@@ -287,21 +293,14 @@ export async function fetchPurchases(){
   
 }
 
-export async function fetchPurchasesDetails(id : string){
+export async function fetchPurchaseDetails(purchaseId: string) {
   noStore();
   try {
     const data = await sql<PurchaseDetail>`
-
-      SELECT 
-        detaliID,
-        purchase_id,
-        productName,
-        quantity,
-        itemPrice
-      FROM 
-          purchaseDetail
-      WHERE 
-          purchase_id = ${id}`
+      SELECT *
+      FROM purchaseDetail
+      WHERE purchase_id = ${purchaseId}
+    `
     ;
 
     return data.rows;

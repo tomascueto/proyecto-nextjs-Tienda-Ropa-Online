@@ -34,10 +34,11 @@ export type Brand = {
 
 export type CartItem = {
   id : string,
-  brandName: string,
+  brand_name: string,
   productName:string,
   quantity : number,
   unitCost: number,
+  image: string
 }
 
 export type Purchase = {
@@ -45,7 +46,8 @@ export type Purchase = {
   buyeremail: string,
   timestamp : string,
   totalcost : number,
-  items: CartItem[]
+  items: CartItem[],
+  itemCount : number
 }
 
 

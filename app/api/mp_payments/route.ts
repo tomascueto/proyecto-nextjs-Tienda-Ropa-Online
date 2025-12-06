@@ -1,47 +1,65 @@
-import type {NextRequest} from "next/server";
-import {MercadoPagoConfig, Payment} from "mercadopago";
-import {createPurchase} from '@/app/lib/actions'
+import type { NextRequest } from "next/server";
+import { MercadoPagoConfig, Payment } from "mercadopago";
+import { createPurchase } from "@/app/lib/actions";
 
-const mercadopago = new MercadoPagoConfig({accessToken: process.env.MP_ACCESS_TOKEN!});
+const mercadopago = new MercadoPagoConfig({
+  accessToken: process.env.MP_ACCESS_TOKEN!,
+});
 
 export async function POST(request: NextRequest) {
+  let body;
+  try {
+    body = await request.json();
+  } catch (err) {
+    console.error("Invalid JSON");
+    return Response.json({ success: false }, { status: 400 });
+  }
 
-  const body = await request.json().then((data) => data as {data: {id: string}});  
-  console.log("body: ", body)
-  const payment = new Payment(mercadopago)
+  console.log("Webhook body:", body);
+
+  // 1) Validar tipo de notificación
+  if (body.type !== "payment") {
+    console.log("Ignored event type:", body.type);
+    return Response.json({ success: true });
+  }
+
+  const payment = new Payment(mercadopago);
 
   let paymentInfo;
-
   try {
-
     paymentInfo = await payment.get({ id: body.data.id });
-  
   } catch (error) {
     console.error("Error fetching payment info:", error);
-    return Response.json({ success: false, error: "Failed to fetch payment info" }, { status: 500 });
+    return Response.json({ success: false }, { status: 500 });
   }
 
   if (!paymentInfo) {
-
     console.error("Payment info not found");
-    return Response.json({ success: false, error: "Payment info not found" }, { status: 404 });
-  
+    return Response.json(
+      { success: false, error: "Payment info not found" },
+      { status: 404 }
+    );
+  }
+
+  // 2) Solo guardar si el pago fue APROBADO
+  if (paymentInfo.status !== "approved") {
+    console.log("Payment not approved, skipping.");
+    return Response.json({ success: true });
   }
 
   const items = paymentInfo.additional_info?.items || [];
   const payerEmail = paymentInfo.payer?.email || "";
   const totalAmount = paymentInfo.transaction_amount || 0;
 
-  console.log("Payment info:", paymentInfo);
-  console.log("Items:", items);
-  console.log("Payer email:", payerEmail);
-  console.log("Total amount:", totalAmount);
-
   try {
     await createPurchase(items, payerEmail, totalAmount);
   } catch (error) {
     console.error("Error creating purchase:", error);
-    return Response.json({ success: false, error: "Failed to create purchase" }, { status: 500 });
+    return Response.json(
+      { success: false, error: "Failed to create purchase" },
+      { status: 500 }
+    );
   }
-  return Response.json({success: true});
+
+  return Response.json({ success: true });
 }
