@@ -51,6 +51,7 @@ const formatDate = (date: string | Date) => {
                     <TableHead>ID Pedido</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Total</TableHead>
+                    <TableHead>Items</TableHead>
                     <TableHead>Fecha</TableHead>
                     <TableHead>Acciones</TableHead>
                   </TableRow>
@@ -61,9 +62,10 @@ const formatDate = (date: string | Date) => {
                       <TableCell className="font-semibold">#{purchase.purchaseid}</TableCell>
                       <TableCell>{purchase.buyeremail}</TableCell>
                       <TableCell className="font-semibold">{formatPrice(purchase.totalcost)}</TableCell>
+                      <TableCell>{purchase.itemcount}</TableCell>
                       <TableCell>{formatDate(purchase.timestamp)}</TableCell>
                       <TableCell className="space-x-2">
-                        <Link href={`/success?purchase_id=${purchase.purchaseid}`}>
+                        <Link href={`/admin/compras/${purchase.purchaseid}`}>
                           <Button variant="outline" size="sm">
                             <Eye className="h-4 w-4" />
                           </Button>

@@ -277,7 +277,8 @@ export async function fetchPurchases(){
         p.purchaseID,
         p.timestamp,
         p.buyerEmail,
-        p.totalCost
+        p.totalCost,
+        COALESCE(SUM(pd.quantity), 0) as itemCount
       FROM purchase p
       LEFT JOIN purchaseDetail pd ON p.purchaseID = pd.purchase_id
       GROUP BY p.purchaseid
