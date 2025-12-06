@@ -90,7 +90,7 @@ export default function DropdownCart() {
 
                     <div className="flex flex-col flex-1">
                       <span className="font-semibold text-sm">
-                        {item.brand_name} {item.productName}
+                        {item.productName}
                       </span>
                       <span className="text-sm text-gray-600">
                         {formatPrice(item.unitCost)} c/u
