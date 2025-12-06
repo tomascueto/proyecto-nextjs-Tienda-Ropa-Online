@@ -47,7 +47,7 @@ export type Purchase = {
   timestamp : string,
   totalcost : number,
   items: CartItem[],
-  itemCount : number
+  itemcount : number
 }
 
 

@@ -459,9 +459,9 @@ export async function payment(cartItems: CartItem[]) {
     body: {
       items: items,
       back_urls: {
-        success: "https://proyecto-nextjs-tienda-ropa-online.vercel.app/success",
-        failure: "https://proyecto-nextjs-tienda-ropa-online.vercel.app/failure",
-        pending: "https://proyecto-nextjs-tienda-ropa-online.vercel.app/pending",
+        success: "https://proyecto-nextjs-tienda-ropa-online.vercel.app/purchases/success",
+        failure: "https://proyecto-nextjs-tienda-ropa-online.vercel.app/purchases/failure",
+        pending: "https://proyecto-nextjs-tienda-ropa-online.vercel.app/purchases/pending",
       },
       auto_return: "approved",
     },
@@ -489,7 +489,7 @@ export async function createPurchase(items: any, payerEmail: string, totalAmount
       items.map(async (item: any) => {
         const data = await sql`
             INSERT INTO purchaseDetail(purchase_id, productName, quantity, itemPrice)
-            VALUES (${purchaseIdv2}, ${item.id}, ${item.quantity}, ${item.quantity * item.unit_price})
+            VALUES (${purchaseIdv2}, ${item.name}, ${item.quantity}, ${item.quantity * item.unit_price})
             `
       }),
     )
