@@ -1,43 +1,84 @@
-import React from "react"
-import {fetchPurchases,fetchPurchasesDetails } from '@/app/lib/data'
-import {PurchaseDetails} from '@/app/ui/admin/product-details'
+import { fetchPurchases } from "@/app/lib/data"
+import Link from "next/link"
+import { Button } from "@/app/ui/button"
+import { Card, CardContent } from "@/app/ui/products/card"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/ui/products/table"
+import { Trash2, Eye } from "lucide-react"
 
+import DeletePurchaseButton from "@/app/ui/admin/delete-purchase-button"
 
-export default async function Compras(){
+export default async function PurchasesPage() {
+  const purchases = await fetchPurchases()
 
-    const purchases = await fetchPurchases();
+  const formatPrice = (price: number) =>
+    new Intl.NumberFormat("es-AR", {
+      style: "currency",
+      currency: "ARS",
+      minimumFractionDigits: 2,
+    }).format(price)
 
-
-    return(
-        <div className="bg-white rounded-lg shadow-md p-4">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold">Lista de compras</h2>
-        </div>
-        <table className="w-full">
-          <thead>
-            <tr className="bg-gray-100 text-gray-600 font-medium">
-              <th className="py-2 px-3 text-left w-[100px]">ID</th>
-              <th className="py-2 px-3 text-left">Fecha de compra</th>
-              <th className="py-2 px-3 text-left">Email del comprador</th>
-              <th className="py-2 px-3 text-right">Costo total</th>
-              <th className="py-2 px-3 text-left">Items</th>
-              
-
-            </tr>
-          </thead>
-          <tbody>
-            {purchases.map((purchase) => (
-                <tr className="border-b" key={purchase.purchaseid}>
-                  <td className="py-2 px-3">{purchase.purchaseid}</td>
-                  <td className="py-2 px-3">{purchase.timestamp}</td>
-                  <td className="py-2 px-3">{purchase.buyeremail}</td>
-                  <td className="py-2 px-3 text-right">${purchase.totalcost}</td>
-                  <td className="py-2 px-3"><PurchaseDetails id={purchase.purchaseid}/></td>
-                </tr>
-                ))
-            }
-          </tbody>
-        </table>
+const formatDate = (date: string | Date) => {
+  // Aseguramos que sea un objeto Date válido
+  const d = new Date(date); 
+  return d.toLocaleDateString("es-AR", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",    // Agregué la hora por si te sirve
+    minute: "2-digit"   // Agregué los minutos
+  });
+}
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold">Compras</h1>
+        <p className="text-gray-600">Gestiona todas las compras realizadas</p>
       </div>
-    )
+
+      {purchases.length === 0 ? (
+        <Card>
+          <CardContent className="p-12 text-center">
+            <p className="text-gray-600 mb-4">No hay compras registradas</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardContent className="p-6">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>ID Pedido</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Total</TableHead>
+                    <TableHead>Fecha</TableHead>
+                    <TableHead>Acciones</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {purchases.map((purchase) => (
+                    <TableRow key={purchase.purchaseid}>
+                      <TableCell className="font-semibold">#{purchase.purchaseid}</TableCell>
+                      <TableCell>{purchase.buyeremail}</TableCell>
+                      <TableCell className="font-semibold">{formatPrice(purchase.totalcost)}</TableCell>
+                      <TableCell>{formatDate(purchase.timestamp)}</TableCell>
+                      <TableCell className="space-x-2">
+                        <Link href={`/success?purchase_id=${purchase.purchaseid}`}>
+                          <Button variant="outline" size="sm">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </Link>
+
+                        <DeletePurchaseButton id={purchase.purchaseid} />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  )
 }

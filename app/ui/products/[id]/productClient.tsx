@@ -35,6 +35,7 @@ export default function ProductClient({
       brandName: product.brand_name,
       productName: product.name,
       unitCost: product.price,
+      image: product.image || "",
     });
   };
 

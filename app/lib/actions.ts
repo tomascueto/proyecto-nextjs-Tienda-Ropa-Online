@@ -459,9 +459,9 @@ export async function payment(cartItems: CartItem[]) {
     body: {
       items: items,
       back_urls: {
-        success: "https://proyecto-nextjs-tienda-ropa-online.vercel.app/",
-        failure: "https://proyecto-nextjs-tienda-ropa-online.vercel.app/products",
-        pending: "https://proyecto-nextjs-tienda-ropa-online.vercel.app/",
+        success: "https://proyecto-nextjs-tienda-ropa-online.vercel.app/success",
+        failure: "https://proyecto-nextjs-tienda-ropa-online.vercel.app/failure",
+        pending: "https://proyecto-nextjs-tienda-ropa-online.vercel.app/pending",
       },
       auto_return: "approved",
     },
@@ -499,3 +499,16 @@ export async function createPurchase(items: any, payerEmail: string, totalAmount
     }
   }
 }
+
+
+export async function deletePurchase(purchaseId: string) {
+  try {
+    await sql`DELETE FROM purchaseDetail WHERE purchase_id = ${purchaseId}`
+    await sql`DELETE FROM purchase WHERE purchaseID = ${purchaseId}`
+    revalidatePath("/admin/purchases")
+    return { message: "Purchase deleted successfully" }
+  } catch (error) {
+    return { message: "Database Error: Failed to delete purchase." }
+  }
+}
+
