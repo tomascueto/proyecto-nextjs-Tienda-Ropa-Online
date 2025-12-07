@@ -17,7 +17,7 @@ export default async function Page({ params }: { params: { id: string } }) {
     <div className="flex justify-center">
       <div className="w-full max-w-4xl">
         <div className="mb-8">
-          <Link href="/admin/productos">
+          <Link href="/admin/products">
             <Button variant="ghost" size="sm" className="mb-4">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Volver a productos

@@ -2,16 +2,22 @@
 import { Button } from "@/app/ui/button"
 import { deleteCategory } from '@/app/lib/actions';
 
-
-export default function DeleteCategoryButton({ id }: { id: string }){
-    const deleteCategoryWithId = deleteCategory.bind(null, id);
+export default function DeleteCategoryButton({ 
+  id, 
+  cloudinary_public_id 
+}: { 
+  id: string, 
+  cloudinary_public_id: string 
+}){
+    // Pasamos el ID público (o un string vacío si es null para evitar errores)
+    const deleteCategoryWithId = deleteCategory.bind(null, id, cloudinary_public_id || "");
+    
     return(
         <form action={deleteCategoryWithId}>
-            <Button variant="outline" size="sm" className="text-red-500">
+            <Button variant="outline" size="sm" className="text-red-500 hover:bg-red-50 hover:text-red-700">
                 <TrashIcon/>
             </Button>
         </form>
-        
     )
 }
 
