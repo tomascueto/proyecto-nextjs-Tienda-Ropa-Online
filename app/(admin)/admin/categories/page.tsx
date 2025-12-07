@@ -40,7 +40,7 @@ export default async function Page(){
                           <td className="py-2 px-3">{category.name}</td>
                           <td className="py-2 px-3 flex justify-end gap-2">
                           <EditCategoryButton id={category.id} />
-                          <DeleteButton id={category.id} />
+                          <DeleteButton id={category.id} cloudinary_public_id = {category.cloudinary_public_id} />
                           </td>
                       </tr>
                     )

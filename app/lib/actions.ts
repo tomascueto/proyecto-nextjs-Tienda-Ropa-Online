@@ -57,17 +57,22 @@ const FormSchema = z.object({
   inStock: z.coerce.boolean(),
   image: z.instanceof(File).refine((file) => {
     return ACCEPTED_FILE_TYPES.includes(file.type)
-  }, "Por favor, subir una imagen"),
+  }, "Por favor, subir una imagen (.jpg, .jpeg, .png)"),
 })
+
 
 const CategoryFormSchema = z.object({
   id: z.string(),
-
   categoryName: z
-    .string({
-      invalid_type_error: "Poner una categoría",
-    })
+    .string({ invalid_type_error: "Poner una categoría" })
     .min(1, { message: "Poner una categoría" }),
+  // NUEVO CAMPO:
+  description: z
+    .string()
+    .max(30, { message: "La descripción no puede superar los 30 caracteres." }),
+  image: z.instanceof(File).refine((file) => {
+    return ACCEPTED_FILE_TYPES.includes(file.type)
+  }, "Por favor, subir una imagen (.jpg, .jpeg, .png)"),
 })
 
 const CreateProduct = FormSchema.omit({ id: true })
@@ -76,8 +81,13 @@ const UpdateProduct = FormSchema.omit({ id: true, image: true }).extend({
 })
 
 const CreateCategory = CategoryFormSchema.omit({ id: true })
-const UpdateCategory = CategoryFormSchema.omit({ id: true })
-
+const UpdateCategory = CategoryFormSchema.omit({ id: true, image: true }).extend({
+  image: z.instanceof(File).optional(),
+  description: z
+    .string()
+    .min(1, { message: "La descripción es obligatoria." }) // Validamos que no esté vacía
+    .max(30, { message: "La descripción no puede superar los 30 caracteres." }),
+})
 export type State = {
   errors?: {
     productName?: string[]
@@ -333,23 +343,55 @@ export async function deleteProduct(id: string, cloudinary_public_id: string) {
 }
 
 export async function createCategory(prevState: CategoryState, formData: FormData) {
-  const validatedFields = CreateCategory.safeParse({
+  
+const validatedFields = CreateCategory.safeParse({
     categoryName: formData.get("categoryName"),
+    description: formData.get("description"), // Recibimos la descripción
+    image: formData.get("image") as File,
   })
 
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to Create Category.",
+      message: "Faltan campos. No se pudo crear la categoría.",
     }
   }
 
-  const { categoryName } = validatedFields.data
+  const { categoryName, description, image } = validatedFields.data
+
+  // Lógica de subida a Cloudinary (Idéntica a productos)
+  const arrayImage = await image.arrayBuffer()
+  const buffer = new Uint8Array(arrayImage)
+
+  let imageUrl = "";
+  let publicId = "";
 
   try {
+    const uploadResult: any = await new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream({}, (error, result) => {
+          if (error) {
+            reject(error)
+          }
+          resolve(result)
+        })
+        .end(buffer)
+    })
+    
+    imageUrl = uploadResult.url;
+    publicId = uploadResult.public_id;
+
+  } catch (error) {
+     return {
+      message: "Cloudinary Error: Failed to upload image.",
+    }
+  }
+
+  try {
+    // Insertamos la descripción
     await sql`
-        INSERT INTO categories (name)
-        VALUES (${categoryName})
+        INSERT INTO categories (name, description, image, cloudinary_public_id)
+        VALUES (${categoryName}, ${description}, ${imageUrl}, ${publicId})
         `
   } catch (error) {
     return {
@@ -358,45 +400,95 @@ export async function createCategory(prevState: CategoryState, formData: FormDat
   }
 
   revalidatePath("/admin/categories")
+  // Revalidamos la home también para que aparezca la nueva categoría ahí
+  revalidatePath("/") 
   redirect("/admin/categories")
 }
 
-export async function updateCategory(id: string, prevState: CategoryState, formData: FormData) {
+export async function updateCategory(
+  id: string,
+  oldPublicId: string, // Necesitamos esto para borrar la foto vieja si la cambian
+  prevState: CategoryState,
+  formData: FormData
+) {
   const validatedFields = UpdateCategory.safeParse({
     categoryName: formData.get("categoryName"),
+    description: formData.get("description"),
+    // El input file puede venir vacío
   })
 
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to Update Category.",
+      message: "Error en los campos.",
     }
   }
 
-  const { categoryName } = validatedFields.data
+  const { categoryName, description } = validatedFields.data
+  const image = formData.get("image") as File
+
+  let imageUrl: string | undefined = undefined
+  let newPublicId: string | undefined = undefined
+
+  // Lógica de Imagen: Si hay nueva imagen, subirla y borrar la vieja
+  if (image && image.size > 0) {
+    if (oldPublicId) {
+       await cloudinary.uploader.destroy(oldPublicId)
+    }
+   
+    const arrayImage = await image.arrayBuffer()
+    const buffer = new Uint8Array(arrayImage)
+    const uploadResult: any = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream({}, (error, result) => {
+          if (error) reject(error)
+          resolve(result)
+        }).end(buffer)
+    })
+    imageUrl = uploadResult.url
+    newPublicId = uploadResult.public_id
+  }
 
   try {
-    await sql`
+    if (imageUrl) {
+      // Actualizamos TODO incluyendo imagen
+      await sql`
         UPDATE categories
-        SET name = ${categoryName}
+        SET name = ${categoryName}, description = ${description}, image = ${imageUrl}, cloudinary_public_id = ${newPublicId}
         WHERE id = ${id}
       `
-  } catch (error) {
-    return {
-      message: "Database Error: Failed to Update Category",
+    } else {
+      // Actualizamos solo textos
+      await sql`
+        UPDATE categories
+        SET name = ${categoryName}, description = ${description}
+        WHERE id = ${id}
+      `
     }
+  } catch (error) {
+    return { message: "Database Error: Failed to Update Category" }
   }
 
   revalidatePath("/admin/categories")
+  revalidatePath("/")
   redirect("/admin/categories")
 }
 
-export async function deleteCategory(id: string) {
+export async function deleteCategory(id: string, cloudinary_public_id: string) {
   try {
+    // 1. Si existe una imagen asociada, la borramos de Cloudinary
+    if (cloudinary_public_id) {
+      await cloudinary.uploader.destroy(cloudinary_public_id);
+      console.log("Imagen de categoría eliminada:", cloudinary_public_id);
+    }
+
+    // 2. Borramos la categoría de la base de datos
     await sql`DELETE FROM categories WHERE id = ${id}`
+    
     revalidatePath("/admin/categories")
-    return { message: "Deleted category." }
+    revalidatePath("/") // Importante para actualizar la home también
+    return { message: "Categoría eliminada." }
   } catch (error) {
+    console.error(error);
     return {
       message: "Database Error: Failed to delete Category.",
     }
