@@ -66,10 +66,13 @@ const CategoryFormSchema = z.object({
   categoryName: z
     .string({ invalid_type_error: "Poner una categoría" })
     .min(1, { message: "Poner una categoría" }),
-  // NUEVO CAMPO:
+    
+  // AQUÍ FALTABA EL .min(1)
   description: z
     .string()
+    .min(1, { message: "La descripción es obligatoria." }) // <--- AGREGAR ESTO
     .max(30, { message: "La descripción no puede superar los 30 caracteres." }),
+    
   image: z.instanceof(File).refine((file) => {
     return ACCEPTED_FILE_TYPES.includes(file.type)
   }, "Por favor, subir una imagen (.jpg, .jpeg, .png)"),
@@ -106,6 +109,8 @@ export type State = {
 export type CategoryState = {
   errors?: {
     categoryName?: string[]
+    description?: string[]
+    image?: string[]
   }
   message?: string | null
 }
