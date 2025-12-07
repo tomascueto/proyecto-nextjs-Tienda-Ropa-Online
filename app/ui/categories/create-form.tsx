@@ -9,16 +9,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/app/ui/products/card
 import { Input } from "@/app/ui/products/input"
 import { Label } from "@/app/ui/products/label"
 import { Upload } from "lucide-react"
-
-// Aunque recibimos categories, no lo usamos en el form de creación (a menos que quieras categorías padre/hijo)
-// Lo mantengo para no romper la interfaz si ya lo estás pasando desde la page.
 import { Category } from '@/app/lib/definitions';
 
 export default function CreateCategoryForm({ categories }: { categories: Category[] }) {
   const initialState = { message: "", errors: {} };
   const [state, dispatch] = useFormState(createCategory, initialState);
   
-  // Estado para mostrar el nombre del archivo seleccionado (igual que en productos)
   const [fileName, setFileName] = useState<string>("")
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,14 +30,14 @@ export default function CreateCategoryForm({ categories }: { categories: Categor
         
         <Card>
           <CardHeader>
-            <CardTitle>Detalles de la Categoría</CardTitle>
+            <CardTitle>Nueva Categoría</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             
             {/* Nombre de la Categoría */}
             <div className="space-y-2">
               <Label htmlFor="categoryName">
-                Nombre de la Categoría <span className="text-red-500">*</span>
+                Nombre <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="categoryName"
@@ -54,13 +50,14 @@ export default function CreateCategoryForm({ categories }: { categories: Categor
               <div id="categoryname-error" aria-live="polite" aria-atomic="true">
                 {state.errors?.categoryName &&
                   state.errors.categoryName.map((error: string) => (
-                    <p className="text-sm text-red-500" key={error}>
+                    <p className="text-sm text-red-500 mt-1" key={error}>
                       {error}
                     </p>
                   ))}
               </div>
             </div>
-                        {/* Descripción */}
+
+            {/* Descripción Breve (Agregado) */}
             <div className="space-y-2">
               <Label htmlFor="description">
                 Descripción Breve <span className="text-red-500">*</span>
@@ -72,31 +69,27 @@ export default function CreateCategoryForm({ categories }: { categories: Categor
                   type="text"
                   placeholder="Ej: Conquista el campo"
                   maxLength={30}
-                  onChange={(e) => {
-                    // Pequeño truco para forzar re-render si quieres mostrar el contador en tiempo real, 
-                    // o simplemente deja que el navegador maneje el maxLength
-                  }}
                   aria-describedby="description-error"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
-                  Máx 30 car.
+                  Máx 30
                 </span>
               </div>
               <div id="description-error" aria-live="polite" aria-atomic="true">
                 {state.errors?.description &&
                   state.errors.description.map((error: string) => (
-                    <p className="text-sm text-red-500" key={error}>
+                    <p className="text-sm text-red-500 mt-1" key={error}>
                       {error}
                     </p>
                   ))}
               </div>
-            </div>      
+            </div>
+
             {/* Carga de Imagen */}
             <div className="space-y-2">
               <Label htmlFor="image">
                 Imagen de Portada <span className="text-red-500">*</span>
               </Label>
-              {/* Estilo idéntico al form de productos: Borde dashed, hover effect, centrado */}
               <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-gray-400 transition-colors bg-white">
                 <input
                   id="image"
@@ -108,7 +101,7 @@ export default function CreateCategoryForm({ categories }: { categories: Categor
                   aria-describedby="image-error"
                 />
                 <label htmlFor="image" className="cursor-pointer flex flex-col items-center justify-center w-full h-full">
-                  <Upload className="h-12 w-12 text-gray-400 mb-4" />
+                  <Upload className="h-10 w-10 text-gray-400 mb-2" />
                   {fileName ? (
                     <p className="text-sm font-medium text-gray-700">{fileName}</p>
                   ) : (
@@ -122,7 +115,7 @@ export default function CreateCategoryForm({ categories }: { categories: Categor
               <div id="image-error" aria-live="polite" aria-atomic="true">
                 {state.errors?.image &&
                   state.errors.image.map((error: string) => (
-                    <p className="text-sm text-red-500" key={error}>
+                    <p className="text-sm text-red-500 mt-1" key={error}>
                       {error}
                     </p>
                   ))}
