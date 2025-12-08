@@ -125,7 +125,11 @@ async function seedBrands(client){
 async function seedProducts(client){
     try {
         await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-        // Create the "products" table if it doesn't exist
+        
+        // BORRAMOS la tabla anterior para recrearla con la nueva estructura
+        // OJO: Esto borrará tus productos actuales.
+        await client.sql`DROP TABLE IF EXISTS products CASCADE`;
+
         const createTable = await client.sql`
           CREATE TABLE IF NOT EXISTS products (
             id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -133,8 +137,8 @@ async function seedProducts(client){
             description VARCHAR(255),
             brand_name VARCHAR(255),
             category_name VARCHAR(255),
-            price INT NOT NULL,
-            original_price INT,
+            original_price INT NOT NULL,
+            price INT,
             features TEXT[],
             image TEXT,
             cloudinary_public_id TEXT,
@@ -147,14 +151,14 @@ async function seedProducts(client){
         const insertedProducts= await Promise.all(
           products.map(async (product) => {
             return client.sql`
-            INSERT INTO products (name,description,brand_name,category_name,price,original_price,features,image,cloudinary_public_id,inStock)
+            INSERT INTO products (name,description,brand_name,category_name,original_price,price,features,image,cloudinary_public_id,inStock)
             VALUES ( 
               ${product.name},
               ${product.description},
               ${product.brandname},
               ${product.categoryname},
-              ${product.price},
-              ${product.originalPrice ?? null},
+              ${product.originalPrice},
+              ${product.price ?? null},
               ${product.features ?? []},
               ${product.image},
               ${product.cloudinary_public_id},

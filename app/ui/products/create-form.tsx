@@ -211,7 +211,7 @@ export default function CreateProductForm({ brands, categories }: { brands: Bran
             <div className="grid md:grid-cols-2 gap-4">
               {/* Precio Original */}
               <div className="space-y-2">
-                <Label htmlFor="originalPrice">Precio Original</Label>
+                <Label htmlFor="originalPrice">Precio Original (Base) <span className="text-red-500">*</span></Label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
                   <Input
@@ -224,7 +224,7 @@ export default function CreateProductForm({ brands, categories }: { brands: Bran
                     aria-describedby="originalprice-error"
                   />
                 </div>
-                <p className="text-xs text-gray-500">Opcional - Precio sin descuento</p>
+                <p className="text-xs text-gray-500">El precio base del producto.</p>
                 <div id="originalprice-error" aria-live="polite" aria-atomic="true">
                   {state.errors?.originalPrice &&
                     state.errors.originalPrice.map((error: string) => (
@@ -235,10 +235,10 @@ export default function CreateProductForm({ brands, categories }: { brands: Bran
                 </div>
               </div>
 
-              {/* Precio Actual */}
+              {/* Precio Oferta (Ahora es el opcional) */}
               <div className="space-y-2">
                 <Label htmlFor="price">
-                  Precio Actual <span className="text-red-500">*</span>
+                  Precio Oferta / Actual <span className="text-gray-400">(Opcional)</span>
                 </Label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
@@ -247,12 +247,12 @@ export default function CreateProductForm({ brands, categories }: { brands: Bran
                     name="price"
                     type="number"
                     min="0"
-                    placeholder="0.00"
+                    placeholder="Dejar vacío si no hay descuento"
                     className="pl-7"
                     aria-describedby="price-error"
                   />
                 </div>
-                <p className="text-xs text-gray-500">Precio de venta del producto</p>
+                <p className="text-xs text-gray-500">Si se completa, este será el precio de venta.</p>
                 <div id="price-error" aria-live="polite" aria-atomic="true">
                   {state.errors?.price &&
                     state.errors.price.map((error: string) => (

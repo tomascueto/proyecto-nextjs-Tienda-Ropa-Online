@@ -11,12 +11,14 @@ export type Product = {
     features: string[],
     brand_name : string,
     category_name : string,
-    price : number,
-    original_price? : number,
+    
+    // CAMBIO AQUÍ:
+    price : number | null,   // Ahora puede ser null (si no hay oferta)
+    original_price : number, // Ahora es obligatorio (siempre es el precio base)
+    
     image : string,
     cloudinary_public_id : string
     instock : boolean
-    
 }
 
 export type Category = {

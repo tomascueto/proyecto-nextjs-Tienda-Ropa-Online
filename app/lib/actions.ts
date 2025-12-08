@@ -9,8 +9,8 @@ import { AuthError } from "next-auth"
 import { MercadoPagoConfig, Preference } from "mercadopago"
 import type { CartItem } from "./definitions"
 
-//Archivos aceptados para chequear el esquema con zod.
-const ACCEPTED_FILE_TYPES = ["image/png", "image/jpg ", "image/jpeg"]
+// Archivos aceptados para chequear el esquema con zod.
+const ACCEPTED_FILE_TYPES = ["image/png", "image/jpg", "image/jpeg"]
 
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -18,6 +18,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 })
 
+// --- SCHEMAS DE PRODUCTOS ---
 const FormSchema = z.object({
   id: z.string(),
   productName: z
@@ -25,11 +26,11 @@ const FormSchema = z.object({
       invalid_type_error: "Poner un nombre",
     })
     .min(1, { message: "Poner un nombre" }),
-  price: z.coerce.number().gt(0, { message: "Ingresar una cantidad mayor a 0." }),
-  originalPrice: z.coerce
-    .number()
-    .optional()
-    .or(z.literal("").transform(() => undefined)),
+
+  price: z.coerce.number().optional(),  
+  
+  originalPrice: z.coerce.number().gt(0, { message: "El precio original es obligatorio." }),
+
   brandName: z
     .string({
       invalid_type_error: "Seleccionar una marca.",
@@ -66,31 +67,51 @@ const CategoryFormSchema = z.object({
   categoryName: z
     .string({ invalid_type_error: "Poner una categoría" })
     .min(1, { message: "Poner una categoría" }),
-    
-  // AQUÍ FALTABA EL .min(1)
+
   description: z
     .string()
-    .min(1, { message: "La descripción es obligatoria." }) // <--- AGREGAR ESTO
+    .min(1, { message: "La descripción es obligatoria." }) 
     .max(30, { message: "La descripción no puede superar los 30 caracteres." }),
-    
+
   image: z.instanceof(File).refine((file) => {
     return ACCEPTED_FILE_TYPES.includes(file.type)
   }, "Por favor, subir una imagen (.jpg, .jpeg, .png)"),
 })
 
 const CreateProduct = FormSchema.omit({ id: true })
-const UpdateProduct = FormSchema.omit({ id: true, image: true }).extend({
-  image: z.instanceof(File).optional(),
-})
+  .refine((data) => {
+    if (data.price && data.price >= data.originalPrice) {
+      return false;
+    }
+    return true;
+  }, {
+    message: "El precio de oferta debe ser menor al precio base.",
+    path: ["price"],
+  });
 
+const UpdateProduct = FormSchema.omit({ id: true, image: true })
+  .extend({
+    image: z.instanceof(File).optional(),
+  })
+  .refine((data) => {
+    if (data.price && data.price >= data.originalPrice) {
+      return false;
+    }
+    return true;
+  }, {
+    message: "El precio de oferta debe ser menor al precio base.",
+    path: ["price"],
+  });
+  
 const CreateCategory = CategoryFormSchema.omit({ id: true })
 const UpdateCategory = CategoryFormSchema.omit({ id: true, image: true }).extend({
   image: z.instanceof(File).optional(),
   description: z
     .string()
-    .min(1, { message: "La descripción es obligatoria." }) // Validamos que no esté vacía
+    .min(1, { message: "La descripción es obligatoria." })
     .max(30, { message: "La descripción no puede superar los 30 caracteres." }),
 })
+
 export type State = {
   errors?: {
     productName?: string[]
@@ -115,26 +136,22 @@ export type CategoryState = {
   message?: string | null
 }
 
+// --- ACCIONES DE PRODUCTOS ---
+
 export async function createProduct(prevState: State, formData: FormData) {
-  // Obtener features del formData y filtrar vacíos
   const featuresRaw = formData.getAll("features[]")
   const featuresInput: string[] = featuresRaw
     .filter((f) => typeof f === "string")
     .map((f) => (f as string).trim())
     .filter((f) => f.length > 0)
 
-  // Obtener inStock del formData
   const inStockValue = formData.get("inStock")
   const inStock = inStockValue === "true" || inStockValue === "on"
 
-  // Obtener originalPrice
-  const originalPriceValue = formData.get("originalPrice")
-  const originalPrice = originalPriceValue && originalPriceValue !== "" ? originalPriceValue : undefined
-
   const validatedFields = CreateProduct.safeParse({
     productName: formData.get("productName"),
-    price: formData.get("price"),
-    originalPrice: originalPrice,
+    price: formData.get("price"),                 
+    originalPrice: formData.get("originalPrice"), 
     brandName: formData.get("brandName"),
     categoryName: formData.get("categoryName"),
     description: formData.get("description"),
@@ -142,8 +159,6 @@ export async function createProduct(prevState: State, formData: FormData) {
     inStock: inStock,
     image: formData.get("image") as File,
   })
-
-  console.log("Validated Fields:", validatedFields)
 
   if (!validatedFields.success) {
     return {
@@ -154,8 +169,8 @@ export async function createProduct(prevState: State, formData: FormData) {
 
   const {
     productName,
-    price,
-    originalPrice: validatedOriginalPrice,
+    price: offerPrice,    
+    originalPrice,        
     brandName,
     categoryName,
     description,
@@ -164,40 +179,48 @@ export async function createProduct(prevState: State, formData: FormData) {
     image,
   } = validatedFields.data
 
+  const dbOfferPrice = (offerPrice && offerPrice > 0) ? offerPrice : null;
+  
+  // Subida de imagen
   const arrayImage = await image.arrayBuffer()
   const buffer = new Uint8Array(arrayImage)
 
-  const uploadResult: any = await new Promise((resolve, reject) => {
-    cloudinary.uploader
-      .upload_stream({}, (error, result) => {
-        if (error) {
-          reject(error)
-        }
-        resolve(result)
-      })
-      .end(buffer)
-  })
-
-  const imageUrl = uploadResult.url
-  const publicId = uploadResult.public_id
+  let imageUrl = ""
+  let publicId = ""
 
   try {
-    await sql`
-        INSERT INTO products (name, description, brand_name, category_name, price, original_price, features, image, cloudinary_public_id, instock)
-        VALUES (
-          ${productName},
-          ${description},
-          ${brandName},
-          ${categoryName},
-          ${price},
-          ${validatedOriginalPrice ?? null},
-          ${features as any},
-          ${imageUrl},
-          ${publicId},
-          ${validatedInStock}
-        )
-    `
+    const uploadResult: any = await new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream({}, (error, result) => {
+          if (error) reject(error)
+          resolve(result)
+        })
+        .end(buffer)
+    })
+    imageUrl = uploadResult.url
+    publicId = uploadResult.public_id
   } catch (error) {
+    return { message: "Image Upload Error" }
+  }
+
+  try {
+      await sql`
+          INSERT INTO products (
+            name, description, brand_name, category_name,original_price,price,features, image, cloudinary_public_id, instock)
+          VALUES (
+            ${productName},
+            ${description},
+            ${brandName},
+            ${categoryName},
+            ${originalPrice}, 
+            ${dbOfferPrice}, 
+            ${features as any},
+            ${imageUrl},
+            ${publicId},
+            ${validatedInStock}
+          )
+      `
+    } catch (error) {
     console.error("Database Error:", error)
     return {
       message: "Database Error: Failed to Create Product.",
@@ -215,25 +238,19 @@ export async function updateProduct(
   prevState: State,
   formData: FormData,
 ) {
-  // Obtener features del formData y filtrar vacíos
   const featuresRaw = formData.getAll("features[]")
   const featuresInput: string[] = featuresRaw
     .filter((f) => typeof f === "string")
     .map((f) => (f as string).trim())
     .filter((f) => f.length > 0)
 
-  // Obtener inStock del formData
   const inStockValue = formData.get("inStock")
   const inStock = inStockValue === "true" || inStockValue === "on"
-
-  // Obtener originalPrice
-  const originalPriceValue = formData.get("originalPrice")
-  const originalPrice = originalPriceValue && originalPriceValue !== "" ? originalPriceValue : undefined
 
   const validatedFields = UpdateProduct.safeParse({
     productName: formData.get("productName"),
     price: formData.get("price"),
-    originalPrice: originalPrice,
+    originalPrice: formData.get("originalPrice"), 
     brandName: formData.get("brandName"),
     categoryName: formData.get("categoryName"),
     description: formData.get("description"),
@@ -250,8 +267,8 @@ export async function updateProduct(
 
   const {
     productName,
-    price,
-    originalPrice: validatedOriginalPrice,
+    price: offerPrice,
+    originalPrice,
     brandName,
     categoryName,
     description,
@@ -259,27 +276,25 @@ export async function updateProduct(
     inStock: validatedInStock,
   } = validatedFields.data
 
-  const image = formData.get("image") as File
+  // LÓGICA DE PRECIOS (Igual que en create):
+  const dbOfferPrice = (offerPrice && offerPrice > 0) ? offerPrice : null;
 
+  const image = formData.get("image") as File
   let imageUrl: string | undefined = undefined
   let newPublicId: string | undefined = undefined
 
   // Solo subir nueva imagen si se seleccionó una
   if (image && image.size > 0) {
-    // Eliminar la imagen anterior de Cloudinary
-    const result = await cloudinary.uploader.destroy(oldPublicId)
-    console.log("Imagen eliminada exitosamente:", result)
-
-    // Subir la nueva imagen
+    if (oldPublicId) {
+       await cloudinary.uploader.destroy(oldPublicId)
+    }
     const arrayImage = await image.arrayBuffer()
     const buffer = new Uint8Array(arrayImage)
 
     const uploadResult: any = await new Promise((resolve, reject) => {
       cloudinary.uploader
         .upload_stream({}, (error, result) => {
-          if (error) {
-            reject(error)
-          }
+          if (error) reject(error)
           resolve(result)
         })
         .end(buffer)
@@ -290,33 +305,31 @@ export async function updateProduct(
 
   try {
     if (!imageUrl) {
-      // Actualizar sin cambiar la imagen
+        await sql`
+            UPDATE products
+            SET 
+              name = ${productName}, 
+              original_price = ${originalPrice},
+              price = ${dbOfferPrice},
+              brand_name = ${brandName}, 
+              category_name = ${categoryName}, 
+              description = ${description},
+              features = ${features as any},
+              instock = ${validatedInStock}
+            WHERE id = ${id}
+          `
+    } else {
       await sql`
         UPDATE products
         SET 
           name = ${productName}, 
-          price = ${price},
-          original_price = ${validatedOriginalPrice ?? null},
+          original_price = ${originalPrice},
+          price = ${dbOfferPrice},
           brand_name = ${brandName}, 
           category_name = ${categoryName}, 
           description = ${description},
           features = ${features as any},
           instock = ${validatedInStock}
-        WHERE id = ${id}
-      `
-    } else {
-      // Actualizar incluyendo nueva imagen
-      await sql`
-        UPDATE products
-        SET 
-          name = ${productName}, 
-          price = ${price},
-          original_price = ${validatedOriginalPrice ?? null},
-          brand_name = ${brandName}, 
-          category_name = ${categoryName}, 
-          description = ${description},
-          features = ${features as any},
-          instock = ${validatedInStock},
           image = ${imageUrl}, 
           cloudinary_public_id = ${newPublicId}
         WHERE id = ${id}
@@ -335,8 +348,10 @@ export async function updateProduct(
 
 export async function deleteProduct(id: string, cloudinary_public_id: string) {
   try {
-    const result = await cloudinary.uploader.destroy(cloudinary_public_id)
-    console.log("Imagen eliminada exitosamente:", result)
+    if(cloudinary_public_id){
+        await cloudinary.uploader.destroy(cloudinary_public_id)
+        console.log("Imagen eliminada exitosamente:", cloudinary_public_id)
+    }
     await sql`DELETE FROM products WHERE id = ${id}`
     revalidatePath("/admin/products")
     return { message: "Deleted product." }
@@ -347,11 +362,12 @@ export async function deleteProduct(id: string, cloudinary_public_id: string) {
   }
 }
 
+// --- ACCIONES DE CATEGORÍAS ---
+
 export async function createCategory(prevState: CategoryState, formData: FormData) {
-  
-const validatedFields = CreateCategory.safeParse({
+  const validatedFields = CreateCategory.safeParse({
     categoryName: formData.get("categoryName"),
-    description: formData.get("description"), // Recibimos la descripción
+    description: formData.get("description"),
     image: formData.get("image") as File,
   })
 
@@ -364,7 +380,6 @@ const validatedFields = CreateCategory.safeParse({
 
   const { categoryName, description, image } = validatedFields.data
 
-  // Lógica de subida a Cloudinary (Idéntica a productos)
   const arrayImage = await image.arrayBuffer()
   const buffer = new Uint8Array(arrayImage)
 
@@ -375,9 +390,7 @@ const validatedFields = CreateCategory.safeParse({
     const uploadResult: any = await new Promise((resolve, reject) => {
       cloudinary.uploader
         .upload_stream({}, (error, result) => {
-          if (error) {
-            reject(error)
-          }
+          if (error) reject(error)
           resolve(result)
         })
         .end(buffer)
@@ -393,7 +406,6 @@ const validatedFields = CreateCategory.safeParse({
   }
 
   try {
-    // Insertamos la descripción
     await sql`
         INSERT INTO categories (name, description, image, cloudinary_public_id)
         VALUES (${categoryName}, ${description}, ${imageUrl}, ${publicId})
@@ -405,21 +417,19 @@ const validatedFields = CreateCategory.safeParse({
   }
 
   revalidatePath("/admin/categories")
-  // Revalidamos la home también para que aparezca la nueva categoría ahí
   revalidatePath("/") 
   redirect("/admin/categories")
 }
 
 export async function updateCategory(
   id: string,
-  oldPublicId: string, // Necesitamos esto para borrar la foto vieja si la cambian
+  oldPublicId: string, 
   prevState: CategoryState,
   formData: FormData
 ) {
   const validatedFields = UpdateCategory.safeParse({
     categoryName: formData.get("categoryName"),
     description: formData.get("description"),
-    // El input file puede venir vacío
   })
 
   if (!validatedFields.success) {
@@ -435,7 +445,6 @@ export async function updateCategory(
   let imageUrl: string | undefined = undefined
   let newPublicId: string | undefined = undefined
 
-  // Lógica de Imagen: Si hay nueva imagen, subirla y borrar la vieja
   if (image && image.size > 0) {
     if (oldPublicId) {
        await cloudinary.uploader.destroy(oldPublicId)
@@ -455,14 +464,12 @@ export async function updateCategory(
 
   try {
     if (imageUrl) {
-      // Actualizamos TODO incluyendo imagen
       await sql`
         UPDATE categories
         SET name = ${categoryName}, description = ${description}, image = ${imageUrl}, cloudinary_public_id = ${newPublicId}
         WHERE id = ${id}
       `
     } else {
-      // Actualizamos solo textos
       await sql`
         UPDATE categories
         SET name = ${categoryName}, description = ${description}
@@ -480,17 +487,15 @@ export async function updateCategory(
 
 export async function deleteCategory(id: string, cloudinary_public_id: string) {
   try {
-    // 1. Si existe una imagen asociada, la borramos de Cloudinary
     if (cloudinary_public_id) {
       await cloudinary.uploader.destroy(cloudinary_public_id);
       console.log("Imagen de categoría eliminada:", cloudinary_public_id);
     }
 
-    // 2. Borramos la categoría de la base de datos
     await sql`DELETE FROM categories WHERE id = ${id}`
     
     revalidatePath("/admin/categories")
-    revalidatePath("/") // Importante para actualizar la home también
+    revalidatePath("/") 
     return { message: "Categoría eliminada." }
   } catch (error) {
     console.error(error);
@@ -500,11 +505,10 @@ export async function deleteCategory(id: string, cloudinary_public_id: string) {
   }
 }
 
+// --- AUTENTICACIÓN Y PAGOS ---
+
 export async function authenticate(prevState: string | undefined, formData: FormData) {
   try {
-    console.log("Se ejecuta authenticate luego de presionar el boton log in")
-    console.log("Email que ingresa:" + formData.get("email"))
-    console.log("Password que ingresa:" + formData.get("password"))
     await signIn("credentials", {
       ...Object.fromEntries(formData),
       redirectTo: "/admin",
@@ -542,7 +546,6 @@ export async function payment(cartItems: CartItem[]) {
   const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN! })
   const preference = new Preference(client)
 
-  // Crear un arreglo para almacenar los items
   const items = cartItems.map((item) => ({
     id: `${item.productName}`,
     title: "mp purchase",
@@ -570,8 +573,6 @@ export async function createPurchase(items: any, payerEmail: string, totalAmount
   console.log("Entrando a crear la compra")
 
   try {
-    //Crear la orden
-
     const data = await sql`
         INSERT INTO purchase (buyerEmail, totalCost)
         VALUES (${payerEmail}, ${totalAmount})
@@ -580,7 +581,6 @@ export async function createPurchase(items: any, payerEmail: string, totalAmount
 
     const purchaseIdv2 = data.rows[0].purchaseid
     console.log("Compra creada")
-    // Por cada item (producto,cantidad) del carrito, creo un detalle.
 
     await Promise.all(
       items.map(async (item: any) => {
@@ -597,7 +597,6 @@ export async function createPurchase(items: any, payerEmail: string, totalAmount
   }
 }
 
-
 export async function deletePurchase(purchaseId: string) {
   try {
     await sql`DELETE FROM purchaseDetail WHERE purchase_id = ${purchaseId}`
@@ -608,4 +607,3 @@ export async function deletePurchase(purchaseId: string) {
     return { message: "Database Error: Failed to delete purchase." }
   }
 }
-
