@@ -118,6 +118,7 @@ export async function fetchProductsByBrand(brand:string) {
         products.brand_name,
         products.category_name,
         products.price,
+        products.original_price,
         products.image
       FROM products
       ${where}

@@ -29,11 +29,15 @@ export default function EditProductForm({
   const initialState = { message: "", errors: {} }
   const [state, dispatch] = useFormState(updateProductWithId, initialState)
 
+0.
+  const defaultBasePrice = product.original_price ?? product.price ?? 0;
+  const isOffer = product.price !== null && product.price < defaultBasePrice;
+  const defaultOfferPrice = isOffer ? product.price : "";
+
   const [inStock, setInStock] = useState(product.instock ?? true)
   const [fileName, setFileName] = useState<string>("")
   const [features, setFeatures] = useState<string[]>(() => {
     const productFeatures = product.features && product.features.length > 0 ? [...product.features] : []
-    // Asegurar que siempre haya 3 espacios
     while (productFeatures.length < 3) {
       productFeatures.push("")
     }
@@ -64,7 +68,7 @@ export default function EditProductForm({
             <CardTitle>Imagen Actual</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="relative w-full aspect-square max-w-xs mx-auto rounded-lg overflow-hidden bg-gray-100">
+            <div className="relative w-full aspect-square max-w-xs mx-auto rounded-lg overflow-hidden bg-gray-100 border">
               <Image src={product.image || "/placeholder.svg"} alt={product.name} fill className="object-cover" />
             </div>
           </CardContent>
@@ -76,7 +80,6 @@ export default function EditProductForm({
             <CardTitle>Información Básica</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Nombre */}
             <div className="space-y-2">
               <Label htmlFor="productName">
                 Nombre del Producto <span className="text-red-500">*</span>
@@ -99,7 +102,6 @@ export default function EditProductForm({
               </div>
             </div>
 
-            {/* Descripción */}
             <div className="space-y-2">
               <Label htmlFor="description">
                 Descripción <span className="text-red-500">*</span>
@@ -122,12 +124,11 @@ export default function EditProductForm({
               </div>
             </div>
 
-            {/* Features */}
             <div className="space-y-2">
               <Label>
                 Características <span className="text-red-500">*</span>
               </Label>
-              <p className="text-xs text-gray-500 mb-2">Agrega hasta 3 características (máx. 20 caracteres cada una)</p>
+              <p className="text-xs text-gray-500 mb-2">Agrega hasta 3 características (máx. 40 caracteres cada una)</p>
               <div className="space-y-3">
                 {features.map((feature, index) => (
                   <div key={index} className="flex gap-2 items-start">
@@ -149,7 +150,6 @@ export default function EditProductForm({
                   </div>
                 ))}
               </div>
-              {/* Hidden inputs para enviar al servidor */}
               {features.map((feature, index) => (
                 <input key={`hidden-${index}`} type="hidden" name="features[]" value={feature} />
               ))}
@@ -165,14 +165,12 @@ export default function EditProductForm({
           </CardContent>
         </Card>
 
-        {/* Categorización */}
         <Card>
           <CardHeader>
             <CardTitle>Categorización</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
-              {/* Marca */}
               <div className="space-y-2">
                 <Label htmlFor="brandName">
                   Marca <span className="text-red-500">*</span>
@@ -201,7 +199,6 @@ export default function EditProductForm({
                 </div>
               </div>
 
-              {/* Categoría */}
               <div className="space-y-2">
                 <Label htmlFor="categoryName">
                   Categoría <span className="text-red-500">*</span>
@@ -233,16 +230,17 @@ export default function EditProductForm({
           </CardContent>
         </Card>
 
-        {/* Precios y Stock */}
         <Card>
           <CardHeader>
             <CardTitle>Precios y Disponibilidad</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
-              {/* Precio Original */}
+              
               <div className="space-y-2">
-                <Label htmlFor="originalPrice">Precio Original</Label>
+                <Label htmlFor="originalPrice">
+                  Precio Original (Base) <span className="text-red-500">*</span>
+                </Label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
                   <Input
@@ -250,13 +248,11 @@ export default function EditProductForm({
                     name="originalPrice"
                     type="number"
                     min="0"
-                    defaultValue={product.original_price ?? ""}
-                    placeholder="0.00"
+                    defaultValue={defaultBasePrice}
                     className="pl-7"
                     aria-describedby="originalprice-error"
                   />
                 </div>
-                <p className="text-xs text-gray-500">Opcional - Precio sin descuento</p>
                 <div id="originalprice-error" aria-live="polite" aria-atomic="true">
                   {state.errors?.originalPrice &&
                     state.errors.originalPrice.map((error: string) => (
@@ -267,11 +263,8 @@ export default function EditProductForm({
                 </div>
               </div>
 
-              {/* Precio Actual */}
               <div className="space-y-2">
-                <Label htmlFor="price">
-                  Precio Actual <span className="text-red-500">*</span>
-                </Label>
+                <Label htmlFor="price">Precio Oferta (Opcional)</Label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
                   <Input
@@ -279,13 +272,12 @@ export default function EditProductForm({
                     name="price"
                     type="number"
                     min="0"
-                    defaultValue={product.price}
-                    placeholder="0.00"
+                    defaultValue={defaultOfferPrice ?? ""}
+                    placeholder="Vacío = Sin oferta"
                     className="pl-7"
                     aria-describedby="price-error"
                   />
                 </div>
-                <p className="text-xs text-gray-500">Precio de venta del producto</p>
                 <div id="price-error" aria-live="polite" aria-atomic="true">
                   {state.errors?.price &&
                     state.errors.price.map((error: string) => (
@@ -297,7 +289,6 @@ export default function EditProductForm({
               </div>
             </div>
 
-            {/* Estado de Stock */}
             <div className="space-y-2">
               <Label htmlFor="inStock">Disponibilidad</Label>
               <div className="flex items-center gap-4 p-4 border rounded-lg">
@@ -307,7 +298,6 @@ export default function EditProductForm({
                   onCheckedChange={setInStock}
                   className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500"
                 />
-                {/* Hidden input para enviar el valor en el form */}
                 <input type="hidden" name="inStock" value={inStock ? "true" : "false"} />
                 <div className="flex-1">
                   <p className={`font-medium ${inStock ? "text-green-600" : "text-red-600"}`}>
@@ -322,7 +312,6 @@ export default function EditProductForm({
           </CardContent>
         </Card>
 
-        {/* Imagen */}
         <Card>
           <CardHeader>
             <CardTitle>Cambiar Imagen (Opcional)</CardTitle>
@@ -367,7 +356,7 @@ export default function EditProductForm({
 
         {/* Botones de Acción */}
         <div className="flex justify-end gap-4">
-          <Link href="/admin/productos">
+          <Link href="/admin/products">
             <Button type="button" variant="outline">
               Cancelar
             </Button>
@@ -380,4 +369,3 @@ export default function EditProductForm({
     </form>
   )
 }
-

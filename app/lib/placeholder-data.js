@@ -1,10 +1,11 @@
+// app/lib/placeholder-data.js
+
 const users = [
     {
       email: 'admin@admin.com',
       password: 'admin',
     },
   ];
-
 
 const categories = [
     {
@@ -19,8 +20,8 @@ const categories = [
         id : 2,
         name : 'Lifestyle',
         description: 'Estilo urbano',
-        image: 'https://res.cloudinary.com/dch0yp6xx/image/upload/v1754161659/lifestyle_iks4jd.png',
-        cloudinary_public_id: 'lifestyle_iks4jd'      
+        image: 'https://res.cloudinary.com/dch0yp6xx/image/upload/v1765207081/Category-Lifestyle_jfuh0w.png',
+        cloudinary_public_id: 'Category-Lifestyle_jfuh0w'      
     },
     {
         id : 3,
@@ -61,19 +62,19 @@ const brands = [
     },
 ]
 
-
 const products = [
     {
-        name :'Air Jordan 3 Palomino',
-        description: 'Zapatillas Jordan 3 de cuero',
+        name :'Jordan AJ 1 Retro High OG V3',
+        description: 'Zapatillas Jordan 1 de cuero',
         brandname :  brands[0].name,
         brandid :  brands[0].id,
         categoryid : categories[1].id,
         categoryname : categories[1].name,
-        price : 10,
+        // OFERTA: Precio real 2000, oferta 1500
         originalPrice : 2000,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/t_Card/v1719263958/Jordan3Palomino_fhha2k.jpg',
-        cloudinary_public_id : 'Jordan3Palomino_fhha2k',
+        price : 1500,
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765216518/Jordan_AJ_1_Retro_High_OG_V3_i1umje.webp',
+        cloudinary_public_id : 'Jordan_AJ_1_Retro_High_OG_V3_i1umje',
         features : [
             'Cuero premium',
             'Amortiguación Air-Sole',
@@ -82,102 +83,111 @@ const products = [
         instock: true
     },
     {
-        name : 'Air Jordan 4 Retro Black Cat',
-        description : 'Zapatillas Jordan 4 full black',
+        name : 'Air Jordan 3 Medium Olive',
+        description : 'Zapatillas Jordan 3 verde oliva',
         brandname :  brands[0].name,
         brandid :  brands[0].id,
         categoryid : categories[1].id,
         categoryname : categories[1].name,
-        price : 4000,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1742233326/Jordan4BlackCat_fyrqid.jpg',
-        cloudinary_public_id : 'Jordan4BlackCat_fyrqid',
+        // SIN OFERTA: price es null
+        originalPrice : 4000,
+        price : null,
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765216961/Jordan_AJ_3_Medium_Olive_t7njft.webp',
+        cloudinary_public_id : 'Jordan_AJ_3_Medium_Olive_t7njft',
         features : [
             'Cuero premium',
-            'Black Cat',
+            'Verde oliva distintivo',
             'Diseño icónico'
         ],
         instock: true       
     },
     {
-        name : 'Air Jordan 1 Retro High OG Latte',
+        name : 'Jordan Air Jordan 1 Low SE Chicago',
         description : 'Gema para los sneakerheads',
         brandname :  brands[0].name,
         brandid :  brands[0].id,
         categoryid : categories[1].id,
         categoryname : categories[1].name,
-        price : 6000,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1742233387/tenis-air-jordan-1-retro-high-og-latte-Dw2wdP_qu1ipo.webp',
-        cloudinary_public_id : 'tenis-air-jordan-1-retro-high-og-latte-Dw2wdP_qu1ipo',
+        originalPrice : 6000,
+        price : null,
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765217190/Jordan_AJ_1_Retro_High_OG_Jordan_Air_Jordan_1_Low_SE_zbgnxn.webp',
+        cloudinary_public_id : 'Jordan_AJ_1_Retro_High_OG_Jordan_Air_Jordan_1_Low_SE_zbgnxn',
         features : [
             'Cuero premium',
-            'Colores neutros',
+            'Colores de los Chicago Bulls',
             'Diseño icónico'
         ],
         instock: true
     },
     {
-        name : 'Air Jordan 4 Retro Oxidized Green',
-        description : 'Zapatillas Jordan 4 con colores metálicos.',
+        name : 'Air Jordan 4 Retro Cozy Girl',
+        description : 'Zapatillas Jordan 4.',
         brandname :  brands[0].name,
         brandid :  brands[0].id,
         categoryid : categories[1].id,
         categoryname : categories[1].name,
-        price : 4000,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1742233444/tenis-air-jordan-4-retro-oxidized-green-PNtDJp_yjvd05.jpg',
-        cloudinary_public_id : 'tenis-air-jordan-4-retro-oxidized-green-PNtDJp_yjvd05',
+        originalPrice : 4000,
+        price : null,
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765217583/Jordan_Air_Jordan_4_Retro_Cozy_Girl_fagnve.webp',
+        cloudinary_public_id : 'Jordan_Air_Jordan_4_Retro_Cozy_Girl_fagnve',
         features : [
             'Cuero premium',
-            'Colores metálicos',
-            'Diseño icónico'
+            'Colores suaves y acogedores',
+            'Calce cómodo'
         ],
         instock: true    
     },
     {
-        name : 'Air Jordan Retro 11 Retro Low',
-        description : 'Air Jordan 11 blancas y negras.',
+        name : 'Jordan Air Jordan 11 Retro RA',
+        description : 'Air Jordan 11 blancas, rojas y azules.',
         brandname :  brands[0].name,
         brandid :  brands[0].id,
         categoryid : categories[1].id,
         categoryname : categories[1].name,
-        price : 10000,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1742233489/tenis-grandes-air-jordan-11-retro-low-black-varsity-royal-Fw0r7C_kk6xpw.webp',
-        cloudinary_public_id : 'tenis-grandes-air-jordan-11-retro-low-black-varsity-royal-Fw0r7C_kk6xpw'
+        // OFERTA: Precio real 10000, oferta 8500
+        originalPrice : 10000,
+        price : 8500,
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765217739/Jordan_Air_Jordan_11_Retro_RA_ovtoky.webp',
+        cloudinary_public_id : 'Jordan_Air_Jordan_11_Retro_RA_ovtoky'
         ,
         features: [
             'Suela con tracción duradera',
             'Entresuela con buena amortiguación',
             'Diseño clásico y reconocible'
         ],
-        instock: true
+        instock: false
     },
     {
-        name : 'Botines Nike Mercurial Superfly 9 Elite',
-        description : 'Botines nike para cancha 11 color verde',
+        name : 'Nike Phantom Luna II Elite FG',
+        description : 'Botines nike para cancha 11 color negro',
         brandname :  brands[1].name,
         brandid :  brands[1].id,
         categoryid : categories[0].id,
         categoryname : categories[0].name,
-        price : 15000,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1742233722/calzado-de-f%C3%BAtbol-fg-de-corte-high-superfly-9-elite-mercurial-dream-speed-sb8gJK_tyhg3c.webp',
-        cloudinary_public_id : 'calzado-de-f%C3%BAtbol-fg-de-corte-high-superfly-9-elite-mercurial-dream-speed-sb8gJK_tyhg3c'    
+        originalPrice : 15000,
+        price : null,
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765217852/Nike_Phantom_Luna_II_Elite_FG_cj9zur.webp',
+        cloudinary_public_id : 'Nike_Phantom_Luna_II_Elite_FG_cj9zur'    
         ,
         features: [
             'Corte alto y ceñido (Flyknit)',
-            'Placa con tracción para terreno firme (FG)',
+            'Placa con tracción para terreno firme',
             'Ajuste de precisión para velocidad'
         ],
         instock: true
     },
     {
-        name : 'Botines Nike Mercurial Superfly 9 Elite',
+        name : 'Nike Legend 10 Elite FG',
         description : 'Botines llamativos.',
         brandname :  brands[1].name,
         brandid :  brands[1].id,
         categoryid : categories[0].id,
         categoryname : categories[0].name,
-        price : 15000,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1742233770/tacos-de-f%C3%BAtbol-de-corte-para-terreno-firme-de-corte-high-mercurial-superfly-9-elite-sb8gJK_acygo7.webp',
-        cloudinary_public_id : 'tacos-de-f%C3%BAtbol-de-corte-para-terreno-firme-de-corte-high-mercurial-superfly-9-elite-sb8gJK_acygo7'      
+        // OFERTA: Precio real 15000, oferta 12000
+        originalPrice : 15000,
+        price : 12000,
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765218003/Nike_Legend_10_Elite_FG_q7kf1z.webp',
+        cloudinary_public_id : 'Nike_Legend_10_Elite_FG_q7kf1z'      
         ,
         features: [
             'Corte Flyknit para ajuste dinámico',
@@ -187,33 +197,35 @@ const products = [
         instock: true
     },
     {
-        name : 'Botines Adidas Messi Freestyle',
-        description : 'Botines de freestyle de Lionel Andrés Messi.',
+        name : 'Adidas Originals Handball Spezial',
+        description : 'Zapatillas Adidas clásicas.',
         brandname :  brands[2].name,
         brandid :  brands[2].id,
         categoryid : categories[0].id,
         categoryname : categories[0].name,
-        price : 22000,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1742233932/zapatilla-adidas-f50-freestyle-24-messi-ftwr-whitegold-metblue-burst-1_eywcun.webp',
-        cloudinary_public_id : 'zapatilla-adidas-f50-freestyle-24-messi-ftwr-whitegold-metblue-burst-1_eywcun'      
+        originalPrice : 22000,
+        price : null,
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765218593/Adidas_Originals_Handball_Spezial_hue887.webp',
+        cloudinary_public_id : 'Adidas_Originals_Handball_Spezial_hue887'      
         ,
         features: [
-            'Material sintético ligero',
-            'Diseño pensado para control de balón',
+            'Gamuza premium.',
+            'Perfil bajo',
             'Agarre y contacto precisos'
         ],
         instock: true
     },
     {
-        name : 'Botines Adidas Nemezis 19.2',
+        name : 'Adidas Predator League FG',
         description : 'Botines de fútbol cancha 11.',
         brandname : brands[2].name,
         brandid : brands[2].id,
         categoryid : categories[0].id,
         categoryname : categories[0].name,
-        price : 35000,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1742233988/Botines_Nemeziz_19.2_Terreno_Firme_Rosa_F34384_06_standard_yvxrxp.avif',
-        cloudinary_public_id : 'BBotines_Nemeziz_19.2_Terreno_Firme_Rosa_F34384_06_standard_yvxrxp'     
+        originalPrice : 35000,
+        price : null,
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765218806/Adidas_Predator_League_FG_wu5051.webp',
+        cloudinary_public_id : 'Adidas_Predator_League_FG_wu5051'     
         ,
         features: [
             'Corte ajustado para control',
@@ -223,105 +235,112 @@ const products = [
         instock: true
     },
     {
-        name : 'Botines Adidas Copa 19.3',
+        name : 'Adidas F50 League FG',
         description : 'Botines de fútbol cancha 11.',
         brandname :  brands[2].name,
         brandid :  brands[2].id,
         categoryid : categories[0].id,
         categoryname : categories[0].name,
-        price : 12000,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1742234035/5da07bd7e3f87-1357-4_r7rkgb.jpg',
-        cloudinary_public_id : '5da07bd7e3f87-1357-4_r7rkgb'   
+        originalPrice : 12000,
+        price : null,
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765219032/Adidas_F50_League_FG_udoly2.webp',
+        cloudinary_public_id : 'Adidas_F50_League_FG_udoly2'   
         ,
         features: [
-            'Pala de cuero premium para toque clásico',
-            'Ajuste cómodo y conformado',
-            'Suela con agarre equilibrado'
+            'Exterior Fiberskin con Sprintgrid',
+            'Suela Sprintplate 360 de impulso',
+            'Lengüeta elástica de ajuste perfecto'
         ],
         instock: true
     },
     {
-        name : 'Sabrina 2 Court Vision',
+        name : 'Nike Sabrina 3 Flowers',
         description : 'Zapatillas de basket.',
         brandname :  brands[1].name,
         brandid :  brands[1].id,
         categoryid : categories[2].id,
         categoryname : categories[2].name,
-        price : 25000,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1742234085/sabrina-2-court-vision-basketball-shoes-NM2JwV_qcufa0.webp',
-        cloudinary_public_id : 'sabrina-2-court-vision-basketball-shoes-NM2JwV_qcufa0'
+        originalPrice : 25000,
+        price : null,
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765219644/Nike_Sabrina_3_Flowers_f19uns.webp',
+        cloudinary_public_id : 'Nike_Sabrina_3_Flowers_f19uns'
         ,
         features: [
-            'Suela con agarre multidireccional',
-            'Amortiguación en talón para saltos',
-            'Estilo retro inspirado en el baloncesto'
+            'Amortiguación Cushlon 3.0 + Air Zoom',
+            'Sujeción Dinámica Flywire',
+            'Tracción multidireccional de alto agarre'
         ],
         instock: true
     },
     {
-        name : 'Nike Lebron XXII',
+        name : 'Nike Lebron XXIII Lux',
         description : 'Las mejores zapatillas de basket',
         brandname :  brands[1].name,
         brandid :  brands[1].id,
         categoryid : categories[2].id,
         categoryname : categories[2].name,
-        price : 30000,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1742234078/lebron-xxi-basketball-shoes-DjB9tK_br6yjo.webp',
-        cloudinary_public_id : 'https://res.cloudinary.com/dch0yp6xx/image/upload/t_Card/v1719280235/lebron-xxi-basketball-shoes-DjB9tK_rhlm2n.webp'
+        originalPrice : 30000,
+        price : null,
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765219937/Nike_Lebron_XXIII_Lux_ot0g4g.webp',
+        cloudinary_public_id : 'Nike_Lebron_XXIII_Lux_ot0g4g'
         ,
         features: [
-            'Amortiguación máxima para aterrizajes',
-            'Soporte de tobillo avanzado',
+            'Mediasuela drop-in ZoomX completa',
+            'Placa de fibra de carbono estabilizadora',
             'Tracción diseñada para cancha indoor'
         ],
         instock: true
     },
     {
-        name : 'Nike Kevin Durant 17 x Alchemist',
+        name : 'Nike KD18 Aunt Pearl',
         description : 'Zapatillas de basket.',
         brandname :  brands[1].name,
         brandid :  brands[1].id,
         categoryid : categories[2].id,
         categoryname : categories[2].name,
-        price : 29500,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1754102334/kd17-x-alchemist.webp',
-        cloudinary_public_id : 'kd17-x-alchemist'
+        originalPrice : 29500,
+        price : null,
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765220132/Nike_KD18_Aunt_Pearl_axxy4l.webp',
+        cloudinary_public_id : 'Nike_KD18_Aunt_Pearl_axxy4l'
         ,
         features: [
-            'Diseño ligero para movilidad',
-            'Respuesta rápida en la entresuela',
-            'Tracción multidireccional para cambios de ritmo'
+            'Amortiguación Cushlon 3.0 + Air Zoom + Nike Air',
+            'Jaula lateral para contención y estabilidad',
+            'Upper de malla abierta ultraligero'
         ],
         instock: true
     },
     {
-        name : 'New Balance 574',
+        name : 'New Balance 9060',
         description : 'Zapatillas para todos los días',
         brandname :  brands[4].name,
         brandid :  brands[4].id,
         categoryid : categories[2].id,
         categoryname : categories[2].name,
-        price : 10000,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1742234189/65818d029d6e2-6389105_cunpta.jpg',
-        cloudinary_public_id : '65818d029d6e2-6389105_cunpta'
+        originalPrice : 10000,
+        price : null,
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765220323/New_Balance_9060_shydsy.webp',
+        cloudinary_public_id : 'New_Balance_9060_shydsy'
         ,
         features: [
             'Comodidad para uso diario',
-            'Entresuela ENCAP para soporte',
-            'Diseño clásico versátil'
+            'Amortiguación dual ABZORB y SBS',
+            'Patrón de la suela inspirado en el diseño clásico del modelo 860 para mejor tracción.'
         ],
         instock: true
     },
     {
-        name : 'Reebok Nano X',
+        name : 'Reebok Nano X5',
         description : 'Zapatillas para crossfit.',
         brandname :  brands[4].name,
         brandid :  brands[4].id,
         categoryid : categories[3].id,
         categoryname : categories[3].name,
-        price : 499999,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1754102283/reebokNanoX_qrp0vv.jpg',
-        cloudinary_public_id : 'reebokNanoX_qrp0vv'
+        // OFERTA: Gran descuento para probar
+        originalPrice : 499999,
+        price : 350000,
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765220447/Reebok_Nano_X5_evotgh.webp',
+        cloudinary_public_id : 'Reebok_Nano_X5_evotgh'
         ,
         features: [
             'Estabilidad lateral para levantamientos',
@@ -331,91 +350,96 @@ const products = [
         instock: true
     },
     {
-        name : 'Reebok Nano X3 Gum Bottoms',
+        name : 'Reebok Nano Court',
         description : 'Zapatillas para crossfit.',
         brandname :  brands[4].name,
         brandid :  brands[4].id,
         categoryid : categories[3].id,
         categoryname : categories[3].name,
-        price : 325000,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/a_-90/a_90/a_hflip/v1742234308/reebok-nano-x-training-shoes-black---true-grey_164544_orbuji.jpg',
-        cloudinary_public_id : 'reebok-nano-x-training-shoes-black---true-grey_164544_orbuji'
+        originalPrice : 325000,
+        price : null,
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765220619/Reebok_Nano_Court_yv3bcu.webp',
+        cloudinary_public_id : 'Reebok_Nano_Court_yv3bcu'
         ,
         features: [
-            'Suela gum para mejor agarre',
-            'Refuerzo en zonas de alto desgaste',
-            'Estabilidad y confort para WODs'
+            'Amortiguación reactiva Floatride Energy',
+            'Suela Griptonite de tracción multidireccional',
+            'Tejido Flexweave con soporte zonal'
         ],
         instock: true
     },
     {
-        name : 'Nike Metcon 9 AMP',
+        name : 'Nike Metcon 10',
         description : 'Zapatillas para crossfit.',
         brandname :  brands[1].name,
         brandid :  brands[1].id,
         categoryid : categories[3].id,
         categoryname : categories[3].name,
-        price : 75999,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1742234518/DZ2616_001_A_PREM_ibvou3.jpg',
-        cloudinary_public_id : 'DZ2616_001_A_PREM_ibvou3'
+        originalPrice : 75999,
+        price : null,
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765221041/Nike_Metcon_10_ebggbs.webp',
+        cloudinary_public_id : 'Nike_Metcon_10_ebggbs'
         ,
         features: [
-            'Suela estable para levantamientos',
-            'Amortiguación para sprints cortos',
+            'Mediasuela ReactX',
+            'Placa Hyperlift optimizada y ligera',
             'Refuerzo en puntera para durabilidad'
         ],
         instock: true
     },
     {
-        name : 'Adidas Adilette Slides',
+        name : 'Adidas Originals Adilette 22',
         description : 'Ojotas Adidas',
         brandname :  brands[2].name,
         brandid :  brands[2].id,
         categoryid : categories[1].id,
         categoryname : categories[1].name,
-        price : 25000,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1742234546/Ojotas_Adilette_Ayoon_Beige_GX7064_06_standard_crtyya.avif',
-        cloudinary_public_id : 'Ojotas_Adilette_Ayoon_Beige_GX7064_06_standard_crtyya'
+        originalPrice : 25000,
+        price : null,
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765221193/Adidas_Originals_Adilette_22_aohcer.webp',
+        cloudinary_public_id : 'Adidas_Originals_Adilette_22_aohcer'
         ,
         features: [
-            'Plantilla acolchada para comodidad',
-            'Fáciles de poner y quitar',
-            'Secado rápido y uso casual'
+            'Material EVA biológico con 25% caña de azúcar',
+            'Diseño 3D inspirado en topografía marciana',
+            'Estructura de una sola pieza para máximo confort'
         ],
         instock: true
     },
     {
-        name : 'Nike More Uptempo Slides',
+        name : 'Nike Calm Slides',
         description : 'Slides Nike cómodas',
         brandname :  brands[1].name,
         brandid :  brands[1].id,
         categoryid : categories[1].id,
         categoryname : categories[1].name,
-        price : 25000,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1742234585/air-more-uptempo-mens-slides-47mMCm_xmn7s7.webp',
-        cloudinary_public_id : 'air-more-uptempo-mens-slides-47mMCm_xmn7s7'
+        originalPrice : 25000,
+        price : null,
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765221308/Nike_Calm_Slides_wkoznw.webp',
+        cloudinary_public_id : 'Nike_Calm_Slides_wkoznw'
         ,
         features: [
-            'Correa acolchada para confort',
+            'Plantilla texturizada para mayor agarre',
             'Suela antideslizante',
-            'Estilo urbano y cómodo'
+            'Diseño resistente al agua y de secado rápido'
         ],
         instock: true
     },
     {
-        name : 'Adidas Yeezy Slides',
-        description : 'Ojotas caras de Kanye West',
+        name : 'Adidas Iiinfinity Mule Adifom',
+        description : 'Ojotas de Kanye West',
         brandname :  brands[2].name,
         brandid :  brands[2].id,
         categoryid : categories[1].id,
         categoryname : categories[1].name,
-        price : 19999,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1754102457/adidas_yeezyslide.png',
-        cloudinary_public_id : 'adidas_yeezyslide'
+        originalPrice : 19999,
+        price : null,
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765221665/Adidas_Iiinfinity_Mule_Adifom_ostl8y.webp',
+        cloudinary_public_id : 'Adidas_Iiinfinity_Mule_Adifom_ostl8y'
         ,
         features: [
             'Espuma EVA ultra suave',
-            'Diseño minimalista y moderno',
+            'Perforaciones laterales de ventilación',
             'Confort para uso prolongado'
         ],
         instock: true

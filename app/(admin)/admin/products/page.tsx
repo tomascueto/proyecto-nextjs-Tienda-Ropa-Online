@@ -51,51 +51,69 @@ export default async function ProductosPage({
                 <TableHead>Nombre</TableHead>
                 <TableHead>Marca</TableHead>
                 <TableHead>Categoría</TableHead>
-                <TableHead>Precio</TableHead>
-                <TableHead>Precio Original</TableHead>
+                <TableHead>Precio Venta</TableHead>
+                <TableHead>Precio Base / Oferta</TableHead>
                 <TableHead>Stock</TableHead>
                 <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {currentProducts.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell className="font-mono text-sm text-gray-600">{product.id}</TableCell>
-                  <TableCell className="font-medium">{product.name}</TableCell>
-                  <TableCell>{product.brand_name}</TableCell>
-                  <TableCell>{product.category_name}</TableCell>
-                  <TableCell className="font-semibold">${product.price.toFixed(2)}</TableCell>
-                  <TableCell>
-                    {product.original_price ? (
-                      <div className="flex items-center gap-2">
-                        <span className="text-gray-500 line-through text-sm">${product.original_price.toFixed(2)}</span>
-                        <Badge variant="destructive" className="text-xs">
-                          {Math.round(((product.original_price - product.price) / product.original_price) * 100)}% OFF
+              {currentProducts.map((product) => {
+                // Lógica de visualización de precios
+                const currentPrice = product.price ?? product.original_price ?? 0;
+                const originalPrice = product.original_price ?? 0;
+                const hasDiscount = (product.price !== null && product.price !== undefined) && (product.price < originalPrice);
+
+                return (
+                  <TableRow key={product.id}>
+                    <TableCell className="font-mono text-sm text-gray-600">
+                        {product.id.substring(0, 8)}...
+                    </TableCell>
+                    <TableCell className="font-medium">{product.name}</TableCell>
+                    <TableCell>{product.brand_name}</TableCell>
+                    <TableCell>{product.category_name}</TableCell>
+                    
+                    {/* Precio de Venta (El que paga el cliente) */}
+                    <TableCell className="font-semibold">
+                        ${currentPrice.toFixed(2)}
+                    </TableCell>
+
+                    {/* Columna de Oferta / Precio Original */}
+                    <TableCell>
+                      {hasDiscount ? (
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-500 line-through text-sm">
+                            ${originalPrice.toFixed(2)}
+                          </span>
+                          <Badge variant="destructive" className="text-xs">
+                            {Math.round(((originalPrice - currentPrice) / originalPrice) * 100)}% OFF
+                          </Badge>
+                        </div>
+                      ) : (
+                        <span className="text-gray-400 text-sm italic">Precio Base</span>
+                      )}
+                    </TableCell>
+                    
+                    <TableCell>
+                      {product.instock ? (
+                        <Badge variant="default" className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200">
+                          En stock
                         </Badge>
+                      ) : (
+                        <Badge variant="default" className="bg-red-100 text-red-800 hover:bg-red-100 border-red-200">
+                          Sin stock
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <EditProductButton id={product.id} />
+                        <DeleteButton id={product.id} cloudinary_public_id={product.cloudinary_public_id} />
                       </div>
-                    ) : (
-                      <span className="text-gray-400 text-sm">-</span>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {product.instock ? (
-                      <Badge variant="default" className="bg-green-100 text-green-800 hover:bg-green-100">
-                        En stock
-                      </Badge>
-                    ) : (
-                      <Badge variant="default" className="bg-red-100 text-red-800 hover:bg-red-100">
-                        Sin stock
-                      </Badge>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <EditProductButton id={product.id} />
-                      <DeleteButton id={product.id} cloudinary_public_id={product.cloudinary_public_id} />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
 

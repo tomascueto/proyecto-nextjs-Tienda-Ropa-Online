@@ -19,7 +19,7 @@ export default function ProductsClient({
   brands,
   categories,
 }: {
-  products: any[]
+  products: any[] // Idealmente usa el tipo Product
   totalPages: number
   totalProductsNumber: number
   categories: Category[]
@@ -32,20 +32,27 @@ export default function ProductsClient({
   }
 }) {
   const currentPage = Number(searchParams?.page) || 1
-
   const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE
   const endIndex = startIndex + PRODUCTS_PER_PAGE
+  
   const { addItem } = useCartStore()
+  
   const handleAddToCart = (product: any) => {
-    console.log("[v0] Handle add to cart for product:", product)
     addItem({
       id: product.id,
       brand_name: product.brand_name,
       productName: product.name,
-      unitCost: product.price,
+      unitCost: product.price && product.price > 0 ? product.price : product.original_price,
       image: product.image,
     })
   }
+
+  const formatPrice = (price: number) =>
+    new Intl.NumberFormat("es-AR", {
+      style: "currency",
+      currency: "ARS",
+      minimumFractionDigits: 0,
+    }).format(price)
 
   return (
     <>
@@ -54,7 +61,7 @@ export default function ProductsClient({
       <div className="container mx-auto px-4 md:px-6 py-8">
         <div className="mb-6">
           <p className="text-gray-600 text-lg">
-            Mostrando {Math.min(startIndex + 1, products.length)}-{Math.min(endIndex, products.length)} de{" "}
+            Mostrando {Math.min(startIndex + 1, totalProductsNumber)}-{Math.min(endIndex, totalProductsNumber)} de{" "}
             {totalProductsNumber} productos
           </p>
         </div>
@@ -70,63 +77,68 @@ export default function ProductsClient({
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {products.map((product) => (
-                <Card
-                  key={product.id}
-                  className="group hover:shadow-lg transition-shadow overflow-hidden flex flex-col h-full"
-                >
-                  <Link href={`/products/${product.id}`}>
-                    <div className="relative aspect-square overflow-hidden">
-                      <Image
-                        src={product.image || "/placeholder.svg"}
-                        alt={product.name}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                  </Link>
-
-                  <CardContent className="p-4 flex flex-col flex-1">
-                    <Link href={`/products/${product.id}`}>
-                      <h3 className="font-semibold text-lg mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
-                        {product.name}
-                      </h3>
-                    </Link>
-
-                    <div className="flex-1" />
-
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl font-bold">
-                          {new Intl.NumberFormat("es-AR", {
-                            style: "currency",
-                            currency: "ARS",
-                            minimumFractionDigits: 2,
-                          }).format(product.price)}
-                        </span>
-
-                        {product.originalPrice && (
-                          <span className="text-sm text-gray-500 line-through">
-                            {new Intl.NumberFormat("es-AR", {
-                              style: "currency",
-                              currency: "ARS",
-                              minimumFractionDigits: 2,
-                            }).format(product.originalPrice)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <Button
-                      onClick={() => handleAddToCart(product)}
-                      className="w-full bg-black hover:bg-gray-800 text-white"
+              {products.map((product) => {
+                const currentPrice = (product.price && product.price > 0) ? product.price : product.original_price;                 
+                const originalPrice = product.original_price ?? 0;
+                const hasDiscount = (product.price && product.price > 0) && (product.price < product.original_price);
+                 return (
+                    <Card
+                      key={product.id}
+                      className="group hover:shadow-lg transition-shadow overflow-hidden flex flex-col h-full"
                     >
-                      <ShoppingCart className="w-4 h-4 mr-2" />
-                      Agregar al carrito
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
+                      <Link href={`/products/${product.id}`} className="relative block">
+                        <div className="relative aspect-square overflow-hidden bg-gray-100">
+                          <Image
+                            src={product.image || "/placeholder.svg"}
+                            alt={product.name}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                        {hasDiscount && (
+                            <span className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10">
+                                OFERTA
+                            </span>
+                        )}
+                      </Link>
+
+                      <CardContent className="p-4 flex flex-col flex-1">
+                        <Link href={`/products/${product.id}`}>
+                          <div className="mb-2">
+                             <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">{product.brand_name}</p>
+                             <h3 className="font-semibold text-lg group-hover:text-blue-600 transition-colors line-clamp-2">
+                               {product.name}
+                             </h3>
+                          </div>
+                        </Link>
+
+                        <div className="flex-1" />
+
+                        <div className="flex items-center justify-between mb-4 mt-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xl font-bold">
+                              {formatPrice(currentPrice)}
+                            </span>
+
+                            {hasDiscount && (
+                              <span className="text-sm text-gray-400 line-through decoration-gray-400">
+                                {formatPrice(originalPrice)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <Button
+                          onClick={() => handleAddToCart(product)}
+                          className="w-full bg-black hover:bg-gray-800 text-white"
+                        >
+                          <ShoppingCart className="w-4 h-4 mr-2" />
+                          Agregar
+                        </Button>
+                      </CardContent>
+                    </Card>
+                 )
+              })}
             </div>
 
             {totalPages > 1 && <Pagination totalPages={totalPages} />}
