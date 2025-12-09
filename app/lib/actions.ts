@@ -546,13 +546,32 @@ export async function payment(cartItems: CartItem[]) {
   const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN! })
   const preference = new Preference(client)
 
-  const items = cartItems.map((item) => ({
-    id: `${item.productName}`,
-    title: "mp purchase",
-    productName: `${item.productName}`,
-    quantity: Number(item.quantity),
-    unit_price: Number(item.unitCost),
-    currency_id: "ARS",
+  // Validar productos contra la base de datos para asegurar integridad de precios y stock
+  const items = await Promise.all(cartItems.map(async (item) => {
+    
+    const { rows } = await sql`SELECT * FROM products WHERE id = ${item.id}`
+    const dbProduct = rows[0]
+
+    if (!dbProduct) {
+      throw new Error(`Producto no encontrado: ${item.productName}`)
+    }
+ 
+    if (!dbProduct.instock) {
+      throw new Error(`El producto ${dbProduct.name} ya no tiene stock disponible`)
+    }
+    
+    // Si tiene precio de oferta (price), usar ese. Si no, usar original_price.
+    const realPrice = dbProduct.price || dbProduct.original_price
+
+    return {
+      id: item.id,
+      title: dbProduct.name,
+      description: dbProduct.description?.substring(0, 250), // MP tiene límite
+      picture_url: dbProduct.image,
+      quantity: Number(item.quantity),
+      unit_price: Number(realPrice),
+      currency_id: "ARS",
+    }
   }))
 
   const result = await preference.create({
@@ -566,7 +585,12 @@ export async function payment(cartItems: CartItem[]) {
       auto_return: "approved",
     },
   })
-  redirect(result.init_point!)
+  
+  if (!result.init_point) {
+    throw new Error("Error al generar el link de pago")
+  }
+
+  return { url: result.init_point }
 }
 
 export async function createPurchase(items: any, payerEmail: string, totalAmount: number) {
