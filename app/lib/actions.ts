@@ -590,7 +590,7 @@ export async function createPurchase(items: any, payerEmail: string, totalAmount
       items.map(async (item: any) => {
         const data = await sql`
             INSERT INTO purchaseDetail(purchase_id, productName, quantity, itemPrice)
-            VALUES (${purchaseIdv2}, ${item.name}, ${item.quantity}, ${item.quantity * item.unit_price})
+            VALUES (${purchaseIdv2}, ${item.title}, ${item.quantity}, ${item.quantity * item.unit_price})
             `
       }),
     )
