@@ -46,11 +46,3 @@ Hasta el momento de la entrega, la página de productos se podía visualizar y a
 
 ![pagina_funcionando](https://res.cloudinary.com/dch0yp6xx/image/upload/v1719214835/WhatsApp_Image_2024-06-23_at_23.40.45_ttykpx.jpg)
 
-### Futuras Mejoras de Performance
-
-Aunque actualmente no utilizamos herramientas de auditoría automatizada como Lighthouse para simplificar el flujo de desarrollo, se recomienda seguir estas buenas prácticas para mantener un buen rendimiento:
-
-- **Optimización de Imágenes:** Seguir utilizando `next/image` para la carga diferida y optimización automática.
-- **Code Splitting:** Next.js lo maneja automáticamente, pero evitar importaciones pesadas en componentes cliente.
-- **Core Web Vitals:** Monitorear manualmente LCP (Largest Contentful Paint) y CLS (Cumulative Layout Shift) durante el desarrollo.
-- **Auditoría:** En fases futuras, se puede reintegrar Lighthouse CI o utilizar PageSpeed Insights para análisis puntuales antes de despliegues críticos.

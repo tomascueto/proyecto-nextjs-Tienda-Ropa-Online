@@ -25,15 +25,8 @@ export default function CheckoutPage() {
     setIsProcessing(true)
     try {
       const { payment } = await import("@/app/lib/actions")
-      const result = await payment(items)
-      
-      if (result?.url) {
-        clearCart()
-        window.location.href = result.url
-      } 
-      else {
-        throw new Error("No se recibió la URL de pago")
-      }
+      await payment(items)
+      clearCart()
     } catch (error) {
       console.error("Error en el pago:", error)
       alert("Error al procesar el pago. Por favor intenta de nuevo.")
@@ -41,41 +34,23 @@ export default function CheckoutPage() {
     }
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50 relative">
-      {isProcessing && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="w-full max-w-md bg-white shadow-2xl animate-in fade-in zoom-in duration-300">
-            <CardContent className="p-8 flex flex-col items-center text-center space-y-6">
-              <div className="relative h-20 w-20">
-                <div className="absolute inset-0 rounded-full border-4 border-gray-200"></div>
-                <div className="absolute inset-0 rounded-full border-4 border-orange-500 border-t-transparent animate-spin"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                   <ShoppingBag className="h-8 w-8 text-orange-500" />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <h3 className="text-2xl font-bold text-gray-900">
-                  Procesando tu pedido
-                </h3>
-                <p className="text-gray-500">
-                  Te estamos redirigiendo a Mercado Pago para completar tu compra de forma segura.
-                </p>
-              </div>
-
-              <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                <div className="h-full bg-orange-500 animate-progress-indeterminate"></div>
-              </div>
-
-              <p className="text-xs text-gray-400">
-                Por favor, no cierres esta ventana.
-              </p>
-            </CardContent>
-          </Card>
+  if (items.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <ShoppingBag className="h-24 w-24 mx-auto text-gray-300 mb-4" />
+          <h1 className="text-3xl font-bold mb-4">Tu carrito está vacío</h1>
+          <p className="text-gray-600 mb-6">Agrega productos para continuar con la compra</p>
+          <Link href="/products">
+            <Button className="bg-black hover:bg-gray-800">Ver productos</Button>
+          </Link>
         </div>
-      )}
+      </div>
+    )
+  }
 
+  return (
+    <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 md:px-6 py-12">
         <h1 className="text-4xl font-bold mb-8">Carrito de compras</h1>
 
