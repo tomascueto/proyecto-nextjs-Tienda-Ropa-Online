@@ -547,17 +547,19 @@ export async function payment(cartItems: CartItem[]) {
   const preference = new Preference(client)
 
   const items = cartItems.map((item) => ({
-    id: `${item.productName}`,
-    title: "mp purchase",
+    id: `${item.id}`,
+    title: `${item.productName}`,
     productName: `${item.productName}`,
     quantity: Number(item.quantity),
     unit_price: Number(item.unitCost),
     currency_id: "ARS",
   }))
 
+
   const result = await preference.create({
     body: {
       items: items,
+      notification_url: "https://proyecto-nextjs-tienda-ropa-online.vercel.app/api/mp_payments",
       back_urls: {
         success: "https://proyecto-nextjs-tienda-ropa-online.vercel.app/purchases/success",
         failure: "https://proyecto-nextjs-tienda-ropa-online.vercel.app/purchases/failure",
@@ -566,13 +568,15 @@ export async function payment(cartItems: CartItem[]) {
       auto_return: "approved",
     },
   })
+
   redirect(result.init_point!)
 }
 
 export async function createPurchase(items: any, payerEmail: string, totalAmount: number) {
-  console.log("Entrando a crear la compra")
 
   try {
+    console.log("Entrando a crear la compra")
+
     const data = await sql`
         INSERT INTO purchase (buyerEmail, totalCost)
         VALUES (${payerEmail}, ${totalAmount})
