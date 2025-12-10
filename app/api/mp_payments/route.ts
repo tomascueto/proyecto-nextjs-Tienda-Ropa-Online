@@ -29,7 +29,10 @@ export async function POST(req: Request) {
 
     console.log("💳 Detalle del pago:", payment)
 
-    if (payment.status !== "approved") {
+    const items = payment.additional_info?.items || []
+    console.log("🛒 Items del pago:", items)
+
+    if (payment.point_of_interaction.status !== "approved") {
       console.log("⏳ Pago no aprobado, ignorado.")
       return NextResponse.json({ status: "ignored" }, { status: 200 })
     }
@@ -38,7 +41,7 @@ export async function POST(req: Request) {
     const email = payment.payer?.email || "unknown"
 
     // 3️⃣ Items (vendrán del array de MP)
-    const items = payment.additional_info?.items || []
+
 
     // 4️⃣ Guardar en la tabla purchase
     const purchaseResult = await sql`
