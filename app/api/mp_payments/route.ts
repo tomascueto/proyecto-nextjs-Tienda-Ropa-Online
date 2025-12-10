@@ -31,8 +31,9 @@ export async function POST(req: Request) {
 
     const items = payment.additional_info?.items || []
     console.log("🛒 Items del pago:", items)
-
-    if (payment.point_of_interaction.status !== "approved") {
+    console.log(payment.status)
+    
+    if (payment.status !== "approved") {
       console.log("⏳ Pago no aprobado, ignorado.")
       return NextResponse.json({ status: "ignored" }, { status: 200 })
     }
