@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { sql } from "@vercel/postgres"
+import { createPurchase } from "@/app/lib/actions";
 
 export async function POST(req: Request) {
   try {
@@ -32,43 +33,28 @@ export async function POST(req: Request) {
     const items = payment.additional_info?.items || []
     console.log("🛒 Items del pago:", items)
     console.log(payment.status)
-    
+
     if (payment.status !== "approved") {
       console.log("⏳ Pago no aprobado, ignorado.")
       return NextResponse.json({ status: "ignored" }, { status: 200 })
     }
 
-    // 2️⃣ Datos del comprador
     const email = payment.payer?.email || "unknown"
+    const totalAmount = payment.transaction_amount;
 
-    // 3️⃣ Items (vendrán del array de MP)
 
+  try {
+    await createPurchase(items, email, totalAmount);
+  } catch (error) {
+    console.error("Error creating purchase:", error);
+    return Response.json(
+      { success: false, error: "Failed to create purchase" },
+      { status: 500 }
+    );
+  }
 
-    // 4️⃣ Guardar en la tabla purchase
-    const purchaseResult = await sql`
-      INSERT INTO purchase (buyerEmail, totalCost, status)
-      VALUES (${email}, ${payment.transaction_amount}, 'completed')
-      RETURNING purchaseid
-    `
+  return NextResponse.json({ status: "success" }, { status: 200 })
 
-    const purchaseId = purchaseResult.rows[0].purchaseid
-
-    // 5️⃣ Guardar detalles por cada producto
-    for (const item of items) {
-      await sql`
-        INSERT INTO purchaseDetail (purchase_id, productName, quantity, unitCost)
-        VALUES (
-          ${purchaseId},
-          ${item.title},
-          ${item.quantity},
-          ${item.unit_price}
-        )
-      `
-    }
-
-    console.log("✅ Compra registrada:", purchaseId)
-
-    return NextResponse.json({ status: "success" }, { status: 200 })
   } catch (error) {
     console.error("❌ Error en webhook:", error)
     return NextResponse.json({ error: "webhook_failed" }, { status: 500 })
