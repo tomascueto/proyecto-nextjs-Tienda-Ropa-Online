@@ -1,65 +1,72 @@
-import type { NextRequest } from "next/server";
-import { MercadoPagoConfig, Payment } from "mercadopago";
-import { createPurchase } from "@/app/lib/actions";
+import { NextResponse } from "next/server"
+import { sql } from "@vercel/postgres"
 
-const mercadopago = new MercadoPagoConfig({
-  accessToken: process.env.MP_ACCESS_TOKEN!,
-});
-
-export async function POST(request: NextRequest) {
-  let body;
+export async function POST(req: Request) {
   try {
-    body = await request.json();
-  } catch (err) {
-    console.error("Invalid JSON");
-    return Response.json({ success: false }, { status: 400 });
-  }
+    const body = await req.json().catch(() => null)
 
-  console.log("Webhook body:", body);
+    console.log("📩 Webhook recibido:", body)
 
-  // 1) Validar tipo de notificación
-  if (body.type !== "payment") {
-    console.log("Ignored event type:", body.type);
-    return Response.json({ success: true });
-  }
+    // Si no trae lo típico, ignoramos
+    if (!body || !body.data || !body.data.id) {
+      console.log("❗ Webhook sin data.id")
+      return NextResponse.json({ status: "ignored" }, { status: 200 })
+    }
 
-  const payment = new Payment(mercadopago);
+    const paymentId = body.data.id
 
-  let paymentInfo;
-  try {
-    paymentInfo = await payment.get({ id: body.data.id });
+    // 1️⃣ Consultar el pago en MP
+    const res = await fetch(
+      `https://api.mercadopago.com/v1/payments/${paymentId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`
+        }
+      }
+    )
+
+    const payment = await res.json()
+
+    console.log("💳 Detalle del pago:", payment)
+
+    if (payment.status !== "approved") {
+      console.log("⏳ Pago no aprobado, ignorado.")
+      return NextResponse.json({ status: "ignored" }, { status: 200 })
+    }
+
+    // 2️⃣ Datos del comprador
+    const email = payment.payer?.email || "unknown"
+
+    // 3️⃣ Items (vendrán del array de MP)
+    const items = payment.additional_info?.items || []
+
+    // 4️⃣ Guardar en la tabla purchase
+    const purchaseResult = await sql`
+      INSERT INTO purchase (buyerEmail, totalCost, status)
+      VALUES (${email}, ${payment.transaction_amount}, 'completed')
+      RETURNING purchaseid
+    `
+
+    const purchaseId = purchaseResult.rows[0].purchaseid
+
+    // 5️⃣ Guardar detalles por cada producto
+    for (const item of items) {
+      await sql`
+        INSERT INTO purchaseDetail (purchase_id, productName, quantity, unitCost)
+        VALUES (
+          ${purchaseId},
+          ${item.title},
+          ${item.quantity},
+          ${item.unit_price}
+        )
+      `
+    }
+
+    console.log("✅ Compra registrada:", purchaseId)
+
+    return NextResponse.json({ status: "success" }, { status: 200 })
   } catch (error) {
-    console.error("Error fetching payment info:", error);
-    return Response.json({ success: false }, { status: 500 });
+    console.error("❌ Error en webhook:", error)
+    return NextResponse.json({ error: "webhook_failed" }, { status: 500 })
   }
-
-  if (!paymentInfo) {
-    console.error("Payment info not found");
-    return Response.json(
-      { success: false, error: "Payment info not found" },
-      { status: 404 }
-    );
-  }
-
-  // 2) Solo guardar si el pago fue APROBADO
-  if (paymentInfo.status !== "approved") {
-    console.log("Payment not approved, skipping.");
-    return Response.json({ success: true });
-  }
-
-  const items = paymentInfo.additional_info?.items || [];
-  const payerEmail = paymentInfo.payer?.email || "";
-  const totalAmount = paymentInfo.transaction_amount || 0;
-
-  try {
-    await createPurchase(items, payerEmail, totalAmount);
-  } catch (error) {
-    console.error("Error creating purchase:", error);
-    return Response.json(
-      { success: false, error: "Failed to create purchase" },
-      { status: 500 }
-    );
-  }
-
-  return Response.json({ success: true });
 }
