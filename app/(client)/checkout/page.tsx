@@ -24,14 +24,30 @@ export default function CheckoutPage() {
   const handleCheckout = async () => {
     setIsProcessing(true)
     try {
+      console.log("Iniciando checkout desde cliente con items:", items)
       const { payment } = await import("@/app/lib/actions")
       await payment(items)
       clearCart()
     } catch (error) {
       console.error("Error en el pago:", error)
-      alert("Error al procesar el pago. Por favor intenta de nuevo.")
+      const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+      alert(`Error al procesar el pago: ${errorMessage}. Por favor intenta de nuevo.`)
       setIsProcessing(false)
     }
+  }
+
+  if (isProcessing) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="flex justify-center mb-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
+          </div>
+          <h1 className="text-2xl font-bold mb-2">Redireccionando al pago...</h1>
+          <p className="text-gray-600">Por favor aguarde un momento.</p>
+        </div>
+      </div>
+    )
   }
 
   if (items.length === 0) {

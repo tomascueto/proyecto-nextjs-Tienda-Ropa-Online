@@ -297,18 +297,18 @@ export async function fetchPurchases(){
 
 export async function fetchPurchaseDetails(purchaseId: string) {
   noStore();
+  console.log(`Fetching details for purchaseId: ${purchaseId}`);
   try {
     const data = await sql<PurchaseDetail>`
       SELECT *
       FROM purchaseDetail
       WHERE purchase_id = ${purchaseId}
-    `
-    ;
-
+    `;
+    
+    console.log("Details found:", data.rows);
     return data.rows;
   } catch (error) {
-    console.error('Failed to fetch purchase:', error);
+    console.error('Failed to fetch purchase details:', error);
     throw new Error('Failed to fetch purchases details.');
   }
-  
 }

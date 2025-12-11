@@ -1,4 +1,5 @@
 "use server"
+import { headers } from "next/headers"
 import { z } from "zod"
 import { sql } from "@vercel/postgres"
 import { revalidatePath } from "next/cache"
@@ -543,6 +544,15 @@ export async function logOut() {
 }
 
 export async function payment(cartItems: CartItem[]) {
+  console.log("Iniciando proceso de pago con items:", JSON.stringify(cartItems, null, 2))
+
+  // Detectar origen para configurar URLs dinámicas
+  const headersList = headers();
+  const host = headersList.get("host") || "localhost:3000";
+  const protocol = headersList.get("x-forwarded-proto")?.split(',')[0] || "http";
+  const origin = `${protocol}://${host}`;
+  console.log("Origen detectado para back_urls:", origin);
+
   const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN! })
   const preference = new Preference(client)
 
@@ -550,11 +560,13 @@ export async function payment(cartItems: CartItem[]) {
     id: `${item.id}`,
     title: `${item.productName}`,
     productName: `${item.productName}`,
+
     quantity: Number(item.quantity),
     unit_price: Number(item.unitCost),
     currency_id: "ARS",
   }))
-
+  
+  console.log("Preferencia de MercadoPago creada con items:", JSON.stringify(items, null, 2))
 
   const result = await preference.create({
     body: {
@@ -568,7 +580,6 @@ export async function payment(cartItems: CartItem[]) {
       auto_return: "approved",
     },
   })
-
   redirect(result.init_point!)
 }
 
