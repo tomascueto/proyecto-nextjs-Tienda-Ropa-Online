@@ -64,14 +64,14 @@ export default async function PurchaseDetailsPage({ params }: { params: { id: st
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {details.map((item: any) => (
-                    <TableRow key={item.id || item.detaliid || Math.random()}> 
-                      {/* Soporte para mayúsculas/minúsculas en nombres de columna */}
-                      <TableCell className="font-medium">{item.productName || item.productname}</TableCell>
+                  {details.map((item) => (
+                    <TableRow key={item.detaliid}> 
+                      {/* Nota: Revisa si tu DB devuelve 'productName' o 'productname' (postgres suele devolver minusculas) */}
+                      <TableCell className="font-medium">{item.productname || item.productname}</TableCell>
                       <TableCell className="text-center">{item.quantity}</TableCell>
-                      <TableCell className="text-right">{formatPrice(Number(item.itemPrice || item.itemprice))}</TableCell>
+                      <TableCell className="text-right">{formatPrice(Number(item.itemprice || item.itemprice))}</TableCell>
                       <TableCell className="text-right font-semibold">
-                        {formatPrice(Number(item.itemPrice || item.itemprice) * item.quantity)}
+                        {formatPrice(Number(item.itemprice || item.itemprice) * item.quantity)}
                       </TableCell>
                     </TableRow>
                   ))}

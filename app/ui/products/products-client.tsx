@@ -96,7 +96,7 @@ export default function ProductsClient({
                           />
                         </div>
                         {hasDiscount && (
-                            <span className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10">
+                            <span className="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full z-10">
                                 OFERTA
                             </span>
                         )}
@@ -105,10 +105,10 @@ export default function ProductsClient({
                       <CardContent className="p-4 flex flex-col flex-1">
                         <Link href={`/products/${product.id}`}>
                           <div className="mb-2">
-                             <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">{product.brand_name}</p>
-                             <h3 className="font-semibold text-lg group-hover:text-blue-600 transition-colors line-clamp-2">
+                             <p className="text-xs text-gray-600 font-medium uppercase tracking-wide">{product.brand_name}</p>
+                             <h2 className="font-semibold text-lg group-hover:text-blue-700 transition-colors line-clamp-2">
                                {product.name}
-                             </h3>
+                             </h2>
                           </div>
                         </Link>
 
@@ -121,7 +121,7 @@ export default function ProductsClient({
                             </span>
 
                             {hasDiscount && (
-                              <span className="text-sm text-gray-400 line-through decoration-gray-400">
+                              <span className="text-sm text-gray-500 line-through decoration-gray-500">
                                 {formatPrice(originalPrice)}
                               </span>
                             )}

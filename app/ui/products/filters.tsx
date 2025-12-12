@@ -64,7 +64,7 @@ export default function Filters({
                 updateParams("brand", val);
               }}
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-[180px]" aria-label="Filtrar por marca">
                 <SelectValue placeholder="Filtrar por marca" />
               </SelectTrigger>
               <SelectContent>
@@ -84,7 +84,7 @@ export default function Filters({
                 updateParams("category", val);
               }}
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-[180px]" aria-label="Filtrar por categoría">
                 <SelectValue placeholder="Filtrar por categoría" />
               </SelectTrigger>
               <SelectContent>

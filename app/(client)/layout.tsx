@@ -1,28 +1,18 @@
-import type { Metadata } from "next";
 import Navbar from '@/app/ui/home/navbar'
 import Footer from '@/app/ui/home/footer'
-import '@/app/ui/global.css';
 
-
-export const metadata: Metadata = {
-  title: "TNDA. SHOP",
-  description: "Project website. Luquelli - Tom",
-};
-
-export default function RootLayout({
+export default function ClientLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="bg-white">
-            <div className="min-h-screen bg-white">
-              <Navbar />
-                {children}  
-              <Footer />
-            </div>
-      </body>
-    </html>
+    <div className="min-h-screen bg-white flex flex-col">
+      <Navbar />
+      <main className="flex-grow">
+        {children}
+      </main>
+      <Footer />
+    </div>
   );
 }

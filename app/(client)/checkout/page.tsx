@@ -90,9 +90,9 @@ export default function CheckoutPage() {
                     <div className="flex-1">
                       <div className="flex justify-between mb-2">
                         <div>
-                          <h3 className="font-semibold text-lg">
+                          <h2 className="font-semibold text-lg">
                             {item.brand_name} {item.productName}
-                          </h3>
+                          </h2>
                           <p className="text-gray-600">{formatPrice(item.unitCost)} c/u</p>
                         </div>
                         <Button
@@ -100,6 +100,7 @@ export default function CheckoutPage() {
                           size="icon"
                           onClick={() => removeItem(item.id)}
                           className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                          aria-label={`Eliminar ${item.productName} del carrito`}
                         >
                           <X className="h-5 w-5" />
                         </Button>
@@ -112,17 +113,19 @@ export default function CheckoutPage() {
                             size="icon"
                             onClick={() => decrementQuantity(item.id)}
                             className="h-8 w-8 rounded-full"
+                            aria-label={`Disminuir cantidad de ${item.productName}`}
                           >
                             <Minus className="h-4 w-4" />
                           </Button>
 
-                          <span className="font-medium w-12 text-center">{item.quantity}</span>
+                          <span className="font-medium w-12 text-center" aria-label="Cantidad">{item.quantity}</span>
 
                           <Button
                             variant="outline"
                             size="icon"
                             onClick={() => incrementQuantity(item.id)}
                             className="h-8 w-8 rounded-full"
+                            aria-label={`Aumentar cantidad de ${item.productName}`}
                           >
                             <Plus className="h-4 w-4" />
                           </Button>
@@ -150,7 +153,7 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex justify-between text-gray-600">
                     <span>Envío</span>
-                    <span className="text-green-600 font-medium">Gratis</span>
+                    <span className="text-green-700 font-medium">Gratis</span>
                   </div>
 
                   <Separator />
