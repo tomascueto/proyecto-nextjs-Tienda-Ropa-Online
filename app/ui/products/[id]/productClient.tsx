@@ -9,6 +9,8 @@ import { useCartStore } from "@/app/lib/store/cart-store";
 import { Product } from "@/app/lib/definitions";
 import { Card, CardContent } from "@/app/ui/products/card";
 
+import { useRouter } from "next/navigation";
+
 export default function ProductClient({
   product,
   relatedProducts,
@@ -17,6 +19,7 @@ export default function ProductClient({
   relatedProducts: Product[];
 }) {
   const addItem = useCartStore((state) => state.addItem);
+  const router = useRouter();
 
   const handleAddToCart = (product: Product) => {
     addItem({
@@ -28,6 +31,12 @@ export default function ProductClient({
     });
   };
 
+  const handleComprarAhora = (product: Product) => {
+    handleAddToCart(product);
+    router.push("/checkout");
+  };
+
+  
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("es-AR", {
       style: "currency",
@@ -113,6 +122,7 @@ export default function ProductClient({
               </Button>
               <Button
                 size="lg"
+                onClick={() => handleComprarAhora(product)}
                 // NARANJA: Botón principal de compra
                 className="flex-1 text-lg h-14 bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-lg hover:shadow-orange-200/50 transition-all"
               >
