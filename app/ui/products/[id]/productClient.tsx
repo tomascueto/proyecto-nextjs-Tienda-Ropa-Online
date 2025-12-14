@@ -8,7 +8,6 @@ import { Separator } from "@/app/ui/products/separator";
 import { useCartStore } from "@/app/lib/store/cart-store";
 import { Product } from "@/app/lib/definitions";
 import { Card, CardContent } from "@/app/ui/products/card";
-
 import { useRouter } from "next/navigation";
 
 export default function ProductClient({
@@ -20,13 +19,10 @@ export default function ProductClient({
 }) {
   const addItem = useCartStore((state) => state.addItem);
   const router = useRouter();
+  const isOutOfStock = !product.instock;
 
-  // 1. LÓGICA DE PRECIOS DEL PRODUCTO PRINCIPAL
-  // Si price es null (o 0), usamos original_price. Si no, usamos price.
   const currentPrice = (product.price && product.price > 0) ? product.price : product.original_price;
   const originalPrice = product.original_price;
-  
-  // Hay descuento solo si existe 'price' Y es menor que el original
   const hasDiscount = (product.price !== null && product.price > 0) && (product.price < originalPrice);
   
   const discountPercentage = hasDiscount 
@@ -34,24 +30,21 @@ export default function ProductClient({
     : 0;
 
   const handleAddToCart = (prod: Product) => {
-    // Calculamos el precio real también aquí para el carrito
     const realPrice = (prod.price && prod.price > 0) ? prod.price : prod.original_price;
-
     addItem({
       id: prod.id,
       brand_name: prod.brand_name,
       productName: prod.name,
-      unitCost: realPrice, // CORREGIDO: Ahora nunca mandamos 0
+      unitCost: realPrice,
       image: prod.image || "",
     });
   };
 
-  const handleComprarAhora = (product: Product) => {
-    handleAddToCart(product);
-    router.push("/checkout");
+  const handleBuyNow = (prod: Product) => {
+    handleAddToCart(prod);
+    router.push('/checkout');
   };
 
-  
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("es-AR", {
       style: "currency",
@@ -78,15 +71,22 @@ export default function ProductClient({
         <div className="grid lg:grid-cols-2 gap-12 max-w-7xl mx-auto">
           {/* Imagen principal */}
           <div className="space-y-4">
-            <div className="relative aspect-square rounded-2xl overflow-hidden bg-white shadow-lg border border-gray-100">
+            <div className={`relative aspect-square rounded-2xl overflow-hidden bg-white shadow-lg border border-gray-100 ${isOutOfStock ? 'opacity-75 grayscale' : ''}`}>
               <Image
                 src={product.image || "/placeholder.svg"}
                 alt={product.name}
                 fill
                 className="object-cover"
                 priority
+                sizes="(max-width: 768px) 100vw, 50vw"
               />
-              {hasDiscount && (
+              
+              {/* LÓGICA BADGES: Prioridad al stock */}
+              {isOutOfStock ? (
+                 <span className="absolute top-4 right-4 bg-gray-900 text-white text-sm font-bold px-4 py-2 rounded-full shadow-md z-10">
+                    AGOTADO
+                 </span>
+              ) : hasDiscount && (
                 <span className="absolute top-4 right-4 bg-orange-500 text-white text-sm font-bold px-3 py-1 rounded-full shadow-md">
                     -{discountPercentage}%
                 </span>
@@ -119,21 +119,28 @@ export default function ProductClient({
               )}
             </div>
 
-            {/* Botones */}
+            {/* Botones - LÓGICA STOCK APLICADA */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Button
                 onClick={() => handleAddToCart(product)}
+                disabled={isOutOfStock}
                 variant="outline"
                 size="lg"
-                className="flex-1 text-lg h-14 border-2 border-black hover:bg-gray-50 text-black font-semibold"
+                className="flex-1 text-lg h-14 border-2 border-black hover:bg-gray-50 text-black font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Agregar al carrito
+                {isOutOfStock ? "Sin Stock" : "Agregar al carrito"}
               </Button>
               <Button
                 size="lg"
-                className="flex-1 text-lg h-14 bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-lg hover:shadow-orange-200/50 transition-all"
+                disabled={isOutOfStock}
+                onClick={() => handleBuyNow(product)}
+                className={`flex-1 text-lg h-14 font-semibold shadow-lg transition-all ${
+                    isOutOfStock 
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed hover:bg-gray-300 shadow-none" 
+                    : "bg-orange-500 hover:bg-orange-600 text-white hover:shadow-orange-200/50"
+                }`}
               >
-                Comprar ahora
+                {isOutOfStock ? "No Disponible" : "Comprar ahora"}
               </Button>
             </div>
 
@@ -158,7 +165,7 @@ export default function ProductClient({
           </div>
         </div>
 
-        {/* Productos relacionados */}
+        {/* Productos relacionados (También verificamos el stock aquí visualmente) */}
         {relatedProducts?.length > 0 && (
           <div className="mt-24 max-w-7xl mx-auto">
             <Separator className="mb-12" />
@@ -166,21 +173,13 @@ export default function ProductClient({
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {relatedProducts.map((relatedProduct) => {
-                 // 2. LÓGICA DE PRECIOS PARA RELACIONADOS (Aquí estaba el error)
-                 
-                 // Si relatedProduct.price es null, tomamos original_price. NO ponemos 0.
-                 const relCurrentPrice = (relatedProduct.price && relatedProduct.price > 0) 
-                    ? relatedProduct.price 
-                    : relatedProduct.original_price;
-                 
+                 const relCurrentPrice = (relatedProduct.price && relatedProduct.price > 0) ? relatedProduct.price : relatedProduct.original_price;
                  const relOriginalPrice = relatedProduct.original_price;
-
-                 // Chequeo estricto de oferta: price debe existir y ser menor al original
-                 const relHasDiscount = (relatedProduct.price !== null && relatedProduct.price > 0) 
-                    && (relatedProduct.price < relOriginalPrice);
+                 const relHasDiscount = (relatedProduct.price !== null && relatedProduct.price > 0) && (relatedProduct.price < relOriginalPrice);
+                 const relIsOutOfStock = !relatedProduct.instock;
 
                  return (
-                    <Card key={relatedProduct.id} className="group hover:shadow-xl transition-shadow border-gray-200">
+                    <Card key={relatedProduct.id} className="group hover:shadow-xl transition-shadow border-gray-200 opacity-100">
                     <CardContent className="p-0">
                         <Link href={`/products/${relatedProduct.id}`} className="relative block">
                         <div className="relative aspect-square overflow-hidden rounded-t-lg bg-gray-100">
@@ -188,11 +187,17 @@ export default function ProductClient({
                             src={relatedProduct.image || "/placeholder.svg"}
                             alt={relatedProduct.name}
                             fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            className={`object-cover transition-transform duration-300 ${relIsOutOfStock ? 'grayscale' : 'group-hover:scale-105'}`}
+                            sizes="(max-width: 768px) 100vw, 25vw"
                             />
                         </div>
                         
-                        {relHasDiscount && (
+                        {/* Badges Relacionados */}
+                        {relIsOutOfStock ? (
+                            <span className="absolute top-2 right-2 bg-gray-800 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                AGOTADO
+                            </span>
+                        ) : relHasDiscount && (
                             <span className="absolute top-2 right-2 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
                                 OFERTA
                             </span>
@@ -205,14 +210,9 @@ export default function ProductClient({
                             </h3>
 
                             <div className="flex items-center gap-2">
-                            {/* Mostramos el precio calculado correctamente */}
-                            <span className="text-lg font-bold">{formatPrice(relCurrentPrice)}</span>
-                            
-                            {relHasDiscount && (
-                                <span className="text-sm text-gray-400 line-through">
-                                {formatPrice(relOriginalPrice)}
-                                </span>
-                            )}
+                            <span className={`text-lg font-bold ${relIsOutOfStock ? 'text-gray-400' : ''}`}>
+                                {formatPrice(relCurrentPrice)}
+                            </span>
                             </div>
                         </div>
                         </Link>

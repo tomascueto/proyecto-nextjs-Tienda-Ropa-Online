@@ -9,6 +9,7 @@ import { ShoppingCart } from "lucide-react"
 import type { Category, Brand } from "@/app/lib/definitions"
 import Filters from "@/app/ui/products/filters"
 import { useCartStore } from "@/app/lib/store/cart-store"
+import type { Product } from "@/app/lib/definitions"
 
 const PRODUCTS_PER_PAGE = 12
 
@@ -20,7 +21,7 @@ export default function ProductsClient({
   brands,
   categories,
 }: {
-  products: any[] // Idealmente usa el tipo Product
+  products: Product[] // Idealmente usa el tipo Product
   totalPages: number
   totalProductsNumber: number
   categories: Category[]
@@ -40,11 +41,14 @@ export default function ProductsClient({
   const { addItem } = useCartStore()
   
   const handleAddToCart = (product: any) => {
+    // Calculamos el precio real para el carrito (evitamos enviar 0 si no hay oferta)
+    const realPrice = (product.price && product.price > 0) ? product.price : product.original_price;
+
     addItem({
       id: product.id,
       brand_name: product.brand_name,
       productName: product.name,
-      unitCost: product.price && product.price > 0 ? product.price : product.original_price,
+      unitCost: realPrice,
       image: product.image,
     })
   }
@@ -80,9 +84,14 @@ export default function ProductsClient({
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {products.map((product) => {
-                const currentPrice = (product.price && product.price > 0) ? product.price : product.original_price;                 
+                // LÓGICA DE PRECIOS
+                const currentPrice = (product.price && product.price > 0) ? product.price : product.original_price;                
                 const originalPrice = product.original_price ?? 0;
-                const hasDiscount = (product.price && product.price > 0) && (product.price < product.original_price);
+                const hasDiscount = (product.price && product.price > 0) && (product.price < originalPrice);
+                
+                // LÓGICA DE STOCK (Asumiendo que viene como 'instock' o 'inStock')
+                const isOutOfStock = !product.instock;
+
                  return (
                     <Card
                       key={product.id}
@@ -95,11 +104,19 @@ export default function ProductsClient({
                             src={product.image || "/placeholder.svg"}
                             alt={product.name}
                             fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            // Aplicamos escala de grises si no hay stock
+                            className={`object-cover transition-transform duration-300 ${isOutOfStock ? 'grayscale opacity-80' : 'group-hover:scale-105'}`}
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           />
                         </div>
-                        {hasDiscount && (
-                            <span className="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full z-10">
+                        
+                        {/* LÓGICA DE BADGES (Prioridad: Sin Stock > Oferta) */}
+                        {isOutOfStock ? (
+                            <span className="absolute top-2 right-2 bg-gray-900 text-white text-xs font-bold px-3 py-1 rounded-full z-10 shadow-sm">
+                                SIN STOCK
+                            </span>
+                        ) : hasDiscount && (
+                            <span className="absolute top-2 right-2 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10 shadow-sm">
                                 OFERTA
                             </span>
                         )}
@@ -109,7 +126,7 @@ export default function ProductsClient({
                         <Link href={`/products/${product.id}`}>
                           <div className="mb-2">
                              <p className="text-xs text-gray-600 font-medium uppercase tracking-wide">{product.brand_name}</p>
-                             <h2 className="font-semibold text-lg group-hover:text-blue-700 transition-colors line-clamp-2">
+                             <h2 className="font-semibold text-lg group-hover:text-orange-500 transition-colors line-clamp-2">
                                {product.name}
                              </h2>
                           </div>
@@ -119,12 +136,12 @@ export default function ProductsClient({
 
                         <div className="flex items-center justify-between mb-4 mt-2">
                           <div className="flex items-center gap-2">
-                            <span className="text-xl font-bold">
+                            <span className={`text-xl font-bold ${isOutOfStock ? 'text-gray-400' : ''}`}>
                               {formatPrice(currentPrice)}
                             </span>
 
-                            {hasDiscount && (
-                              <span className="text-sm text-gray-500 line-through decoration-gray-500">
+                            {hasDiscount && !isOutOfStock && (
+                              <span className="text-sm text-gray-400 line-through decoration-gray-400">
                                 {formatPrice(originalPrice)}
                               </span>
                             )}
@@ -133,10 +150,21 @@ export default function ProductsClient({
 
                         <Button
                           onClick={() => handleAddToCart(product)}
-                          className="w-full bg-black hover:bg-gray-800 text-white"
+                          disabled={isOutOfStock} // Deshabilitamos el botón
+                          className={`w-full text-white transition-colors ${
+                            isOutOfStock 
+                                ? "bg-gray-300 hover:bg-gray-300 cursor-not-allowed text-gray-500" // Estilo deshabilitado
+                                : "bg-black hover:bg-gray-800" // Estilo normal
+                          }`}
                         >
-                          <ShoppingCart className="w-4 h-4 mr-2" />
-                          Agregar
+                          {isOutOfStock ? (
+                             "Agotado"
+                          ) : (
+                             <>
+                                <ShoppingCart className="w-4 h-4 mr-2" />
+                                Agregar
+                             </>
+                          )}
                         </Button>
                       </CardContent>
                     </Card>

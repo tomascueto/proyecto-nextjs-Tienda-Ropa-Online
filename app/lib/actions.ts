@@ -546,7 +546,6 @@ export async function logOut() {
 export async function payment(cartItems: CartItem[]) {
   console.log("Iniciando proceso de pago con items:", JSON.stringify(cartItems, null, 2))
 
-  // --- VALIDACIONES DE STOCK Y PRECIO ---
   try {
     for (const item of cartItems) {
       const productResult = await sql`
@@ -614,8 +613,6 @@ export async function payment(cartItems: CartItem[]) {
 export async function createPurchase(items: any, payerEmail: string, totalAmount: number) {
 
   try {
-    console.log("Entrando a crear la compra")
-
     const data = await sql`
         INSERT INTO purchase (buyerEmail, totalCost)
         VALUES (${payerEmail}, ${totalAmount})
