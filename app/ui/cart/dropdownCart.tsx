@@ -7,7 +7,6 @@ import { Button } from "@/app/ui/button"
 import Link from "next/link"
 import Image from "next/image"
 
-
 // 🧩 Helper para formatear precios
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("es-AR", {
@@ -18,6 +17,10 @@ const formatPrice = (price: number) =>
 
 export default function DropdownCart() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  
+  // 1. Estado para controlar la hidratación
+  const [isMounted, setIsMounted] = useState(false)
+  
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   const { items, removeItem, incrementQuantity, decrementQuantity, getTotalItems, getTotalPrice } = useCartStore()
@@ -25,6 +28,11 @@ export default function DropdownCart() {
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen)
   }
+
+  // 2. Efecto para marcar que ya estamos en el cliente
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // Cerrar dropdown al hacer click fuera
   useEffect(() => {
@@ -40,12 +48,24 @@ export default function DropdownCart() {
     }
   }, [])
 
+  // Si no está montado (servidor), retornamos una versión "vacía" o simple para que coincida con el HTML estático
+  // O simplemente retornamos null si prefieres que no se vea el carrito hasta cargar
+  if (!isMounted) {
+      return (
+        <div className="relative">
+            <Button variant="ghost" size="icon" className="relative" aria-label="Cargando carrito">
+                <ShoppingCart className="h-5 w-5" />
+            </Button>
+        </div>
+      )
+  }
+
   const totalAmount = getTotalPrice()
   const totalItems = getTotalItems()
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <Button variant="ghost" size="icon" onClick={toggleDropdown} className="relative">
+      <Button variant="ghost" size="icon" onClick={toggleDropdown} className="relative" aria-label="Abrir carrito de compras">
         <ShoppingCart className="h-5 w-5" />
         {totalItems > 0 && (
           <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-black text-white text-xs flex items-center justify-center">
@@ -59,7 +79,7 @@ export default function DropdownCart() {
           <div className="p-4 bg-gray-50 text-black font-semibold border-b">
             <div className="flex items-center justify-between">
               <span>Carrito</span>
-              <Button variant="ghost" size="icon" onClick={() => setIsDropdownOpen(false)} className="h-6 w-6 p-0">
+              <Button variant="ghost" size="icon" onClick={() => setIsDropdownOpen(false)} className="h-6 w-6 p-0" aria-label="Cerrar carrito">
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -80,6 +100,7 @@ export default function DropdownCart() {
                         src={item.image}
                         alt={item.productName}
                         fill
+                        sizes="64px"
                         className="object-cover"
                         crossOrigin="anonymous"
                         onError={(e) => {
@@ -108,6 +129,7 @@ export default function DropdownCart() {
                           size="icon"
                           onClick={() => decrementQuantity(item.id)}
                           className="h-6 w-6 rounded-full"
+                          aria-label={`Disminuir cantidad de ${item.productName}`}
                         >
                           <Minus className="h-3 w-3" />
                         </Button>
@@ -119,6 +141,7 @@ export default function DropdownCart() {
                           size="icon"
                           onClick={() => incrementQuantity(item.id)}
                           className="h-6 w-6 rounded-full"
+                          aria-label={`Aumentar cantidad de ${item.productName}`}
                         >
                           <Plus className="h-3 w-3" />
                         </Button>
@@ -128,6 +151,7 @@ export default function DropdownCart() {
                           size="icon"
                           onClick={() => removeItem(item.id)}
                           className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50 ml-2"
+                          aria-label={`Eliminar ${item.productName} del carrito`}
                         >
                           <X className="h-4 w-4" />
                         </Button>

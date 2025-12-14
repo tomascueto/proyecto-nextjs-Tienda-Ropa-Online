@@ -55,23 +55,24 @@
                           autoFocus
                         />
                         <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8"
-                          onClick={() => setSearchOpen(false)}
-                        >
-                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                          </svg>
-                        </Button>
-                      </div>
-                  </div>
-                )}
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8"
+                            onClick={() => setSearchOpen(false)}
+                            aria-label="Cerrar búsqueda"
+                          >
+                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </Button>
+                        </div>
+                    </div>
+                  )}
 
-                <Button variant="ghost" size="icon" onClick={() => setSearchOpen(true)} className="relative">
-                  <SearchIcon className="h-5 w-5" />
-                </Button>
+                  <Button variant="ghost" size="icon" onClick={() => setSearchOpen(true)} className="relative" aria-label="Abrir búsqueda">
+                    <SearchIcon className="h-5 w-5" />
+                  </Button>
               </div>        
       )
   }

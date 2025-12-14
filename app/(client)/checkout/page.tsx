@@ -24,14 +24,30 @@ export default function CheckoutPage() {
   const handleCheckout = async () => {
     setIsProcessing(true)
     try {
+      console.log("Iniciando checkout desde cliente con items:", items)
       const { payment } = await import("@/app/lib/actions")
       await payment(items)
       clearCart()
     } catch (error) {
       console.error("Error en el pago:", error)
-      alert("Error al procesar el pago. Por favor intenta de nuevo.")
+      const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+      alert(`Error al procesar el pago: ${errorMessage}. Por favor intenta de nuevo.`)
       setIsProcessing(false)
     }
+  }
+
+  if (isProcessing) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="flex justify-center mb-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
+          </div>
+          <h1 className="text-2xl font-bold mb-2">Redireccionando al pago...</h1>
+          <p className="text-gray-600">Por favor aguarde un momento.</p>
+        </div>
+      </div>
+    )
   }
 
   if (items.length === 0) {
@@ -67,6 +83,7 @@ export default function CheckoutPage() {
                         src={item.image}
                         alt={item.productName}
                         fill
+                        sizes="96px"
                         className="object-cover"
                       />
                     </div>
@@ -74,9 +91,9 @@ export default function CheckoutPage() {
                     <div className="flex-1">
                       <div className="flex justify-between mb-2">
                         <div>
-                          <h3 className="font-semibold text-lg">
+                          <h2 className="font-semibold text-lg">
                             {item.brand_name} {item.productName}
-                          </h3>
+                          </h2>
                           <p className="text-gray-600">{formatPrice(item.unitCost)} c/u</p>
                         </div>
                         <Button
@@ -84,6 +101,7 @@ export default function CheckoutPage() {
                           size="icon"
                           onClick={() => removeItem(item.id)}
                           className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                          aria-label={`Eliminar ${item.productName} del carrito`}
                         >
                           <X className="h-5 w-5" />
                         </Button>
@@ -96,17 +114,19 @@ export default function CheckoutPage() {
                             size="icon"
                             onClick={() => decrementQuantity(item.id)}
                             className="h-8 w-8 rounded-full"
+                            aria-label={`Disminuir cantidad de ${item.productName}`}
                           >
                             <Minus className="h-4 w-4" />
                           </Button>
 
-                          <span className="font-medium w-12 text-center">{item.quantity}</span>
+                          <span className="font-medium w-12 text-center" aria-label="Cantidad">{item.quantity}</span>
 
                           <Button
                             variant="outline"
                             size="icon"
                             onClick={() => incrementQuantity(item.id)}
                             className="h-8 w-8 rounded-full"
+                            aria-label={`Aumentar cantidad de ${item.productName}`}
                           >
                             <Plus className="h-4 w-4" />
                           </Button>
@@ -134,7 +154,7 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex justify-between text-gray-600">
                     <span>Envío</span>
-                    <span className="text-green-600 font-medium">Gratis</span>
+                    <span className="text-green-700 font-medium">Gratis</span>
                   </div>
 
                   <Separator />

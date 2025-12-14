@@ -48,6 +48,7 @@ export default function Hero({ carouselImages, categories }: Props) {
                 src={carouselImages[currentImage] || "/placeholder.svg"}
                 alt="Zapatillas destacadas"
                 fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 className={`object-cover transition-opacity duration-500 ease-in-out ${fade ? 'opacity-100' : 'opacity-0'}`}
                 priority
               />
@@ -58,6 +59,7 @@ export default function Hero({ carouselImages, categories }: Props) {
                   size="icon"
                   className="rounded-full bg-white/80 hover:bg-white backdrop-blur-sm shadow-sm"
                   onClick={prevImage}
+                  aria-label="Imagen anterior"
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </Button>
@@ -66,6 +68,7 @@ export default function Hero({ carouselImages, categories }: Props) {
                   size="icon"
                   className="rounded-full bg-white/80 hover:bg-white backdrop-blur-sm shadow-sm"
                   onClick={nextImage}
+                  aria-label="Siguiente imagen"
                 >
                   <ChevronRight className="h-5 w-5" />
                 </Button>
@@ -76,10 +79,15 @@ export default function Hero({ carouselImages, categories }: Props) {
                   <button
                     key={index}
                     onClick={() => changeImage(index)}
-                    className={`h-1.5 rounded-full transition-all duration-300 ${
-                      index === currentImage ? "bg-black w-6" : "bg-black/30 w-1.5"
-                    }`}
-                  />
+                    aria-label={`Ir a la imagen ${index + 1}`}
+                    className="p-2 group focus:outline-none" // Area de toque aumentada
+                  >
+                    <span 
+                      className={`block h-1.5 rounded-full transition-all duration-300 ${
+                        index === currentImage ? "bg-black w-6" : "bg-black/30 w-1.5 group-hover:bg-black/50"
+                      }`} 
+                    />
+                  </button>
                 ))}
               </div>
             </div>
@@ -114,7 +122,7 @@ export default function Hero({ carouselImages, categories }: Props) {
               </Link>
             </div>
 
-            <div className="flex items-center gap-6 pt-4 text-sm font-semibold text-gray-400 uppercase tracking-widest">
+            <div className="flex items-center gap-6 pt-4 text-sm font-semibold text-gray-600 uppercase tracking-widest">
               <span>Nike</span>
               <span>•</span>
               <span>Adidas</span>

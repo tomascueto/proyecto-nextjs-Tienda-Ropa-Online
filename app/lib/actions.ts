@@ -1,4 +1,5 @@
 "use server"
+import { headers } from "next/headers"
 import { z } from "zod"
 import { sql } from "@vercel/postgres"
 import { revalidatePath } from "next/cache"
@@ -543,10 +544,49 @@ export async function logOut() {
 }
 
 export async function payment(cartItems: CartItem[]) {
+  console.log("Iniciando proceso de pago con items:", JSON.stringify(cartItems, null, 2))
+
+  // --- VALIDACIONES DE STOCK Y PRECIO ---
+  try {
+    for (const item of cartItems) {
+      const productResult = await sql`
+        SELECT id, name, price, original_price, instock
+        FROM products
+        WHERE id = ${item.id}
+      `
+
+      if (productResult.rowCount === 0) {
+        throw new Error(`El producto "${item.productName}" no se encuentra disponible (ID no válido).`)
+      }
+
+      const dbProduct = productResult.rows[0]
+    
+      if (!dbProduct.instock) {
+        throw new Error(`El producto "${dbProduct.name}" no tiene stock disponible.`)
+      }
+
+      const currentPrice = dbProduct.price ?? dbProduct.original_price
+      const priceDifference = Math.abs(currentPrice - item.unitCost)
+      const MARGIN_OF_ERROR = 1.0 // Permitir 1 peso de diferencia por redondeo
+
+      if (priceDifference > MARGIN_OF_ERROR) {
+        throw new Error(
+          `El precio del producto "${dbProduct.name}" ha cambiado. Precio actual: $${currentPrice}, Precio en carrito: $${item.unitCost}. Por favor, actualiza tu carrito.`
+        )
+      }
+    }
+  } 
+  catch (error) {
+    console.error("Error de validación en el pago:", error)
+    throw error
+  }
+
+  // --- FIN VALIDACIONES ---
+
   const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN! })
   const preference = new Preference(client)
 
-  const items = cartItems.map((item) => ({
+ const items = cartItems.map((item) => ({
     id: `${item.id}`,
     title: `${item.productName}`,
     productName: `${item.productName}`,
@@ -554,8 +594,7 @@ export async function payment(cartItems: CartItem[]) {
     unit_price: Number(item.unitCost),
     currency_id: "ARS",
   }))
-
-
+  
   const result = await preference.create({
     body: {
       items: items,
@@ -565,7 +604,7 @@ export async function payment(cartItems: CartItem[]) {
         failure: "https://proyecto-nextjs-tienda-ropa-online.vercel.app/purchases/failure",
         pending: "https://proyecto-nextjs-tienda-ropa-online.vercel.app/purchases/pending",
       },
-      auto_return: "approved",
+      //auto_return: "approved",
     },
   })
 
