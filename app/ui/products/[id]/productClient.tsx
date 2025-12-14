@@ -21,13 +21,28 @@ export default function ProductClient({
   const addItem = useCartStore((state) => state.addItem);
   const router = useRouter();
 
-  const handleAddToCart = (product: Product) => {
+  // 1. LÓGICA DE PRECIOS DEL PRODUCTO PRINCIPAL
+  // Si price es null (o 0), usamos original_price. Si no, usamos price.
+  const currentPrice = (product.price && product.price > 0) ? product.price : product.original_price;
+  const originalPrice = product.original_price;
+  
+  // Hay descuento solo si existe 'price' Y es menor que el original
+  const hasDiscount = (product.price !== null && product.price > 0) && (product.price < originalPrice);
+  
+  const discountPercentage = hasDiscount 
+    ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100) 
+    : 0;
+
+  const handleAddToCart = (prod: Product) => {
+    // Calculamos el precio real también aquí para el carrito
+    const realPrice = (prod.price && prod.price > 0) ? prod.price : prod.original_price;
+
     addItem({
-      id: product.id,
-      brand_name: product.brand_name,
-      productName: product.name,
-      unitCost: product.price ?? 0,
-      image: product.image || "",
+      id: prod.id,
+      brand_name: prod.brand_name,
+      productName: prod.name,
+      unitCost: realPrice, // CORREGIDO: Ahora nunca mandamos 0
+      image: prod.image || "",
     });
   };
 
@@ -43,11 +58,6 @@ export default function ProductClient({
       currency: "ARS",
       minimumFractionDigits: 0,
     }).format(price)
-
-  const currentPrice = (product.price && product.price > 0) ? product.price : product.original_price;  const originalPrice = product.original_price ?? 0;
-  const hasDiscount = (product.price && product.price > 0) && (product.price < product.original_price);  const discountPercentage = hasDiscount 
-    ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100) 
-    : 0;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -77,7 +87,6 @@ export default function ProductClient({
                 priority
               />
               {hasDiscount && (
-                // NARANJA: Badge de descuento
                 <span className="absolute top-4 right-4 bg-orange-500 text-white text-sm font-bold px-3 py-1 rounded-full shadow-md">
                     -{discountPercentage}%
                 </span>
@@ -122,8 +131,6 @@ export default function ProductClient({
               </Button>
               <Button
                 size="lg"
-                onClick={() => handleComprarAhora(product)}
-                // NARANJA: Botón principal de compra
                 className="flex-1 text-lg h-14 bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-lg hover:shadow-orange-200/50 transition-all"
               >
                 Comprar ahora
@@ -140,7 +147,6 @@ export default function ProductClient({
                   {product.features.map((feature, index) => (
                     feature && (
                         <li key={index} className="flex items-center gap-3 text-gray-700">
-                        {/* NARANJA: Viñetas de la lista */}
                         <div className="h-2 w-2 rounded-full bg-orange-500 flex-shrink-0" />
                         <span>{feature}</span>
                         </li>
@@ -160,9 +166,18 @@ export default function ProductClient({
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {relatedProducts.map((relatedProduct) => {
-                 const relCurrentPrice = relatedProduct.price ?? 0;
-                 const relOriginalPrice = relatedProduct.original_price ?? 0;
-                 const relHasDiscount = relOriginalPrice > relCurrentPrice;
+                 // 2. LÓGICA DE PRECIOS PARA RELACIONADOS (Aquí estaba el error)
+                 
+                 // Si relatedProduct.price es null, tomamos original_price. NO ponemos 0.
+                 const relCurrentPrice = (relatedProduct.price && relatedProduct.price > 0) 
+                    ? relatedProduct.price 
+                    : relatedProduct.original_price;
+                 
+                 const relOriginalPrice = relatedProduct.original_price;
+
+                 // Chequeo estricto de oferta: price debe existir y ser menor al original
+                 const relHasDiscount = (relatedProduct.price !== null && relatedProduct.price > 0) 
+                    && (relatedProduct.price < relOriginalPrice);
 
                  return (
                     <Card key={relatedProduct.id} className="group hover:shadow-xl transition-shadow border-gray-200">
@@ -176,8 +191,8 @@ export default function ProductClient({
                             className="object-cover group-hover:scale-105 transition-transform duration-300"
                             />
                         </div>
+                        
                         {relHasDiscount && (
-                            // NARANJA: Badge pequeño en relacionados
                             <span className="absolute top-2 right-2 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
                                 OFERTA
                             </span>
@@ -185,13 +200,14 @@ export default function ProductClient({
 
                         <div className="p-4">
                             <p className="text-xs text-gray-500 mb-1 font-medium">{relatedProduct.brand_name}</p>
-                            {/* NARANJA: Hover en el título */}
                             <h3 className="font-semibold mb-2 group-hover:text-orange-500 transition-colors line-clamp-1">
                             {relatedProduct.name}
                             </h3>
 
                             <div className="flex items-center gap-2">
+                            {/* Mostramos el precio calculado correctamente */}
                             <span className="text-lg font-bold">{formatPrice(relCurrentPrice)}</span>
+                            
                             {relHasDiscount && (
                                 <span className="text-sm text-gray-400 line-through">
                                 {formatPrice(relOriginalPrice)}
