@@ -23,7 +23,7 @@ export default function Hero({ carouselImages, categories }: Props) {
       changeImage((currentImage + 1) % carouselImages.length)
     }, 4000)
     return () => clearInterval(interval)
-  }, [currentImage])
+  }, [currentImage, carouselImages])
 
   const changeImage = (newIndex: number) => {
     setFade(false)
