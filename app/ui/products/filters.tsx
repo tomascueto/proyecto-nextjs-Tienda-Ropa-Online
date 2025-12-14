@@ -15,9 +15,11 @@ import { useState, useEffect } from "react";
 export default function Filters({
   categories,
   brands,
+  onOpenChange,
 }: {
   categories: Category[];
   brands: Brand[];
+  onOpenChange?: (isOpen: boolean) => void;
 }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -49,7 +51,6 @@ export default function Filters({
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold">
-              {/* Podrías pasar searchQuery desde el padre si lo necesitas */}
               {searchParams.get("query")
                 ? `Resultados para "${searchParams.get("query")}"`
                 : "Todos los Productos"}
@@ -63,6 +64,7 @@ export default function Filters({
                 setSelectedBrand(val);
                 updateParams("brand", val);
               }}
+              onOpenChange={onOpenChange}
             >
               <SelectTrigger className="w-[180px]" aria-label="Filtrar por marca">
                 <SelectValue placeholder="Filtrar por marca" />
@@ -83,6 +85,7 @@ export default function Filters({
                 setSelectedCategory(val);
                 updateParams("category", val);
               }}
+              onOpenChange={onOpenChange}
             >
               <SelectTrigger className="w-[180px]" aria-label="Filtrar por categoría">
                 <SelectValue placeholder="Filtrar por categoría" />

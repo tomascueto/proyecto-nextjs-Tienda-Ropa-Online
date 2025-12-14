@@ -1,4 +1,5 @@
 "use client"
+import { useState } from "react"
 import Pagination from "@/app/ui/products/pagination"
 import Link from "next/link"
 import { Button } from "@/app/ui/button"
@@ -31,6 +32,7 @@ export default function ProductsClient({
     category?: string
   }
 }) {
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
   const currentPage = Number(searchParams?.page) || 1
   const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE
   const endIndex = startIndex + PRODUCTS_PER_PAGE
@@ -56,9 +58,9 @@ export default function ProductsClient({
 
   return (
     <>
-      <Filters categories={categories} brands={brands} />
+      <Filters categories={categories} brands={brands} onOpenChange={setIsFilterOpen} />
 
-      <div className="container mx-auto px-4 md:px-6 py-8">
+      <div className={`container mx-auto px-4 md:px-6 py-8 transition-opacity duration-200 ${isFilterOpen ? 'pointer-events-none opacity-50' : ''}`}>
         <div className="mb-6">
           <p className="text-gray-600 text-lg">
             Mostrando {Math.min(startIndex + 1, totalProductsNumber)}-{Math.min(endIndex, totalProductsNumber)} de{" "}
@@ -85,6 +87,7 @@ export default function ProductsClient({
                     <Card
                       key={product.id}
                       className="group hover:shadow-lg transition-shadow overflow-hidden flex flex-col h-full"
+                      aria-disabled={isFilterOpen}
                     >
                       <Link href={`/products/${product.id}`} className="relative block">
                         <div className="relative aspect-square overflow-hidden bg-gray-100">

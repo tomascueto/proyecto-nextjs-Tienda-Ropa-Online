@@ -9,6 +9,8 @@ import { useCartStore } from "@/app/lib/store/cart-store";
 import { Product } from "@/app/lib/definitions";
 import { Card, CardContent } from "@/app/ui/products/card";
 
+import { useRouter } from "next/navigation";
+
 export default function ProductClient({
   product,
   relatedProducts,
@@ -17,6 +19,7 @@ export default function ProductClient({
   relatedProducts: Product[];
 }) {
   const addItem = useCartStore((state) => state.addItem);
+  const router = useRouter();
 
   // 1. LÓGICA DE PRECIOS DEL PRODUCTO PRINCIPAL
   // Si price es null (o 0), usamos original_price. Si no, usamos price.
@@ -43,6 +46,12 @@ export default function ProductClient({
     });
   };
 
+  const handleComprarAhora = (product: Product) => {
+    handleAddToCart(product);
+    router.push("/checkout");
+  };
+
+  
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("es-AR", {
       style: "currency",
