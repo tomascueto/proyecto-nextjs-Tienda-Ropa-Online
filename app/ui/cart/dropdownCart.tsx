@@ -7,7 +7,6 @@ import { Button } from "@/app/ui/button"
 import Link from "next/link"
 import Image from "next/image"
 
-
 // 🧩 Helper para formatear precios
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("es-AR", {
@@ -18,6 +17,10 @@ const formatPrice = (price: number) =>
 
 export default function DropdownCart() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  
+  // 1. Estado para controlar la hidratación
+  const [isMounted, setIsMounted] = useState(false)
+  
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   const { items, removeItem, incrementQuantity, decrementQuantity, getTotalItems, getTotalPrice } = useCartStore()
@@ -25,6 +28,11 @@ export default function DropdownCart() {
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen)
   }
+
+  // 2. Efecto para marcar que ya estamos en el cliente
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // Cerrar dropdown al hacer click fuera
   useEffect(() => {
@@ -39,6 +47,18 @@ export default function DropdownCart() {
       document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [])
+
+  // Si no está montado (servidor), retornamos una versión "vacía" o simple para que coincida con el HTML estático
+  // O simplemente retornamos null si prefieres que no se vea el carrito hasta cargar
+  if (!isMounted) {
+      return (
+        <div className="relative">
+            <Button variant="ghost" size="icon" className="relative" aria-label="Cargando carrito">
+                <ShoppingCart className="h-5 w-5" />
+            </Button>
+        </div>
+      )
+  }
 
   const totalAmount = getTotalPrice()
   const totalItems = getTotalItems()
@@ -80,6 +100,7 @@ export default function DropdownCart() {
                         src={item.image}
                         alt={item.productName}
                         fill
+                        sizes="64px"
                         className="object-cover"
                         crossOrigin="anonymous"
                         onError={(e) => {

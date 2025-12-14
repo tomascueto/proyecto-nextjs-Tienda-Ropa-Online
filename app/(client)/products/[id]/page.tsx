@@ -38,6 +38,7 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
     .slice(0, 4);
 
   return (
+    console.log("Renderizando página de producto con:", product, relatedProducts),
     <ProductClient product={product} relatedProducts={relatedProducts} />
   );
 }
