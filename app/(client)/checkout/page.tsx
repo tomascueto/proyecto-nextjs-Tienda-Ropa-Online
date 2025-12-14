@@ -24,7 +24,6 @@ export default function CheckoutPage() {
   const handleCheckout = async () => {
     setIsProcessing(true)
     try {
-      console.log("Iniciando checkout desde cliente con items:", items)
       const { payment } = await import("@/app/lib/actions")
       await payment(items)
       clearCart()
@@ -74,7 +73,6 @@ export default function CheckoutPage() {
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             {items.map((item) => (
-                console.log(item.image),
               <Card key={item.id}>
                 <CardContent className="p-6">
                   <div className="flex gap-6">

@@ -119,7 +119,8 @@ export async function fetchProductsByBrand(brand:string) {
         products.category_name,
         products.price,
         products.original_price,
-        products.image
+        products.image,
+        products.instock
       FROM products
       ${where}
       LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}

@@ -93,8 +93,6 @@ export default function Hero({ carouselImages, categories }: Props) {
             </div>
           </div>
 
-          {/* COLUMNA DERECHA: Contenido Centrado */}
-          {/* CAMBIO: Eliminé 'lg:items-start' y 'lg:text-left' para centrar todo */}
           <div className={`flex flex-col justify-center items-center text-center space-y-8 order-1 lg:order-2 ${jost.className}`}>
             
             <span className="inline-block px-4 py-1.5 rounded-full bg-orange-100 text-orange-700 text-sm font-bold tracking-wider uppercase mb-2">
