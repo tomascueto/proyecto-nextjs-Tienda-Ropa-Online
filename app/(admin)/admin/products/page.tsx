@@ -108,7 +108,7 @@ export default async function ProductosPage({
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <EditProductButton id={product.id} />
-                        <DeleteButton id={product.id} cloudinary_public_id={product.cloudinary_public_id} />
+                        <DeleteButton id={product.id} cloudinary_public_id={product.cloudinary_public_id} name={product.name}/>
                       </div>
                     </TableCell>
                   </TableRow>
