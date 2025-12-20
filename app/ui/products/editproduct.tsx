@@ -8,9 +8,13 @@ import Link from "next/link"
 export default function EditProductButton({ id }: { id: string }){
     return(
       <Link
-        href={`/admin/products/${id}/edit`} 
+        href={`/admin/products/${id}/edit`}
       >
-        <Button variant="outline" size="sm">
+        <Button 
+          variant="outline" 
+          size="sm"
+          aria-label={`Editar producto ${id}`} 
+        >
           <FilePenIcon />
         </Button>
       </Link>    

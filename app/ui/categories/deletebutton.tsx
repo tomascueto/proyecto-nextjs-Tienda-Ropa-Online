@@ -14,7 +14,12 @@ export default function DeleteCategoryButton({
     
     return(
         <form action={deleteCategoryWithId}>
-            <Button variant="outline" size="sm" className="text-red-500 hover:bg-red-50 hover:text-red-700">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="text-red-500 hover:bg-red-50 hover:text-red-700"
+              aria-label={`Eliminar categoría ${id}`}
+              >
                 <TrashIcon/>
             </Button>
         </form>

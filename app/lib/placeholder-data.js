@@ -12,16 +12,16 @@ const categories = [
         id : 1,
         name : 'Fútbol',
         description: 'Conquista el campo',
-        image: 'https://res.cloudinary.com/dch0yp6xx/image/upload/v1754159775/vapor-xvi-x-vini-jr-story-tab_0001_layer-14_n5oxay.jpg',
-        cloudinary_public_id: 'vapor-xvi-x-vini-jr-story-tab_0001_layer-14_n5oxay'
+        image: 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1766083299/Category-Futbol_xmlfeg.jpg',
+        cloudinary_public_id: 'Category-Futbol_xmlfeg'
 
     },
     {
         id : 2,
         name : 'Lifestyle',
         description: 'Estilo urbano',
-        image: 'https://res.cloudinary.com/dch0yp6xx/image/upload/v1765207081/Category-Lifestyle_jfuh0w.png',
-        cloudinary_public_id: 'Category-Lifestyle_jfuh0w'      
+        image: 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1766083411/Category-Lifestyle_uw96wy.png',
+        cloudinary_public_id: 'Category-Lifestyle_uw96wy'      
     },
     {
         id : 3,
@@ -73,8 +73,8 @@ const products = [
         // OFERTA: Precio real 2000, oferta 1500
         originalPrice : 2000,
         price : 1500,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765216518/Jordan_AJ_1_Retro_High_OG_V3_i1umje.webp',
-        cloudinary_public_id : 'Jordan_AJ_1_Retro_High_OG_V3_i1umje',
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766083870/Jordan_AJ_1_Retro_High_OG_V3_wyq5ow.webp',
+        cloudinary_public_id : 'Jordan_AJ_1_Retro_High_OG_V3_wyq5ow',
         features : [
             'Cuero premium',
             'Amortiguación Air-Sole',
@@ -92,8 +92,8 @@ const products = [
         // SIN OFERTA: price es null
         originalPrice : 4000,
         price : null,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765216961/Jordan_AJ_3_Medium_Olive_t7njft.webp',
-        cloudinary_public_id : 'Jordan_AJ_3_Medium_Olive_t7njft',
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766083915/Jordan_AJ_3_Medium_Olive_w8zq3b.webp',
+        cloudinary_public_id : 'Jordan_AJ_3_Medium_Olive_w8zq3b',
         features : [
             'Cuero premium',
             'Verde oliva distintivo',
@@ -110,8 +110,8 @@ const products = [
         categoryname : categories[1].name,
         originalPrice : 6000,
         price : null,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765217190/Jordan_AJ_1_Retro_High_OG_Jordan_Air_Jordan_1_Low_SE_zbgnxn.webp',
-        cloudinary_public_id : 'Jordan_AJ_1_Retro_High_OG_Jordan_Air_Jordan_1_Low_SE_zbgnxn',
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766083977/Jordan_AJ_1_Retro_High_OG_Jordan_Air_Jordan_1_Low_SE_pbd58x.webp',
+        cloudinary_public_id : 'Jordan_AJ_1_Retro_High_OG_Jordan_Air_Jordan_1_Low_SE_pbd58x',
         features : [
             'Cuero premium',
             'Colores de los Chicago Bulls',
@@ -128,8 +128,8 @@ const products = [
         categoryname : categories[1].name,
         originalPrice : 4000,
         price : null,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765217583/Jordan_Air_Jordan_4_Retro_Cozy_Girl_fagnve.webp',
-        cloudinary_public_id : 'Jordan_Air_Jordan_4_Retro_Cozy_Girl_fagnve',
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766084029/Jordan_Air_Jordan_4_Retro_Cozy_Girl_i2ssue.webp',
+        cloudinary_public_id : 'Jordan_Air_Jordan_4_Retro_Cozy_Girl_i2ssue',
         features : [
             'Cuero premium',
             'Colores suaves y acogedores',
@@ -147,8 +147,8 @@ const products = [
         // OFERTA: Precio real 10000, oferta 8500
         originalPrice : 10000,
         price : 8500,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765217739/Jordan_Air_Jordan_11_Retro_RA_ovtoky.webp',
-        cloudinary_public_id : 'Jordan_Air_Jordan_11_Retro_RA_ovtoky'
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766084121/Jordan_Air_Jordan_11_Retro_RA_egocvw.webp',
+        cloudinary_public_id : 'JJordan_Air_Jordan_11_Retro_RA_egocvw'
         ,
         features: [
             'Suela con tracción duradera',
@@ -166,8 +166,8 @@ const products = [
         categoryname : categories[0].name,
         originalPrice : 15000,
         price : null,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765217852/Nike_Phantom_Luna_II_Elite_FG_cj9zur.webp',
-        cloudinary_public_id : 'Nike_Phantom_Luna_II_Elite_FG_cj9zur'    
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766084165/Nike_Phantom_Luna_II_Elite_FG_pwnzzf.webp',
+        cloudinary_public_id : 'Nike_Phantom_Luna_II_Elite_FG_pwnzzf'    
         ,
         features: [
             'Corte alto y ceñido (Flyknit)',
@@ -186,8 +186,8 @@ const products = [
         // OFERTA: Precio real 15000, oferta 12000
         originalPrice : 15000,
         price : 12000,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765218003/Nike_Legend_10_Elite_FG_q7kf1z.webp',
-        cloudinary_public_id : 'Nike_Legend_10_Elite_FG_q7kf1z'      
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766084487/Nike_Legend_10_Elite_FG_mvhwwk.webp',
+        cloudinary_public_id : 'Nike_Legend_10_Elite_FG_mvhwwk'      
         ,
         features: [
             'Corte Flyknit para ajuste dinámico',
@@ -205,8 +205,8 @@ const products = [
         categoryname : categories[0].name,
         originalPrice : 22000,
         price : null,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765218593/Adidas_Originals_Handball_Spezial_hue887.webp',
-        cloudinary_public_id : 'Adidas_Originals_Handball_Spezial_hue887'      
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766084549/Adidas_Originals_Handball_Spezial_dnlde9.webp',
+        cloudinary_public_id : 'Adidas_Originals_Handball_Spezial_dnlde9'      
         ,
         features: [
             'Gamuza premium.',
