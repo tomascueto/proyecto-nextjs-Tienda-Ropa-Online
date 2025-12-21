@@ -6,11 +6,34 @@ import { Button } from "@/app/ui/button"
 import { Card, CardContent } from "@/app/ui/products/card"
 import { Separator } from "@/app/ui/products/separator"
 import { Plus, Minus, X, ShoppingBag } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 export default function CheckoutPage() {
   const { items, removeItem, incrementQuantity, decrementQuantity, getTotalPrice, clearCart } = useCartStore()
   const [isProcessing, setIsProcessing] = useState(false)
+  const [isOffline, setIsOffline] = useState(false)
+
+  useEffect(() => {
+    // Función para actualizar estado con seguridad
+    const updateOnlineStatus = () => {
+      setIsOffline(!navigator.onLine)
+    }
+
+    // Chequeo inicial: usamos un pequeño timeout para asegurar que 
+    // no bloqueamos el renderizado inicial y damos tiempo al navegador
+    // para reportar el estado correcto
+    if (typeof window !== 'undefined') {
+       setIsOffline(!navigator.onLine);
+    }
+
+    window.addEventListener('online', updateOnlineStatus)
+    window.addEventListener('offline', updateOnlineStatus)
+
+    return () => {
+      window.removeEventListener('online', updateOnlineStatus)
+      window.removeEventListener('offline', updateOnlineStatus)
+    }
+  }, [])
 
   const totalAmount = getTotalPrice()
 
@@ -166,9 +189,13 @@ export default function CheckoutPage() {
                 <Button
                   onClick={handleCheckout}
                   className="w-full bg-orange-500 hover:bg-orange-600 text-white py-6"
-                  disabled={isProcessing}
+                  disabled={isProcessing || isOffline}
                 >
-                  {isProcessing ? "Procesando..." : "Proceder al pago"}
+                  {isProcessing 
+                    ? "Procesando..." 
+                    : isOffline 
+                      ? "Sin conexión - Pago no disponible" 
+                      : "Proceder al pago"}
                 </Button>
 
                 <Link href="/products" className="block mt-4">

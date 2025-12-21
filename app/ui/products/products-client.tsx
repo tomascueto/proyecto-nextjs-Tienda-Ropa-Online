@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Pagination from "@/app/ui/products/pagination"
 import Link from "next/link"
 import { Button } from "@/app/ui/button"
@@ -10,6 +10,7 @@ import type { Category, Brand } from "@/app/lib/definitions"
 import Filters from "@/app/ui/products/filters"
 import { useCartStore } from "@/app/lib/store/cart-store"
 import type { Product } from "@/app/lib/definitions"
+import { RefreshCcw, WifiOff, Home } from "lucide-react"
 
 const PRODUCTS_PER_PAGE = 12
 
@@ -34,6 +35,27 @@ export default function ProductsClient({
   }
 }) {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const [isOffline, setIsOffline] = useState(false)
+
+  useEffect(() => {
+    // Verificación inicial segura
+    if (typeof window !== 'undefined') {
+       setIsOffline(!navigator.onLine);
+    }
+
+    const handleOnlineStatus = () => {
+      setIsOffline(!navigator.onLine)
+    }
+
+    window.addEventListener('online', handleOnlineStatus)
+    window.addEventListener('offline', handleOnlineStatus)
+
+    return () => {
+      window.removeEventListener('online', handleOnlineStatus)
+      window.removeEventListener('offline', handleOnlineStatus)
+    }
+  }, [])
+
   const currentPage = Number(searchParams?.page) || 1
   const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE
   const endIndex = startIndex + PRODUCTS_PER_PAGE
@@ -63,6 +85,18 @@ export default function ProductsClient({
   return (
     <>
       <Filters categories={categories} brands={brands} onOpenChange={setIsFilterOpen} />
+      
+      {isOffline && (
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4 container mx-auto mt-4">
+          <div className="flex">
+            <div className="ml-3">
+              <p className="text-sm text-yellow-700">
+                Estás navegando sin conexión. La información mostrada puede no estar actualizada.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className={`container mx-auto px-4 md:px-6 py-8 transition-opacity duration-200 ${isFilterOpen ? 'pointer-events-none opacity-50' : ''}`}>
         <div className="mb-6">
@@ -73,12 +107,35 @@ export default function ProductsClient({
         </div>
 
         {products.length === 0 ? (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold text-gray-600 mb-4">No se encontraron productos</h2>
-            <p className="text-gray-500 mb-6">Intenta ajustar tus filtros o términos de búsqueda</p>
-            <Link href="/products">
-              <Button>Ver todos los productos</Button>
-            </Link>
+           <div className="min-h-[60vh] flex flex-col items-center justify-center p-4 text-center">
+             <div className="mb-6 rounded-full bg-gray-100 p-6">
+                <WifiOff className="h-12 w-12 text-gray-500" />
+              </div>
+      
+            <h1 className="mb-2 text-2xl font-bold text-gray-900">
+                No pudimos cargar los productos
+            </h1>
+      
+            <p className="mb-8 max-w-md text-gray-600">
+             Esto suele ocurrir cuando la conexión es inestable y no tenemos una copia guardada de esta página.
+            </p>
+
+            <div className="flex flex-col gap-4 sm:flex-row">
+              <Link href="/">
+                  <Button className="flex items-center gap-2">
+                  <Home className="h-4 w-4" />
+                      Ir al Inicio
+                  </Button>
+               </Link>
+        
+              <Button 
+                variant="outline"
+                className="flex items-center gap-2 border-gray-300"
+              >
+                <RefreshCcw className="h-4 w-4" />
+                  Reintentar
+              </Button>
+            </div>
           </div>
         ) : (
           <>

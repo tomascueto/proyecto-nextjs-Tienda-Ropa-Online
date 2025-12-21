@@ -1,29 +1,37 @@
 import { fetchBrands, fetchCategories } from "@/app/lib/data";
 import Link from "next/link";
-import { Facebook, Instagram, Twitter, MapPin, Phone, Mail, ArrowRight } from "lucide-react";
+import { Facebook, Instagram, Twitter, MapPin, Mail, ArrowRight } from "lucide-react";
+import { Brand, Category } from "@/app/lib/definitions";
 
 export default async function Footer() {
-  // Obtenemos los datos frescos de la base de datos
-  const brands = await fetchBrands();
-  const categories = await fetchCategories();
+  let brands: Brand[] = [];
+  let categories: Category[] = [];
+
+  try {
+    brands = await fetchBrands();
+    categories = await fetchCategories();
+  }
+  catch (error) {
+    console.error("Error fetching footer data:", error);
+  }
 
   return (
     <footer className="bg-black text-white border-t border-gray-800">
       <div className="container mx-auto px-4 md:px-6 py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8 text-center md:text-left">
           
           {/* Columna 1: Marca y Sobre Nosotros */}
-          <div className="space-y-4">
+          <div className="space-y-4 flex flex-col items-center md:items-start">
             <Link href="/" className="flex items-center space-x-2">
               <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center text-black font-bold text-xl">
                 T
               </div>
               <span className="font-bold text-2xl tracking-tight">TNDA</span>
             </Link>
-            <p className="text-gray-300 text-sm leading-relaxed max-w-xs">
+            <p className="text-gray-300 text-sm leading-relaxed max-w-xs mx-auto md:mx-0">
               Tu destino premium para las mejores zapatillas del mercado. Encontrá calidad, estilo y rendimiento en cada paso que das.
             </p>
-            <div className="flex gap-4 pt-2">
+            <div className="flex gap-4 pt-2 justify-center md:justify-start">
               <SocialIcon href="https://instagram.com" label="Instagram" icon={<Instagram size={20} />} />
               <SocialIcon href="https://twitter.com" label="Twitter" icon={<Twitter size={20} />} />
               <SocialIcon href="https://facebook.com" label="Facebook" icon={<Facebook size={20} />} />
@@ -69,11 +77,11 @@ export default async function Footer() {
             <div>
               <h3 className="font-bold text-lg mb-4">Contacto</h3>
               <ul className="space-y-3 text-sm text-gray-300">
-                <li className="flex items-start gap-3">
+                <li className="flex flex-col md:flex-row items-center md:items-start gap-3">
                   <MapPin size={18} className="mt-0.5 shrink-0" />
                   <span>Av. Alem 1253, Bahía Blanca,<br />Buenos Aires, Argentina</span>
                 </li>
-                <li className="flex items-center gap-3">
+                <li className="flex flex-col md:flex-row items-center md:items-start gap-3">
                   <Mail size={18} className="shrink-0" />
                   <a href="mailto:hola@tnda.com" className="hover:text-white transition-colors">hola@tnda.com</a>
                 </li>
