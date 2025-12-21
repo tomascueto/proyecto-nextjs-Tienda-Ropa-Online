@@ -120,7 +120,8 @@ export async function fetchProductsByBrand(brand:string) {
         products.price,
         products.original_price,
         products.image,
-        products.instock
+        products.instock,
+        products.cloudinary_public_id
       FROM products
       ${where}
       LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}

@@ -330,7 +330,7 @@ export async function updateProduct(
           category_name = ${categoryName}, 
           description = ${description},
           features = ${features as any},
-          instock = ${validatedInStock}
+          instock = ${validatedInStock},
           image = ${imageUrl}, 
           cloudinary_public_id = ${newPublicId}
         WHERE id = ${id}

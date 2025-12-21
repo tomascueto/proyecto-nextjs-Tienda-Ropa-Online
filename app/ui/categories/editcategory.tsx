@@ -7,7 +7,10 @@ export default function EditCategoryButton({ id }: { id: string }){
     return(
         <Link 
             href={`/admin/categories/${id}/edit`}>
-            <Button variant="outline" size="sm">
+            <Button 
+              variant="outline" 
+              size="sm"
+              aria-label={`Editar categoría ${id}`}>
                 <FilePenIcon />
             </Button>
         </Link>
