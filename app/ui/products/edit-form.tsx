@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState } from "react"
-import { useFormState } from "react-dom"
+import { useFormState, useFormStatus } from "react-dom" // <--- Importamos useFormStatus
 import Link from "next/link"
 import Image from "next/image"
 import { updateProduct } from "@/app/lib/actions"
@@ -14,7 +14,51 @@ import { Label } from "@/app/ui/products/label"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/app/ui/products/select"
 import { Textarea } from "@/app/ui/products/textarea"
 import { Switch } from "@/app/ui/products/switch"
-import { Upload } from "lucide-react"
+import { Upload, Loader2 } from "lucide-react" // <--- Importamos Loader2
+
+// 1. Componente del Botón de Envío (Maneja el estado disabled)
+function SubmitButton() {
+  const { pending } = useFormStatus()
+  
+  return (
+    <Button 
+      type="submit" 
+      className="bg-black hover:bg-gray-800 text-white min-w-[160px]"
+      disabled={pending}
+    >
+      {pending ? (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Actualizando...
+        </>
+      ) : (
+        "Actualizar Producto"
+      )}
+    </Button>
+  )
+}
+
+// 2. Componente de "Pantalla de Espera" (Overlay)
+function LoadingOverlay() {
+  const { pending } = useFormStatus()
+
+  if (!pending) return null
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-all animate-in fade-in">
+      <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center gap-4 text-center max-w-sm mx-4">
+        <div className="relative">
+          <div className="h-16 w-16 rounded-full border-4 border-gray-200"></div>
+          <div className="absolute top-0 left-0 h-16 w-16 rounded-full border-4 border-orange-500 border-t-transparent animate-spin"></div>
+        </div>
+        <div>
+          <h3 className="text-xl font-bold text-gray-900">Actualizando producto</h3>
+          <p className="text-gray-500 mt-2">Guardando cambios... por favor no cierres la página.</p>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function EditProductForm({
   brands,
@@ -29,7 +73,6 @@ export default function EditProductForm({
   const initialState = { message: "", errors: {} }
   const [state, dispatch] = useFormState(updateProductWithId, initialState)
 
-0.
   const defaultBasePrice = product.original_price ?? product.price ?? 0;
   const isOffer = product.price !== null && product.price < defaultBasePrice;
   const defaultOfferPrice = isOffer ? product.price : "";
@@ -61,6 +104,9 @@ export default function EditProductForm({
 
   return (
     <form action={dispatch}>
+      {/* AQUÍ INYECTAMOS EL OVERLAY */}
+      <LoadingOverlay />
+
       <div className="grid gap-6">
         {/* Imagen actual */}
         <Card>
@@ -329,7 +375,7 @@ export default function EditProductForm({
                   className="hidden"
                   aria-describedby="image-error"
                 />
-                <label htmlFor="image" className="cursor-pointer">
+                <label htmlFor="image" className="cursor-pointer flex flex-col items-center">
                   <Upload className="h-12 w-12 mx-auto text-gray-400 mb-4" />
                   {fileName ? (
                     <p className="text-sm font-medium text-gray-700">{fileName}</p>
@@ -361,9 +407,9 @@ export default function EditProductForm({
               Cancelar
             </Button>
           </Link>
-          <Button type="submit" className="bg-black hover:bg-gray-800">
-            Actualizar Producto
-          </Button>
+          
+          {/* USAMOS EL NUEVO BOTÓN */}
+          <SubmitButton />
         </div>
       </div>
     </form>
