@@ -6,10 +6,13 @@ import { Metadata } from 'next'
 export const metadata: Metadata = {
   title: {
     template: '%s | TNDA. SHOP',
-    default: 'TNDA. SHOP',
+    default: 'UnderdogsTM',
   },
   description: 'Tu tienda online de ropa urbana y zapatillas.',
   metadataBase: new URL('https://proyecto-nextjs-tienda-ropa-online.vercel.app'),
+  icons: {
+    icon: "/favicon.ico", // O "/logo.png" si usaste una imagen PNG en 'public'
+  },
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {

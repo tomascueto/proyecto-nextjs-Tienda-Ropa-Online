@@ -1,92 +1,89 @@
-import { fetchCategories} from "@/app/lib/data"
-import { Button } from "@/app/ui/button"
-import  DeleteButton  from '@/app/ui/categories/deletebutton'
+import { fetchCategories } from "@/app/lib/data"
 import Link from "next/link"
+import { Plus } from "lucide-react"
+import { Button } from "@/app/ui/button"
+import { Card, CardContent } from "@/app/ui/admin/card"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/ui/admin/table"
+import DeleteButton from '@/app/ui/categories/deletebutton'
 import EditCategoryButton from "@/app/ui/categories/editcategory"
+import ProductIdCell from "@/app/ui/products/product-id-cell"
 
+export default async function CategoriesPage() {
+  const categories = await fetchCategories()
 
-
-export default async function Page(){
-    const categories = await fetchCategories()
-
-    return(
-        <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold">Lista de Productos</h2>
-                    <Link 
-                        href = {"/admin/categories/create"}
-                    >
-                        <Button variant="outline" size="sm" className="bg-black text-white">
-                            <PlusIcon/>
-                                Agregar categoría
-                        </Button>
-
-                    </Link>
-            </div>
-
-            <table className="w-full">
-                <thead>
-                    <tr className="bg-gray-100 text-gray-600 font-medium">
-                        <th className="py-3 px-4 text-left">ID</th>
-                        <th className="py-3 px-4 text-left">Nombre</th>
-                        <th className="py-3 px-4 text-right">Acciones</th>
-                    </tr>
-                    
-                </thead>
-                <tbody>
-                    {categories.map((category) => (
-                      <tr key={category.id} className="border-b">
-                          <td className="py-2 px-3">{category.id}</td>
-                          <td className="py-2 px-3">{category.name}</td>
-                          <td className="py-2 px-3 flex justify-end gap-2">
-                          <EditCategoryButton id={category.id} />
-                          <DeleteButton id={category.id} cloudinary_public_id = {category.cloudinary_public_id} />
-                          </td>
-                      </tr>
-                    )
-                    )}
-                </tbody>
-            </table>
+  return (
+    <div>
+      {/* ENCABEZADO */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 mb-8">
+        <div className="space-y-1 w-full sm:w-auto">
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900">Categorías</h1>
+          <p className="text-gray-500 text-sm sm:text-base">
+            Gestiona las categorías de tu tienda ({categories.length})
+          </p>
         </div>
-    )
-}
-function DeleteIcon() {
-    return (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M20 5H9l-7 7 7 7h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Z" />
-        <line x1="18" x2="12" y1="9" y2="15" />
-        <line x1="12" x2="18" y1="9" y2="15" />
-      </svg>
-    )
-}
 
-  function PlusIcon() {
-    return (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M5 12h14" />
-        <path d="M12 5v14" />
-      </svg>
-    )
-}
+        <Link href="/admin/categories/create" className="w-full sm:w-auto">
+          <Button className="w-full sm:w-auto bg-black hover:bg-gray-800 shadow-md transition-all hover:scale-[1.02]">
+            <Plus className="h-4 w-4 mr-2" />
+            Agregar Categoría
+          </Button>
+        </Link>
+      </div>
 
-  
+      <Card>
+        <CardContent className="p-0 rounded-lg overflow-hidden border">
+          
+          <div className="overflow-x-auto">
+            <Table className="w-full">
+              <TableHeader className="bg-gray-50/50">
+                <TableRow>
+                  {/* TODOS LOS ENCABEZADOS CON text-center */}
+                  <TableHead className="w-[100px] min-w-[100px] text-center">Acciones</TableHead>
+                  <TableHead className="min-w-[150px] text-center font-semibold text-gray-900">Nombre</TableHead>
+                  <TableHead className="min-w-[200px] text-center text-gray-500">Descripción</TableHead>
+                  <TableHead className="w-[150px] min-w-[150px] text-center">ID</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {categories.map((category) => (
+                  <TableRow key={category.id} className="hover:bg-gray-50/50 transition-colors">
+                    
+                    {/* ACCIONES (Centradas) */}
+                    <TableCell>
+                      <div className="flex justify-center gap-2">
+                        <EditCategoryButton id={category.id} />
+                        <DeleteButton 
+                            id={category.id} 
+                            cloudinary_public_id={category.cloudinary_public_id}
+                            name={category.name} 
+                        />
+                      </div>
+                    </TableCell>
+
+                    {/* NOMBRE (Centrado) */}
+                    <TableCell className="font-medium text-gray-900 text-center">
+                        {category.name}
+                    </TableCell>
+
+                    {/* DESCRIPCIÓN (Centrada) */}
+                    <TableCell className="text-gray-500 truncate max-w-[300px] text-center" title={category.description}>
+                        {category.description || "-"}
+                    </TableCell>
+
+                    {/* ID (Centrado) */}
+                    <TableCell>
+                        <div className="flex justify-center">
+                            <ProductIdCell id={category.id} />
+                        </div>
+                    </TableCell>
+                    
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
