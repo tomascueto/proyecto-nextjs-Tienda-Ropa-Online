@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Category } from "@/app/lib/definitions";
-import { cn } from "@/app/lib/utils"; // <--- 1. IMPORTANTE: Importar cn
+import { cn } from "@/app/lib/utils";
 import {
   Carousel,
   CarouselContent,
@@ -30,25 +30,14 @@ export default function ShopByCategories({ categories }: Props) {
             align: "start",
             loop: true,
           }}
-          className="w-full max-w-7xl mx-auto"
+          className="w-full max-w-7xl mx-auto relative" // 'relative' necesario para las flechas absolutas
         >
-          {/* 2. CAMBIO AQUÍ: 
-             Usamos 'cn' para agregar 'lg:justify-center' condicionalmente.
-             
-             Explicación:
-             - '-ml-4': Es el margen negativo base del carousel (no lo tocamos).
-             - 'categories?.length < 4': Si hay 1, 2 o 3 categorías...
-             - 'lg:justify-center': ...las centramos horizontalmente PERO SOLO en pantallas grandes (lg).
-             
-             Por qué solo 'lg'? Porque en móvil/tablet mostramos menos items por fila (1 o 2),
-             así que si tienes 3 categorías, en tablet SÍ ocupan más del 100% del ancho y 
-             necesitan scroll, por lo que no debemos centrarlas ahí.
-          */}
           <CarouselContent className={cn(
             "-ml-4", 
             categories?.length < 4 ? "lg:justify-center" : ""
           )}>
             {categories && categories.map((category) => (
+              // VUELTA AL ORIGINAL: basis-full (100% ancho) en mobile
               <CarouselItem key={category.id} className="pl-4 basis-full md:basis-1/2 lg:basis-1/4">
                 <Link href={`/products?category=${category.name}`} className="group block h-full">
                   
@@ -84,12 +73,18 @@ export default function ShopByCategories({ categories }: Props) {
             ))}
           </CarouselContent>
           
-          {/* Ocultamos las flechas si hay pocas categorías, ya que no hay nada que scrollear en desktop */}
-          {categories?.length >= 4 && (
-            <div className="hidden md:block">
-              <CarouselPrevious className="left-[-20px] md:left-[-50px]" />
-              <CarouselNext className="right-[-20px] md:right-[-50px]" />
-            </div>
+          {/* FLECHAS VISIBLES SIEMPRE (Mobile y Desktop) */}
+          {categories?.length > 1 && (
+            <>
+              {/* En mobile: absolute left-4 (encima de la foto) */}
+              {/* En desktop: absolute -left-12 (fuera de la foto) */}
+              <CarouselPrevious 
+                className="absolute left-4 md:-left-12 top-1/2 -translate-y-1/2 z-10 h-10 w-10 md:h-12 md:w-12 bg-white/20 hover:bg-white/40 md:bg-white md:hover:bg-gray-100 border-none md:border text-white md:text-black backdrop-blur-sm transition-all" 
+              />
+              <CarouselNext 
+                className="absolute right-4 md:-right-12 top-1/2 -translate-y-1/2 z-10 h-10 w-10 md:h-12 md:w-12 bg-white/20 hover:bg-white/40 md:bg-white md:hover:bg-gray-100 border-none md:border text-white md:text-black backdrop-blur-sm transition-all" 
+              />
+            </>
           )}
         </Carousel>
       </div>

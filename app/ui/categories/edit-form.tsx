@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useFormState } from "react-dom"
+import { useFormState, useFormStatus } from "react-dom" // <--- Importamos useFormStatus
 import Link from "next/link"
 import Image from "next/image"
 import { updateCategory } from "@/app/lib/actions"
@@ -10,7 +10,51 @@ import { Button } from "@/app/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/ui/products/card"
 import { Input } from "@/app/ui/products/input"
 import { Label } from "@/app/ui/products/label"
-import { Upload } from "lucide-react"
+import { Upload, Loader2 } from "lucide-react" // <--- Importamos Loader2
+
+// --- COMPONENTES AUXILIARES ---
+function SubmitButton() {
+  const { pending } = useFormStatus()
+  
+  return (
+    <Button 
+      type="submit" 
+      className="bg-black hover:bg-gray-800 text-white min-w-[150px]"
+      disabled={pending}
+    >
+      {pending ? (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Guardando...
+        </>
+      ) : (
+        "Guardar Cambios"
+      )}
+    </Button>
+  )
+}
+
+function LoadingOverlay() {
+  const { pending } = useFormStatus()
+
+  if (!pending) return null
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-all animate-in fade-in">
+      <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center gap-4 text-center max-w-sm mx-4">
+        <div className="relative">
+          <div className="h-16 w-16 rounded-full border-4 border-gray-200"></div>
+          <div className="absolute top-0 left-0 h-16 w-16 rounded-full border-4 border-orange-500 border-t-transparent animate-spin"></div>
+        </div>
+        <div>
+          <h3 className="text-xl font-bold text-gray-900">Actualizando categoría</h3>
+          <p className="text-gray-500 mt-2">Guardando cambios... por favor espere.</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+// -----------------------------
 
 export default function EditCategoryForm({ category }: { category: Category }) {
   // Bind de argumentos para la server action
@@ -27,6 +71,9 @@ export default function EditCategoryForm({ category }: { category: Category }) {
 
   return (
     <form action={dispatch}>
+      {/* OVERLAY DE CARGA */}
+      <LoadingOverlay />
+
       <div className="grid gap-6">
         
         {/* Imagen Actual (Preview) */}
@@ -139,9 +186,9 @@ export default function EditCategoryForm({ category }: { category: Category }) {
           <Link href="/admin/categories">
             <Button type="button" variant="outline">Cancelar</Button>
           </Link>
-          <Button type="submit" className="bg-black text-white hover:bg-gray-800">
-            Guardar Cambios
-          </Button>
+          
+          {/* USAMOS EL NUEVO BOTÓN */}
+          <SubmitButton />
         </div>
 
       </div>

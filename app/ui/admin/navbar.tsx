@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image" // <--- 1. Importamos Image
 import { LayoutDashboard, Package, Grid3x3, ShoppingBag, LogOut } from "lucide-react"
 import { Button } from "@/app/ui/button"
 import { usePathname } from "next/navigation"
@@ -45,11 +46,23 @@ export default function Navbar() {
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-white">
         <div className="container flex h-16 items-center justify-between px-4 md:px-6">
-          <Link href="/admin" className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-full bg-black flex items-center justify-center">
-              <span className="text-white font-bold text-sm">T</span>
-            </div>
-            <span className="font-bold text-xl">TNDA Admin</span>
+          
+          {/* LOGO ADMIN */}
+          <Link href="/admin" className="flex items-center gap-3">
+            {/* 2. Reemplazamos el círculo negro por tu Imágen */}
+            <Image 
+                src="/logo-underdogs.png" 
+                alt="Underdogs Admin"
+                width={120}
+                height={40}
+                className="h-8 w-auto object-contain" // h-8 (32px) queda perfecto en un header de h-16
+                priority
+            />
+            
+            {/* 3. Mantenemos 'Admin' pero con un estilo sutil para diferenciarlo del logo */}
+            <span className="font-semibold text-lg text-gray-500 border-l pl-3 border-gray-300">
+                Admin
+            </span>
           </Link>
 
           <div className="flex items-center gap-4">
@@ -74,7 +87,7 @@ export default function Navbar() {
       {/* Navigation Tabs */}
       <div className="border-b bg-white">
         <div className="container px-4 md:px-6">
-          <nav className="flex gap-6 overflow-x-auto">
+          <nav className="flex gap-6 overflow-x-auto no-scrollbar"> {/* Agregué no-scrollbar por si hay muchas tabs en mobile */}
             {navigation.map((item) => {
               const isActive = pathname === item.href
               return (
