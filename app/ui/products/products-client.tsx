@@ -1,5 +1,6 @@
 "use client"
 import { useState, useEffect } from "react"
+import { useOnlineStatus } from "@/app/lib/hooks/use-online-status"
 import Pagination from "@/app/ui/products/pagination"
 import Link from "next/link"
 import { Button } from "@/app/ui/button"
@@ -10,7 +11,7 @@ import type { Category, Brand } from "@/app/lib/definitions"
 import Filters from "@/app/ui/products/filters"
 import { useCartStore } from "@/app/lib/store/cart-store"
 import type { Product } from "@/app/lib/definitions"
-import { RefreshCcw, WifiOff, Home } from "lucide-react"
+import NoProductsFallback from "@/app/ui/products/no-products-fallback"
 
 const PRODUCTS_PER_PAGE = 12
 
@@ -35,27 +36,9 @@ export default function ProductsClient({
   }
 }) {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
-  const [isOffline, setIsOffline] = useState(false)
-
-  useEffect(() => {
-    // Verificación inicial segura
-    if (typeof window !== 'undefined') {
-       setIsOffline(!navigator.onLine);
-    }
-
-    const handleOnlineStatus = () => {
-      setIsOffline(!navigator.onLine)
-    }
-
-    window.addEventListener('online', handleOnlineStatus)
-    window.addEventListener('offline', handleOnlineStatus)
-
-    return () => {
-      window.removeEventListener('online', handleOnlineStatus)
-      window.removeEventListener('offline', handleOnlineStatus)
-    }
-  }, [])
-
+  const isOffline = useOnlineStatus()
+   console.log("ProductsClient: isOffline state:", isOffline, "| Navigator onLine:", typeof navigator !== 'undefined' ? navigator.onLine : 'N/A')
+  
   const currentPage = Number(searchParams?.page) || 1
   const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE
   const endIndex = startIndex + PRODUCTS_PER_PAGE
@@ -107,36 +90,7 @@ export default function ProductsClient({
         </div>
 
         {products.length === 0 ? (
-           <div className="min-h-[60vh] flex flex-col items-center justify-center p-4 text-center">
-             <div className="mb-6 rounded-full bg-gray-100 p-6">
-                <WifiOff className="h-12 w-12 text-gray-500" />
-              </div>
-      
-            <h1 className="mb-2 text-2xl font-bold text-gray-900">
-                No pudimos cargar los productos
-            </h1>
-      
-            <p className="mb-8 max-w-md text-gray-600">
-             Esto suele ocurrir cuando la conexión es inestable y no tenemos una copia guardada de esta página.
-            </p>
-
-            <div className="flex flex-col gap-4 sm:flex-row">
-              <Link href="/">
-                  <Button className="flex items-center gap-2">
-                  <Home className="h-4 w-4" />
-                      Ir al Inicio
-                  </Button>
-               </Link>
-        
-              <Button 
-                variant="outline"
-                className="flex items-center gap-2 border-gray-300"
-              >
-                <RefreshCcw className="h-4 w-4" />
-                  Reintentar
-              </Button>
-            </div>
-          </div>
+           <NoProductsFallback />
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

@@ -6,34 +6,14 @@ import { Button } from "@/app/ui/button"
 import { Card, CardContent } from "@/app/ui/products/card"
 import { Separator } from "@/app/ui/products/separator"
 import { Plus, Minus, X, ShoppingBag } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState } from "react"
+import { useOnlineStatus } from "@/app/lib/hooks/use-online-status"
 
 export default function CheckoutPage() {
   const { items, removeItem, incrementQuantity, decrementQuantity, getTotalPrice, clearCart } = useCartStore()
   const [isProcessing, setIsProcessing] = useState(false)
-  const [isOffline, setIsOffline] = useState(false)
-
-  useEffect(() => {
-    // Función para actualizar estado con seguridad
-    const updateOnlineStatus = () => {
-      setIsOffline(!navigator.onLine)
-    }
-
-    // Chequeo inicial: usamos un pequeño timeout para asegurar que 
-    // no bloqueamos el renderizado inicial y damos tiempo al navegador
-    // para reportar el estado correcto
-    if (typeof window !== 'undefined') {
-       setIsOffline(!navigator.onLine);
-    }
-
-    window.addEventListener('online', updateOnlineStatus)
-    window.addEventListener('offline', updateOnlineStatus)
-
-    return () => {
-      window.removeEventListener('online', updateOnlineStatus)
-      window.removeEventListener('offline', updateOnlineStatus)
-    }
-  }, [])
+  const isOffline = useOnlineStatus()
+  console.log("CheckoutPage: isOffline state:", isOffline, "| Navigator onLine:", typeof navigator !== 'undefined' ? navigator.onLine : 'N/A')
 
   const totalAmount = getTotalPrice()
 

@@ -113,9 +113,9 @@ export default async function Footer() {
         {/* Barra Inferior */}
         <div className="border-t border-gray-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500 text-center md:text-left">
           <p>&copy; {new Date().getFullYear()} TNDA. Todos los derechos reservados.</p>
-          <div className="flex gap-6 justify-center">
-            <Link href="#" className="hover:text-white transition-colors">Términos y Condiciones</Link>
-            <Link href="#" className="hover:text-white transition-colors">Política de Privacidad</Link>
+          <div className="flex gap-6">
+            <Link href="/terms" className="hover:text-white transition-colors">Términos y Condiciones</Link>
+            <Link href="/privacy" className="hover:text-white transition-colors">Política de Privacidad</Link>
           </div>
         </div>
       </div>

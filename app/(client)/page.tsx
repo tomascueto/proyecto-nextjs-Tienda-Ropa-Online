@@ -9,7 +9,8 @@ export default async function Home() {
   try {
     products = await fetchProducts()
     categories = await fetchCategories()
-  } catch (error) {
+  } 
+  catch (error) {
     console.error("Error fetching home data:", error);
   }
 
