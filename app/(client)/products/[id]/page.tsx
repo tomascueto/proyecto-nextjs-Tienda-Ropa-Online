@@ -27,12 +27,10 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center px-4">
           <h1 className="text-2xl font-bold mb-4">
-            {error ? "No se pudo cargar el producto" : "Producto no encontrado"}
+            No se pudo cargar el producto 
           </h1>
           <p className="text-gray-600 mb-6">
-            {error 
-              ? "Verifica tu conexión a internet e intenta nuevamente." 
-              : "El producto que buscas no existe o fue eliminado."}
+             El producto que buscas no existe o fue eliminado.
           </p>
           <Link href="/products">
             <Button>Volver a productos</Button>

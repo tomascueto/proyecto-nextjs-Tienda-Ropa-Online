@@ -47,7 +47,7 @@ export default async function ProductsPage({
       brands = fetchedBrands;
     } 
     catch (error) {
-      console.error("Error fetching products data:", error);
+      console.log("Error fetching products data:", error);
       // Al relanzar el error el Service Worker NO cacheará una respuesta fallida (vacía) con status 200.
       throw error;
     }
