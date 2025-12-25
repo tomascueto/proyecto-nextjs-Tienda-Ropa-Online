@@ -23,49 +23,46 @@ function subscribe(callback: () => void) {
  * @returns boolean true si el usuario está offline, false si está online.
  */
 export function useOnlineStatus() {
-  // navigatorOnline es true si el navegador cree que hay red
   const navigatorOnline = useSyncExternalStore(subscribe, getSnapshot, () => true)
-  
-  // isOffline es el estado final que devolvemos.
-  // Inicializamos asumiendo el estado del navegador.
   const [isOffline, setIsOffline] = useState(!navigatorOnline)
+  const [checkTrigger, setCheckTrigger] = useState(0)
+
+  // Escuchar eventos manualmente para disparar re-verificaciones de ping
+  useEffect(() => {
+    const triggerCheck = () => setCheckTrigger(prev => prev + 1)
+    
+    window.addEventListener('online', triggerCheck)
+    window.addEventListener('focus', triggerCheck)
+    
+    return () => {
+      window.removeEventListener('online', triggerCheck)
+      window.removeEventListener('focus', triggerCheck)
+    }
+  }, [])
 
   useEffect(() => {
-    // Si el navigator dice que estamos offline, no hay duda de que estamos offline.
     if (!navigatorOnline) {
       setIsOffline(true)
       return
     }
 
-    // Si el navigator dice que estamos online, verificamos con un ping real
-    // para asegurar que hay salida a internet.
     let isMounted = true
-    
     const checkRealStatus = async () => {
       try {
-        console.log("Intentando ping al servidor...")
-        const response = await fetch("/api/ping", { 
+        // Añadimos un timestamp para evitar cache agresiva del navegador en el fetch
+        const response = await fetch(`/api/ping?t=${Date.now()}`, { 
           method: "GET",
           cache: "no-store" 
         })
-        
-        if (isMounted) {
-          // Si el status es 200, estamos realmente online (isOffline = false)
-          setIsOffline(!response.ok)
-        }
+        if (isMounted) setIsOffline(!response.ok)
       } catch (error) {
-        // Si hay un error (ej. SerwistError, red caída, timeout), 
-        // asumimos que estamos offline.
-        if (isMounted) {
-          setIsOffline(true)
-        }
+        if (isMounted) setIsOffline(true)
       }
     }
 
     checkRealStatus()
-    
     return () => { isMounted = false }
-  }, [navigatorOnline])
+  }, [navigatorOnline, checkTrigger]) // Ahora también depende de checkTrigger
 
   return isOffline
 }

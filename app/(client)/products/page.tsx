@@ -25,14 +25,31 @@ export default async function ProductsPage({
     let brands: any[] = [];
 
     try {
-      totalPages = await fetchProductsPages(query, brand, category);
-      products = await fetchFilteredProducts(query, currentPage, brand, category);
-      totalProducts = await fetchTotalProductsNumber();
-      categories = await fetchCategories();
-      brands = await fetchBrands();
+      // Lanzamos las peticiones en paralelo para mejor performance
+      const [
+        fetchedTotalPages,
+        fetchedProducts,
+        fetchedTotalProducts,
+        fetchedCategories,
+        fetchedBrands
+      ] = await Promise.all([
+        fetchProductsPages(query, brand, category),
+        fetchFilteredProducts(query, currentPage, brand, category),
+        fetchTotalProductsNumber(),
+        fetchCategories(),
+        fetchBrands()
+      ]);
+
+      totalPages = fetchedTotalPages;
+      products = fetchedProducts;
+      totalProducts = fetchedTotalProducts;
+      categories = fetchedCategories;
+      brands = fetchedBrands;
     } 
     catch (error) {
       console.error("Error fetching products data:", error);
+      // Al relanzar el error el Service Worker NO cacheará una respuesta fallida (vacía) con status 200.
+      throw error;
     }
 
     return (

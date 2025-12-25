@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from "react"
+import { useState} from "react"
 import { useOnlineStatus } from "@/app/lib/hooks/use-online-status"
 import Pagination from "@/app/ui/products/pagination"
 import Link from "next/link"
@@ -37,7 +37,6 @@ export default function ProductsClient({
 }) {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const isOffline = useOnlineStatus()
-   console.log("ProductsClient: isOffline state:", isOffline, "| Navigator onLine:", typeof navigator !== 'undefined' ? navigator.onLine : 'N/A')
   
   const currentPage = Number(searchParams?.page) || 1
   const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE

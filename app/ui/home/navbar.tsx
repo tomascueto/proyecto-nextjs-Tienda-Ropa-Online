@@ -1,6 +1,6 @@
 import { fetchBrands, fetchCategories } from '@/app/lib/data'
 import Link from 'next/link'
-import Image from 'next/image' // <--- 1. IMPORTANTE: Importamos el componente Image
+import Image from 'next/image' 
 import DropdownCart from '@/app/ui/cart/dropdownCart';
 import Dropdowns from '@/app/ui/home/dropdowns';
 import Search from '@/app/ui/home/search';
@@ -28,7 +28,7 @@ export default async function Navbar(){
           <Link href="/" className="flex items-center">
             <Image 
                 src="/logo-underdogs.png"      
-                alt="TNDA Logo"          
+                alt="Underddogs Logo"          
                 width={160}              
                 height={56}              
                 className="object-contain h-10 w-auto md:h-14"                

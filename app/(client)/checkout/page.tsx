@@ -13,7 +13,6 @@ export default function CheckoutPage() {
   const { items, removeItem, incrementQuantity, decrementQuantity, getTotalPrice, clearCart } = useCartStore()
   const [isProcessing, setIsProcessing] = useState(false)
   const isOffline = useOnlineStatus()
-  console.log("CheckoutPage: isOffline state:", isOffline, "| Navigator onLine:", typeof navigator !== 'undefined' ? navigator.onLine : 'N/A')
 
   const totalAmount = getTotalPrice()
 

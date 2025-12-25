@@ -1,6 +1,6 @@
-// sw.ts
 declare const self: any;
-import { Serwist, NetworkFirst, NetworkOnly, ExpirationPlugin, CacheableResponsePlugin } from "serwist";
+
+import { Serwist, NetworkFirst, NetworkOnly, StaleWhileRevalidate, ExpirationPlugin, CacheableResponsePlugin } from "serwist";
 
 const OFFLINE_HTML = `<!DOCTYPE html> 
                         <html lang="es"> 
@@ -128,15 +128,20 @@ const serwist = new Serwist({
   clientsClaim: true,
   navigationPreload: true,
   runtimeCaching: [
-    // 1. REGLA PARA DOCUMENTOS (Navegación real)
-    // Solo aquí devolvemos tu HTML de "Estás sin conexión"
+    //Especifico para el estatus online
     {
-      matcher: ({ request }) => request.destination === "document",
+        matcher: ({ url }) => url.pathname === "/api/ping" ,
+        handler: new NetworkOnly(),
+      },
+
+    //Peticiones HTML
+     {
+      matcher: ({ request }) => request.destination === "document" ,
       handler: new NetworkFirst({
-        cacheName: "TNDA-Pages",
+        cacheName: "TNDA-HTML",
         plugins: [
           new CacheableResponsePlugin({ statuses: [200] }),
-          new ExpirationPlugin({ maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 }),
+          new ExpirationPlugin({ maxEntries: 40, maxAgeSeconds: 60 * 60 * 24 }),
           {
             // Solo si falla la navegación de la página completa
             handlerDidError: async () => {
@@ -149,44 +154,59 @@ const serwist = new Serwist({
       }),
     },
 
-    // 2. REGLA PARA PING (Verificación de conexión real)
-    // Usamos NetworkOnly para que nunca use caché ni el service worker para responder
-    {
-      matcher: ({ url }) => url.pathname === "/api/ping",
-      handler: new NetworkOnly(),
-    },
-
-    // 3. REGLA PARA DATOS DE NEXT.JS (RSC) Y API GET
-    // Aquí NO devolvemos HTML si falla, dejamos que falle o use caché.
-    {
-      matcher: ({ request, url }) => 
-        url.searchParams.has("_rsc") || 
-        request.headers.get("RSC") === "1" || 
-        url.pathname.startsWith("/api/"),
-      handler: new NetworkFirst({
-        cacheName: "TNDA-Data",
-        plugins: [
-          new CacheableResponsePlugin({ statuses: [200] }),
-          new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 }),
-          {
-          // Solo si falla la navegación de la página completa  
-          handlerDidError: async () => {
-              return new Response(OFFLINE_HTML, {
-                headers: { "Content-Type": "text/html" },
-              });
-            },
-          }
-        ],
-      }),
-    },
-
-    // 4. REGLA PARA IMÁGENES (Cloudinary u otras)
+    //Peticiones de imagenes
     {
       matcher: ({ request }) => request.destination === "image",
       handler: new NetworkFirst({
         cacheName: "TNDA-Images",
         plugins: [
           new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 * 30 }),
+        ],
+      }),
+    },
+
+    // REGLA PARA ARCHIVOS ESTÁTICOS (CSS, JS, Fonts)
+    {
+      matcher: ({ request }) => 
+        request.destination === "style" || 
+        request.destination === "script" || 
+        request.destination === "font",
+      handler: new StaleWhileRevalidate({
+        cacheName: "TNDA-StaticFiles",
+        plugins: [
+          new CacheableResponsePlugin({ statuses: [200] }),
+        ],
+      }),
+    },
+
+    // Peticiones RSC (Next.js App Router Navigation)
+    {
+      matcher: ({ request, url }) => 
+        url.searchParams.has("_rsc") || request.headers.get("RSC") === "1",
+      handler: new NetworkFirst({
+        cacheName: "TNDA-RSC",
+        plugins: [
+          new CacheableResponsePlugin({ statuses: [200] }),
+          new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 }),
+        ],
+        matchOptions: {
+          ignoreSearch: true, // Crucial para RSC ya que el token _rsc cambia
+        },
+      }),
+    },
+
+    // Peticiones API (JSON)
+    {
+      matcher: ({ request }) => 
+        request.url.includes("/api/") && 
+        request.method === "GET" && 
+        !request.url.includes("/api/ping") && 
+        request.destination !== "document",
+      handler: new NetworkFirst({
+        cacheName: "TNDA-Apis",
+        plugins: [
+          new CacheableResponsePlugin({ statuses: [200] }),
+          new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 }),
         ],
       }),
     },
