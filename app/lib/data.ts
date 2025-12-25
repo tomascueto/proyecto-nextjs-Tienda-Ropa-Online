@@ -48,7 +48,7 @@ export async function fetchCategoryById(id : string) {
     return category[0]
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch category data.');
+    throw new Error('Failed fetch category data by ID.');
   }
 }
 
@@ -71,7 +71,7 @@ export async function fetchProductsByBrand(brand:string) {
   }
   catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch products data.');
+    throw new Error('Failed to fetch products data by brand.');
   }
 }
 
@@ -145,9 +145,10 @@ export async function fetchProductById(id : string) {
     const product = data.rows.map((product) => ({
       ...product}))
     return product[0]
-  } catch (error) {
+  } 
+  catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch products data.');
+    throw new Error('Failed to fetch products data by ID.');
   }
 }
 
@@ -196,8 +197,7 @@ export async function fetchProductsPages(query?: string, brand?: string, categor
     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
     return totalPages;
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch total number of products.");
+    throw new Error("Failed to fetch total number of products (from fetchProductsPages()).");
   }
 }
 
@@ -257,7 +257,7 @@ export async function fetchOverviewCardsData(){
 
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch overview data.');
+    throw new Error('Failed to fetch overviewCards data.');
   }
 
 }

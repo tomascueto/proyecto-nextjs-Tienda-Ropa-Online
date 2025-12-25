@@ -1,5 +1,6 @@
 "use client"
-import { useState } from "react"
+import { useState} from "react"
+import { useOnlineStatus } from "@/app/lib/hooks/use-online-status"
 import Pagination from "@/app/ui/products/pagination"
 import Link from "next/link"
 import { Button } from "@/app/ui/button"
@@ -10,6 +11,7 @@ import type { Category, Brand } from "@/app/lib/definitions"
 import Filters from "@/app/ui/products/filters"
 import { useCartStore } from "@/app/lib/store/cart-store"
 import type { Product } from "@/app/lib/definitions"
+import NoProductsFallback from "@/app/ui/products/no-products-fallback"
 
 const PRODUCTS_PER_PAGE = 12
 
@@ -34,6 +36,8 @@ export default function ProductsClient({
   }
 }) {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const isOffline = useOnlineStatus()
+  
   const currentPage = Number(searchParams?.page) || 1
   const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE
   const endIndex = startIndex + PRODUCTS_PER_PAGE
@@ -63,6 +67,18 @@ export default function ProductsClient({
   return (
     <>
       <Filters categories={categories} brands={brands} onOpenChange={setIsFilterOpen} />
+      
+      {isOffline && (
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4 container mx-auto mt-4">
+          <div className="flex">
+            <div className="ml-3">
+              <p className="text-sm text-yellow-700">
+                Estás navegando sin conexión. La información mostrada puede no estar actualizada.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className={`container mx-auto px-4 md:px-6 py-8 transition-opacity duration-200 ${isFilterOpen ? 'pointer-events-none opacity-50' : ''}`}>
         <div className="mb-6">
@@ -73,13 +89,7 @@ export default function ProductsClient({
         </div>
 
         {products.length === 0 ? (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold text-gray-600 mb-4">No se encontraron productos</h2>
-            <p className="text-gray-500 mb-6">Intenta ajustar tus filtros o términos de búsqueda</p>
-            <Link href="/products">
-              <Button>Ver todos los productos</Button>
-            </Link>
-          </div>
+           <NoProductsFallback />
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

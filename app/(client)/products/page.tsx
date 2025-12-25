@@ -1,4 +1,4 @@
-// File: app/products/page.tsx (Server Component)
+
 import ProductsClient from "@/app/ui/products/products-client";
 import { fetchProductsPages, fetchFilteredProducts, fetchTotalProductsNumber, fetchCategories, fetchBrands } from "@/app/lib/data";
 
@@ -18,19 +18,50 @@ export default async function ProductsPage({
 
     const currentPage = Number(searchParams?.page) || 1;
 
-    const totalPages = await fetchProductsPages(query,brand,category);
-    const products = await fetchFilteredProducts(query,currentPage,brand,category);
-    const totalProducts = await fetchTotalProductsNumber();
-    const categories = await fetchCategories();
-    const brands = await fetchBrands();
+    let totalPages = 0;
+    let products: any[] = [];
+    let totalProducts = 0;
+    let categories: any[] = [];
+    let brands: any[] = [];
+
+    try {
+      // Lanzamos las peticiones en paralelo para mejor performance
+      const [
+        fetchedTotalPages,
+        fetchedProducts,
+        fetchedTotalProducts,
+        fetchedCategories,
+        fetchedBrands
+      ] = await Promise.all([
+        fetchProductsPages(query, brand, category),
+        fetchFilteredProducts(query, currentPage, brand, category),
+        fetchTotalProductsNumber(),
+        fetchCategories(),
+        fetchBrands()
+      ]);
+
+      totalPages = fetchedTotalPages;
+      products = fetchedProducts;
+      totalProducts = fetchedTotalProducts;
+      categories = fetchedCategories;
+      brands = fetchedBrands;
+    } 
+    catch (error) {
+      console.log("Error fetching products data:", error);
+      // Al relanzar el error el Service Worker NO cacheará una respuesta fallida (vacía) con status 200.
+      throw error;
+    }
+
     return (
-      <ProductsClient
-        products={products}
-        totalPages={totalPages}
-        totalProductsNumber={totalProducts}
-        searchParams={searchParams}
-        categories={categories}
-        brands={brands}
-      />
-  );
+      <>
+        <ProductsClient
+          products={products}
+          totalPages={totalPages}
+          totalProductsNumber={totalProducts}
+          searchParams={searchParams}
+          categories={categories}
+          brands={brands}
+        />
+      </>
+    );
 }

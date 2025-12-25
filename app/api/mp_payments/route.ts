@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server"
-import { sql } from "@vercel/postgres"
 import { createPurchase } from "@/app/lib/actions";
 
 export async function POST(req: Request) {

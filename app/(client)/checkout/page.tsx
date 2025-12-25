@@ -7,10 +7,12 @@ import { Card, CardContent } from "@/app/ui/products/card"
 import { Separator } from "@/app/ui/products/separator"
 import { Plus, Minus, X, ShoppingBag } from "lucide-react"
 import { useState } from "react"
+import { useOnlineStatus } from "@/app/lib/hooks/use-online-status"
 
 export default function CheckoutPage() {
   const { items, removeItem, incrementQuantity, decrementQuantity, getTotalPrice, clearCart } = useCartStore()
   const [isProcessing, setIsProcessing] = useState(false)
+  const isOffline = useOnlineStatus()
 
   const totalAmount = getTotalPrice()
 
@@ -166,9 +168,13 @@ export default function CheckoutPage() {
                 <Button
                   onClick={handleCheckout}
                   className="w-full bg-orange-500 hover:bg-orange-600 text-white py-6"
-                  disabled={isProcessing}
+                  disabled={isProcessing || isOffline}
                 >
-                  {isProcessing ? "Procesando..." : "Proceder al pago"}
+                  {isProcessing 
+                    ? "Procesando..." 
+                    : isOffline 
+                      ? "Sin conexión - Pago no disponible" 
+                      : "Proceder al pago"}
                 </Button>
 
                 <Link href="/products" className="block mt-4">

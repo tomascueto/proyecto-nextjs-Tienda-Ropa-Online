@@ -1,5 +1,4 @@
 "use server"
-import { headers } from "next/headers"
 import { z } from "zod"
 import { sql } from "@vercel/postgres"
 import { revalidatePath } from "next/cache"
@@ -544,7 +543,6 @@ export async function logOut() {
 }
 
 export async function payment(cartItems: CartItem[]) {
-  console.log("Iniciando proceso de pago con items:", JSON.stringify(cartItems, null, 2))
 
   try {
     for (const item of cartItems) {
@@ -603,7 +601,7 @@ export async function payment(cartItems: CartItem[]) {
         failure: "https://proyecto-nextjs-tienda-ropa-online.vercel.app/purchases/failure",
         pending: "https://proyecto-nextjs-tienda-ropa-online.vercel.app/purchases/pending",
       },
-      //auto_return: "approved",
+      auto_return: "approved",
     },
   })
 

@@ -80,7 +80,7 @@ export default function Hero({ carouselImages, categories }: Props) {
                     key={index}
                     onClick={() => changeImage(index)}
                     aria-label={`Ir a la imagen ${index + 1}`}
-                    className="p-2 group focus:outline-none" // Area de toque aumentada
+                    className="p-2 group focus:outline-none" 
                   >
                     <span 
                       className={`block h-1.5 rounded-full transition-all duration-300 ${

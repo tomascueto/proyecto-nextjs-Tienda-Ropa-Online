@@ -1,7 +1,7 @@
 import { fetchBrands, fetchCategories } from "@/app/lib/data";
 import Link from "next/link";
-import Image from "next/image"; // <--- 1. Importamos el componente Image
-import { Facebook, Instagram, Twitter, MapPin, Phone, Mail, ArrowRight } from "lucide-react";
+import Image from "next/image"; // 
+import { Facebook, Instagram, Twitter, MapPin, Mail, ArrowRight } from "lucide-react";
 
 export default async function Footer() {
   const brands = await fetchBrands();
@@ -97,6 +97,8 @@ export default async function Footer() {
               <h4 className="text-sm font-semibold mb-3 text-white">Suscribite al newsletter</h4>
               <div className="flex gap-2">
                 <input 
+                  id="newsletter-email"
+                  name="newsletter-email"
                   type="email" 
                   placeholder="Tu email..." 
                   className="bg-gray-900 border border-gray-800 text-sm rounded-lg px-4 py-2.5 w-full focus:outline-none focus:border-white focus:ring-1 focus:ring-white transition-all text-white placeholder:text-gray-500"
@@ -112,10 +114,10 @@ export default async function Footer() {
 
         {/* Barra Inferior */}
         <div className="border-t border-gray-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500 text-center md:text-left">
-          <p>&copy; {new Date().getFullYear()} TNDA. Todos los derechos reservados.</p>
+          <p>&copy; {new Date().getFullYear()} Underdogs. Todos los derechos reservados.</p>
           <div className="flex gap-6 justify-center">
-            <Link href="#" className="hover:text-white transition-colors">Términos y Condiciones</Link>
-            <Link href="#" className="hover:text-white transition-colors">Política de Privacidad</Link>
+            <Link href="/terms" className="hover:text-white transition-colors">Términos y Condiciones</Link>
+            <Link href="/privacy" className="hover:text-white transition-colors">Política de Privacidad</Link>
           </div>
         </div>
       </div>

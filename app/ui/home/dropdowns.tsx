@@ -46,16 +46,22 @@ export default function Dropdowns({ brands, categories }: Props) {
         {openMenu === "brands" && (
           <div className="absolute top-full left-0 mt-1 w-[200px] bg-white border rounded-md shadow-lg z-50">
             <div className="p-2">
-              {brands.map((brand) => (
-                <Link
-                  key={brand.name}
-                  href={`/products?brand=${brand.name}&page=1`}
-                  className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                  onClick={() => setOpenMenu(null)}
-                >
-                  <div className="text-sm font-medium leading-none">{brand.name}</div>
-                </Link>
-              ))}
+              {brands.length > 0 ? (
+                brands.map((brand) => (
+                  <Link
+                    key={brand.name}
+                    href={`/products?brand=${brand.name}&page=1`}
+                    className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                    onClick={() => setOpenMenu(null)}
+                  >
+                    <div className="text-sm font-medium leading-none">{brand.name}</div>
+                  </Link>
+                ))
+              ) : (
+                <div className="p-3 text-sm text-gray-500">
+                  No hay marcas disponibles
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -73,16 +79,22 @@ export default function Dropdowns({ brands, categories }: Props) {
         {openMenu === "sports" && (
           <div className="absolute top-full left-0 mt-1 w-[200px] bg-white border rounded-md shadow-lg z-50">
             <div className="p-2">
-              {categories.map((category) => (
-                <Link
-                  key={category.name}
-                  href={`/products?category=${category.name}&page=1`}
-                  className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                  onClick={() => setOpenMenu(null)}
-                >
-                  <div className="text-sm font-medium leading-none">{category.name}</div>
-                </Link>
-              ))}
+              {categories.length > 0 ? (
+                categories.map((category) => (
+                  <Link
+                    key={category.name}
+                    href={`/products?category=${category.name}&page=1`}
+                    className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                    onClick={() => setOpenMenu(null)}
+                  >
+                    <div className="text-sm font-medium leading-none">{category.name}</div>
+                  </Link>
+                ))
+              ) : (
+                <div className="p-3 text-sm text-gray-500">
+                  No hay categorías disponibles
+                </div>
+              )}
             </div>
           </div>
         )}
