@@ -12,17 +12,12 @@ interface DeleteProductProps {
 }
 
 export default function DeleteProductButton({ id, cloudinary_public_id, name }: DeleteProductProps) {
-  // Estado para controlar si el modal de confirmación está abierto
   const [showConfirm, setShowConfirm] = useState(false)
-  // Hook para manejar el estado de carga del server action
   const [isPending, startTransition] = useTransition()
 
   const handleDelete = () => {
-    // Cerramos el modal de confirmación
     setShowConfirm(false)
-    
-    // Iniciamos la transición (esto activará el overlay de carga)
-    startTransition(async () => {
+        startTransition(async () => {
       try {
         await deleteProduct(id, cloudinary_public_id)
       } catch (error) {
@@ -34,11 +29,10 @@ export default function DeleteProductButton({ id, cloudinary_public_id, name }: 
 
   return (
     <>
-      {/* 1. BOTÓN DE BASURA (Trigger) */}
       <Button 
         variant="outline" 
         size="sm" 
-        onClick={() => setShowConfirm(true)} // Al hacer click, abrimos el modal
+        onClick={() => setShowConfirm(true)}
         disabled={isPending}
         className="text-red-500 hover:bg-red-50 hover:text-red-700"
         title="Eliminar producto"
@@ -46,7 +40,6 @@ export default function DeleteProductButton({ id, cloudinary_public_id, name }: 
         <Trash2 className="h-4 w-4" />
       </Button>
 
-      {/* 2. MODAL DE CONFIRMACIÓN (Solo visible si showConfirm es true y no está cargando) */}
       {showConfirm && !isPending && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white p-6 rounded-xl shadow-2xl max-w-md w-full mx-4 border border-gray-100">
@@ -81,7 +74,7 @@ export default function DeleteProductButton({ id, cloudinary_public_id, name }: 
         </div>
       )}
 
-      {/* 3. PANTALLA DE CARGA (Overlay completo "Eliminando...") */}
+
       {isPending && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-all animate-in fade-in">
             <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center gap-4 text-center max-w-sm mx-4">

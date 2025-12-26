@@ -32,13 +32,11 @@ export async function fillBaseProductForm(page: any, overrides?: {
   await page.getByPlaceholder('Característica 1').fill('Feature obligatoria');
 
   if (!overrides?.skipBrand) {
-    await page.getByText('Selecciona una marca').click();
-    await page.locator('[role="option"]').first().click();
+    await page.locator('select[name="brandName"]').selectOption({ index: 1 });
   }
 
   if (!overrides?.skipCategory) {
-    await page.getByText('Selecciona una categoría').click();
-    await page.locator('[role="option"]').first().click();
+    await page.locator('select[name="categoryName"]').selectOption({ index: 1 });
   }
 
   if (!overrides?.skipImage) {
