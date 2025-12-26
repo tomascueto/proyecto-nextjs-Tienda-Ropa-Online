@@ -1,7 +1,6 @@
 declare const self: any;
 
 import { Serwist, NetworkFirst, NetworkOnly, StaleWhileRevalidate, ExpirationPlugin, CacheableResponsePlugin } from "serwist";
-import { defaultCache } from "@serwist/next/worker";
 
 const OFFLINE_HTML = `<!DOCTYPE html> 
                         <html lang="es"> 
@@ -125,7 +124,7 @@ const OFFLINE_HTML = `<!DOCTYPE html>
                 </html>`; 
  
 
-const NOT_FOUND_HTML = `<!DOCTYPE html> 
+const SERVER_ERROR = `<!DOCTYPE html> 
                         <html lang="es"> 
                         <head> 
                           <meta charset="UTF-8"> 
@@ -244,159 +243,139 @@ const serwist = new Serwist({
   clientsClaim: true,
   navigationPreload: true,
   runtimeCaching: [
-    // 1. EXCLUSIONES CRÍTICAS (Nunca cachear Admin ni Login, pero con Fallback Offline)
+
     {
-      matcher: ({ url }) => 
-        url.pathname.startsWith("/admin") || 
-        url.pathname.startsWith("/login"),
+      matcher: ({url}) => url.pathname.startsWith("/admin") || url.pathname.startsWith("/login"),
       handler: new NetworkOnly({
         plugins: [
-          {
+        {
             handlerDidError: async () => {
-             
-            // 1. Verificación inmediata de hardware/SO
-              if (navigator.onLine === false) {
-                return new Response(OFFLINE_HTML, {
+              try {
+                const response =  await fetch("https://1.1.1.1/cdn-cgi/trace", {
+                  mode: "no-cors",
+                  cache: "no-store",
+                });
+
+                return new Response(SERVER_ERROR, {
                   headers: { "Content-Type": "text/html" },
                 });
-              }   
-                try {
-                  const extController = new AbortController();
-                  const extTimeoutId = setTimeout(() => extController.abort(), 4000);
-
-                  // Usamos una URL externa confiable para verificar acceso a internet real
-                  await fetch("https://clients3.google.com/generate_204", {
-                    mode: "no-cors",
-                    cache: "no-store",
-                    signal: extController.signal,
-                  });
-                  clearTimeout(extTimeoutId);
-
-                  // Si llegamos aquí, hay internet pero nuestro servidor no responde
-                  return new Response(NOT_FOUND_HTML, {
-                    headers: { "Content-Type": "text/html" },
-                  });
-                } catch (extError) {
-                  // No hay acceso a internet real
-                  return new Response(OFFLINE_HTML, {
-                    headers: { "Content-Type": "text/html" },
-                  });
-                }
-            },
-          },
-        ],
-      }),
-    },
-    // 2. Regla para el endpoint de ping (Siempre red, nunca caché)
-    {
-      matcher: ({ url }) => url.pathname === "/api/ping",
-      handler: new NetworkOnly(),
-    },
-    // 3. Peticiones RSC (Next.js App Router Navigation)
-    {
-      matcher: ({ request, url }) => 
-        url.searchParams.has("_rsc") || request.headers.get("RSC") === "1",
-      handler: new NetworkFirst({
-        cacheName: "TNDA-RSC",
-        plugins: [
-          new CacheableResponsePlugin({ statuses: [200] }),
-          new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 }),
-        ],
-        matchOptions: {
-          ignoreSearch: true,
-        },
-      }),
-    },
-    // 4. Peticiones de Documentos (HTML principal) con Fallback robusto
-    {
-      matcher: ({ request }) => request.destination === "document",
-      handler: new NetworkFirst({
-        cacheName: "TNDA-DOCS",
-        plugins: [
-          new CacheableResponsePlugin({ statuses: [200] }),
-          new ExpirationPlugin({ maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 }),
-          {
-            handlerDidError: async () => {
-              // 1. Verificación inmediata de hardware/SO
-              if (navigator.onLine === false) {
-                return new Response(OFFLINE_HTML, {
-                  headers: { "Content-Type": "text/html" },
-                });
-              }  
-                try {
-                  const extController = new AbortController();
-                  const extTimeoutId = setTimeout(() => extController.abort(), 4000);
-
-                  // Usamos una URL externa confiable para verificar acceso a internet real
-                  await fetch("https://clients3.google.com/generate_204", {
-                    mode: "no-cors",
-                    cache: "no-store",
-                    signal: extController.signal,
-                  });
-                  clearTimeout(extTimeoutId);
-
-                  // Si llegamos aquí, hay internet pero nuestro servidor no responde
-                  return new Response(NOT_FOUND_HTML, {
-                    headers: { "Content-Type": "text/html" },
-                  });
-                } catch (extError) {
-                  // No hay acceso a internet real
-                  return new Response(OFFLINE_HTML, {
-                    headers: { "Content-Type": "text/html" },
-                  });
-                }
-            },
-          },
-        ],
-      }),
+              } 
+              catch (err) {
+              return new Response(OFFLINE_HTML, {
+                headers: { "Content-Type": "text/html" },
+              });
+              }
+            }
+          
+        }
+        ]
+      })
     },
 
     {
-      matcher: ({ request }) => 
-        request.url.includes("/api/") && 
-        request.method === "GET" && 
-        !request.url.includes("/api/ping") && 
-        request.destination !== "document",
-      handler: new NetworkFirst({
-        cacheName: "TNDA-Apis",
-        plugins: [
-          new CacheableResponsePlugin({ statuses: [200] }),
-          new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 }),
-        ],
-      }),
-    },
-    // 5. Cloudinary Images (Cache de imágenes externas)
-    {
-      matcher: ({ request }) => request.destination === "image",
+      matcher: ({ url }) => url.pathname.startsWith('/_next/image'),
       handler: new StaleWhileRevalidate({
-        cacheName: "Underdog-images-cloudinary",
+        cacheName: "UND-Images",
         plugins: [
           new CacheableResponsePlugin({
-            statuses: [0, 200], // 0 para peticiones opacas (cross-origin)
+            statuses: [0, 200],
           }),
           new ExpirationPlugin({
             maxEntries: 100,
             maxAgeSeconds: 60 * 60 * 24 * 30, // 30 días
           }),
         ],
-      }),
+      })
     },
 
-    {
-      matcher: ({ request }) => 
-        request.destination === "style" || 
-        request.destination === "script" || 
-        request.destination === "font",
+   /* {
+      matcher: ({ url }) => 
+        url.pathname.endsWith('.png') || 
+        url.pathname.endsWith('.jpg') || 
+        url.pathname.endsWith('.jpeg') || 
+        url.pathname.endsWith('.svg') || 
+        url.pathname.endsWith('.ico'),
       handler: new StaleWhileRevalidate({
-        cacheName: "Underdog-StaticFiles",
+        cacheName: "UND-Static-Assets",
         plugins: [
-          new CacheableResponsePlugin({ statuses: [200] }),
+          new CacheableResponsePlugin({
+            statuses: [0, 200],
+          }),
+          new ExpirationPlugin({
+            maxEntries: 50,
+            maxAgeSeconds: 60 * 60 * 24 * 30, // 30 días
+          }),
+        ],
+      })
+    },*/
+
+    {
+      matcher: ({ request}) => request.destination === "document",
+      handler: new NetworkFirst({
+        cacheName: "UND-HTML",
+        plugins: [
+          new CacheableResponsePlugin({statuses: [200],}),
+          new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 }),
+          {
+            handlerDidError: async () => {
+              try {
+              const response =  await fetch("https://1.1.1.1/cdn-cgi/trace", {
+                mode: "no-cors",
+                cache: "no-store",
+              });
+
+              return new Response(SERVER_ERROR, {
+                headers: { "Content-Type": "text/html" },
+              });
+            } 
+            catch (err) {
+              return new Response(OFFLINE_HTML, {
+                headers: { "Content-Type": "text/html" },
+              });
+            }
+            },
+          }
+        ]
+      })
+    },
+    
+    /*
+    {
+      matcher: ({url, request}) =>  
+          url.pathname.includes('_rsc') || 
+          url.searchParams.has('_rsc') ||
+          request.headers.get('RSC') === '1',
+      handler: new NetworkFirst({
+        cacheName: "UND-RSC",
+        plugins: [
+          new CacheableResponsePlugin({statuses: [200],}),
+          new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 }),
+          {
+            handlerDidError: async () => {
+              // Para RSC (React Server Components), no debemos devolver el HTML de error u offline
+              // porque rompería el parser de Next.js en el cliente.
+              // Devolvemos un status 503 para que el router de Next.js detecte el fallo y pueda
+              // intentar una recarga completa o mostrar un error boundary.
+              return new Response(null, {
+                status: 503,
+                statusText: "Service Unavailable (Offline)",
+              });
+            },
+          }
+        ],
+      }),
+    },*/
+    {
+      matcher: (request) => true, 
+      handler: new NetworkFirst({
+        cacheName: "UND-General",
+        plugins: [
+          new CacheableResponsePlugin({statuses: [200],}),
+          new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 }),
         ],
       }),
     },
   ],
 });
-
-
 
 serwist.addEventListeners();
