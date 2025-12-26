@@ -2,11 +2,19 @@ import { fetchBrands, fetchCategories } from "@/app/lib/data";
 import Link from "next/link";
 import Image from "next/image"; // 
 import { Facebook, Instagram, Twitter, MapPin, Mail, ArrowRight } from "lucide-react";
+import { Brand, Category } from "@/app/lib/definitions";
 
 export default async function Footer() {
-  const brands = await fetchBrands();
-  const categories = await fetchCategories();
+  let brands : Brand[] = [];
+  let categories : Category[] = [];
 
+  try{
+    brands = await fetchBrands();
+    categories = await fetchCategories();
+  }
+  catch(error){
+    console.error("Error fetching data:", error);
+  }
   return (
     <footer className="bg-black text-white border-t border-gray-800">
       <div className="container mx-auto px-4 md:px-6 py-12 md:py-16">
@@ -19,7 +27,7 @@ export default async function Footer() {
             <Link href="/" className="flex items-center">
               <Image 
                   src="/logo-underdogs-blanco.png" // <--- CAMBIÁ ESTO por el nombre de tu archivo en /public
-                  alt="TNDA Logo"
+                  alt="Underdogs Logo"
                   width={140}              // Un poco más grande que el header suele quedar bien en el footer
                   height={50}
                   className="object-contain h-12 w-auto md:h-14" // Altura responsiva (48px en móvil, 56px en PC)

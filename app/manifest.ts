@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Underddogs. SHOP',
     short_name: 'Underddogs',
-    description: 'Tu tienda online de ropa urbana y zapatillas.',
+    description: 'Tu tienda online de zapatillas.',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',

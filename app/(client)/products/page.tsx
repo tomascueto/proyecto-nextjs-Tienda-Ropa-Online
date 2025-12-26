@@ -1,6 +1,7 @@
 
 import ProductsClient from "@/app/ui/products/products-client";
 import { fetchProductsPages, fetchFilteredProducts, fetchTotalProductsNumber, fetchCategories, fetchBrands } from "@/app/lib/data";
+import { notFound } from "next/navigation";
 
 export default async function ProductsPage({
   searchParams,
@@ -49,7 +50,7 @@ export default async function ProductsPage({
     catch (error) {
       console.log("Error fetching products data:", error);
       // Al relanzar el error el Service Worker NO cacheará una respuesta fallida (vacía) con status 200.
-      throw error;
+      notFound();
     }
 
     return (
