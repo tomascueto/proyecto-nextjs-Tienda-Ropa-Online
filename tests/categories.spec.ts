@@ -118,6 +118,9 @@ test.describe('CRUD Categorías', () => {
       .first()
       .click();
 
+    await expect(page.getByText('¿Eliminar categoría?')).toBeVisible();
+    await page.getByRole('button', { name: 'Eliminar', exact: true }).click();
+
     const response = await page.waitForResponse(res =>
       res.request().method() === 'POST' &&
       res.url().includes('/categories')

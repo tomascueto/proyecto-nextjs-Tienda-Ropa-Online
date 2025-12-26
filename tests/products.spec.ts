@@ -33,13 +33,8 @@ test.describe('Creación de un producto', () => {
     await page.fill('input[name="originalPrice"]', '20000');
     await page.getByPlaceholder('Característica 1').fill('Suela antideslizante');
 
-    await page.click('text=Selecciona una marca');
-    await page.locator('[role="option"]').first().click();
-
-    await page.click('text=Selecciona una categoría');
-    await page.locator('[role="option"]').first().click();
-
-    
+    await page.locator('select[name="brandName"]').selectOption({ index: 1 });
+    await page.locator('select[name="categoryName"]').selectOption({ index: 1 });
 
     await page.setInputFiles(
       'input[type="file"]',
@@ -188,16 +183,29 @@ test.describe('Eliminación de un producto', () => {
 
     await Promise.all([
       page.waitForLoadState('networkidle'),
-      firstRow.locator('form button').click(),
+      firstRow.getByRole('button', { name: /Eliminar producto/i }).click(),
     ]);
+    
+    await expect(page.getByText('¿Eliminar producto?')).toBeVisible();
+    await expect(page.locator('.fixed').getByText(productName)).toBeVisible();
+    await page.getByRole('button', { name: 'Sí, eliminar', exact: true }).click();
+    await expect(page.getByText('Eliminando producto')).not.toBeVisible();
 
-    await page.reload();
-    await page.waitForLoadState('networkidle');
+    await expect(async () => {
 
-    await expect(page.getByText(productName)).not.toBeVisible();
+        await page.reload();
+        await expect(page.locator('table')).toBeVisible();
+        const tableContent = await page.locator('table').innerText();
+        expect(tableContent).not.toContain(productName);
+
+    }).toPass({
+        timeout: 10000,
+        intervals: [1000, 2000, 2000],
+    });
 
     const exists = await waitForProductToExist(request, productName);
     expect(exists).toBe(false);
+
   });
 
 });
