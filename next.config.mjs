@@ -11,18 +11,22 @@ const withSerwist = withSerwistInit({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Configuración de imágenes
   images: {
     remotePatterns: [
+      // Opción 1: HTTPS (La que ya tenías)
       {
         protocol: 'https', 
         hostname: 'res.cloudinary.com',
-        pathname: '**',    // Permite todas las rutas de imágenes
+        pathname: '**',    
+      },
+      // Opción 2: HTTP (La que falta para arreglar el error)
+      {
+        protocol: 'http', 
+        hostname: 'res.cloudinary.com',
+        pathname: '**',    
       },
     ],
   },
-  // Opcional: Si usas exportación estática o configuraciones avanzadas
-  // reactStrictMode: true,
 };
 
 export default withSerwist(nextConfig);
