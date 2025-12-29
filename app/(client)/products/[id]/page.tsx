@@ -17,7 +17,8 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
     ]);
     products = fetchedProducts;
     product = fetchedProduct;
-  } catch (e) {
+  } 
+  catch (e) {
     console.error("Error fetching product details:", e);
     error = true;
   }

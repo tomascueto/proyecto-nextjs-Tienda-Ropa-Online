@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { Button } from "@/app/ui/button"
-import { RefreshCcw, Home } from "lucide-react"
+import { Home } from "lucide-react"
 
 export default function NoProductsFallback() {
   return (

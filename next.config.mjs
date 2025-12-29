@@ -13,13 +13,13 @@ const withSerwist = withSerwistInit({
 const nextConfig = {
   images: {
     remotePatterns: [
-      // Opción 1: HTTPS (La que ya tenías)
+      // Opción 1: HTTPS 
       {
         protocol: 'https', 
         hostname: 'res.cloudinary.com',
         pathname: '**',    
       },
-      // Opción 2: HTTP (La que falta para arreglar el error)
+      // Opción 2: HTTP 
       {
         protocol: 'http', 
         hostname: 'res.cloudinary.com',

@@ -207,7 +207,9 @@ export async function fetchTotalProductsNumber() {
   try {
     const count = await sql`SELECT COUNT(*) FROM products`;
     return Number(count.rows[0].count);
-  } catch (error) {
+  } 
+
+  catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch total number of products.");
   }
@@ -220,7 +222,8 @@ export async function fetchProductsImages() {
   try{
     const data = await sql<String>`SELECT images FROM products`;
     return data.rows;
-  } catch (error) {
+  } 
+  catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch products images.');
   }
