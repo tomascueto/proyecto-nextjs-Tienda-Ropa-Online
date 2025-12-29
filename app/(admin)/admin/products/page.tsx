@@ -10,7 +10,6 @@ import DeleteButton from "@/app/ui/products/deletebutton"
 import ProductsPagination from "@/app/ui/admin/products-pagination"
 import ProductIdCell from "@/app/ui/products/product-id-cell"
 
-// IMPORTANTE: Esto arregla el error de build en Admin
 export const dynamic = 'force-dynamic';
 
 const ITEMS_PER_PAGE = 8

@@ -1,6 +1,6 @@
 import { fetchBrands, fetchCategories } from "@/app/lib/data";
 import Link from "next/link";
-import Image from "next/image"; // 
+import Image from "next/image";
 import { Facebook, Instagram, Twitter, MapPin, Mail, ArrowRight } from "lucide-react";
 import { Brand, Category } from "@/app/lib/definitions";
 
@@ -19,18 +19,14 @@ export default async function Footer() {
     <footer className="bg-black text-white border-t border-gray-800">
       <div className="container mx-auto px-4 md:px-6 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 text-center md:text-left">
-          
-          {/* Columna 1: Marca y Sobre Nosotros */}
           <div className="space-y-4 flex flex-col items-center md:items-start">
-            
-            {/* 2. Reemplazamos el texto por el Logo */}
             <Link href="/" className="flex items-center">
               <Image 
-                  src="/logo-underdogs-blanco.png" // <--- CAMBIÁ ESTO por el nombre de tu archivo en /public
+                  src="/logo-underdogs-blanco.png"
                   alt="Underdogs Logo"
-                  width={140}              // Un poco más grande que el header suele quedar bien en el footer
+                  width={140}
                   height={50}
-                  className="object-contain h-12 w-auto md:h-14" // Altura responsiva (48px en móvil, 56px en PC)
+                  className="object-contain h-12 w-auto md:h-14"
               />
             </Link>
 
@@ -42,11 +38,7 @@ export default async function Footer() {
               <SocialIcon href="https://twitter.com" label="Twitter" icon={<Twitter size={20} />} />
               <SocialIcon href="https://facebook.com" label="Facebook" icon={<Facebook size={20} />} />
             </div>
-          </div>
-
-          {/* ... (Resto de las columnas igual que antes) ... */}
-          
-          {/* Columna 2: Categorías */}
+          </div>          
           <div>
             <h3 className="font-bold text-lg mb-4 text-white">Categorías</h3>
             <ul className="space-y-3 text-sm text-gray-400">
@@ -63,7 +55,6 @@ export default async function Footer() {
             </ul>
           </div>
 
-          {/* Columna 3: Marcas */}
           <div>
             <h3 className="font-bold text-lg mb-4 text-white">Marcas Top</h3>
             <ul className="space-y-3 text-sm text-gray-400">
@@ -79,8 +70,6 @@ export default async function Footer() {
               ))}
             </ul>
           </div>
-
-          {/* Columna 4: Contacto y Newsletter */}
           <div className="space-y-8 md:space-y-6">
             <div className="flex flex-col items-center md:items-start">
               <h3 className="font-bold text-lg mb-4 text-white">Contacto</h3>
@@ -99,8 +88,6 @@ export default async function Footer() {
                 </li>
               </ul>
             </div>
-
-            {/* Newsletter Visual */}
             <div className="w-full max-w-xs mx-auto md:mx-0">
               <h4 className="text-sm font-semibold mb-3 text-white">Suscribite al newsletter</h4>
               <div className="flex gap-2">
@@ -120,7 +107,6 @@ export default async function Footer() {
 
         </div>
 
-        {/* Barra Inferior */}
         <div className="border-t border-gray-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500 text-center md:text-left">
           <p>&copy; {new Date().getFullYear()} Underdogs. Todos los derechos reservados.</p>
           <div className="flex gap-6 justify-center">
@@ -133,7 +119,6 @@ export default async function Footer() {
   );
 }
 
-// Pequeño componente helper
 function SocialIcon({ href, icon, label }: { href: string, icon: React.ReactNode, label: string }) {
   return (
     <a 

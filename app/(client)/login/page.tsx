@@ -7,13 +7,10 @@ export default function LogIn() {
 
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
-          {/* Header Section */}
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Bienvenido</h1>
             <p className="text-muted-foreground text-sm md:text-base">Accede a tu cuenta para continuar comprando</p>
           </div>
-
-          {/* Form Card */}
           <div className="bg-card border border-border rounded-lg shadow-lg p-8">
             <Login />
           </div>

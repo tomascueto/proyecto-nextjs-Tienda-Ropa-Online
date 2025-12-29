@@ -1,20 +1,19 @@
 "use client"
 
 import { useState } from "react"
-import { useFormState, useFormStatus } from "react-dom" // <--- Importamos useFormStatus
+import { useFormState, useFormStatus } from "react-dom"
 import Link from "next/link"
 import { createCategory } from "@/app/lib/actions"
 import { Button } from "@/app/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/ui/products/card"
 import { Input } from "@/app/ui/products/input"
 import { Label } from "@/app/ui/products/label"
-import { Upload, Loader2 } from "lucide-react" // <--- Importamos Loader2
+import { Upload, Loader2 } from "lucide-react"
 import { Category } from '@/app/lib/definitions';
 
-// --- COMPONENTES AUXILIARES ---
+
 function SubmitButton() {
   const { pending } = useFormStatus()
-  
   return (
     <Button 
       type="submit" 
@@ -35,9 +34,7 @@ function SubmitButton() {
 
 function LoadingOverlay() {
   const { pending } = useFormStatus()
-
   if (!pending) return null
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-all animate-in fade-in">
       <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center gap-4 text-center max-w-sm mx-4">
@@ -53,7 +50,7 @@ function LoadingOverlay() {
     </div>
   )
 }
-// -----------------------------
+
 
 export default function CreateCategoryForm({ categories }: { categories: Category[] }) {
   const initialState = { message: "", errors: {} };
@@ -70,18 +67,13 @@ export default function CreateCategoryForm({ categories }: { categories: Categor
 
   return (
     <form action={dispatch}>
-      {/* OVERLAY DE CARGA */}
       <LoadingOverlay />
-
       <div className="grid gap-6">
-        
         <Card>
           <CardHeader>
             <CardTitle>Nueva Categoría</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            
-            {/* Nombre de la Categoría */}
             <div className="space-y-2">
               <Label htmlFor="categoryName">
                 Nombre <span className="text-red-500">*</span>
@@ -103,8 +95,6 @@ export default function CreateCategoryForm({ categories }: { categories: Categor
                   ))}
               </div>
             </div>
-
-            {/* Descripción Breve */}
             <div className="space-y-2">
               <Label htmlFor="description">
                 Descripción Breve <span className="text-red-500">*</span>
@@ -131,8 +121,6 @@ export default function CreateCategoryForm({ categories }: { categories: Categor
                   ))}
               </div>
             </div>
-
-            {/* Carga de Imagen */}
             <div className="space-y-2">
               <Label htmlFor="image">
                 Imagen de Portada <span className="text-red-500">*</span>
@@ -171,16 +159,12 @@ export default function CreateCategoryForm({ categories }: { categories: Categor
 
           </CardContent>
         </Card>
-
-        {/* Botones de Acción */}
         <div className="flex justify-end gap-4">
           <Link href="/admin/categories">
             <Button type="button" variant="outline">
               Cancelar
             </Button>
           </Link>
-          
-          {/* USAMOS EL NUEVO BOTÓN */}
           <SubmitButton />
         </div>
 

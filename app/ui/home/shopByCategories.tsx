@@ -30,14 +30,13 @@ export default function ShopByCategories({ categories }: Props) {
             align: "start",
             loop: true,
           }}
-          className="w-full max-w-7xl mx-auto relative" // 'relative' necesario para las flechas absolutas
+          className="w-full max-w-7xl mx-auto relative"
         >
           <CarouselContent className={cn(
             "-ml-4", 
             categories?.length < 4 ? "lg:justify-center" : ""
           )}>
             {categories && categories.map((category) => (
-              // VUELTA AL ORIGINAL: basis-full (100% ancho) en mobile
               <CarouselItem key={category.id} className="pl-4 basis-full md:basis-1/2 lg:basis-1/4">
                 <Link href={`/products?category=${category.name}`} className="group block h-full">
                   
@@ -73,11 +72,9 @@ export default function ShopByCategories({ categories }: Props) {
             ))}
           </CarouselContent>
           
-          {/* FLECHAS VISIBLES SIEMPRE (Mobile y Desktop) */}
           {categories?.length > 1 && (
             <>
-              {/* En mobile: absolute left-4 (encima de la foto) */}
-              {/* En desktop: absolute -left-12 (fuera de la foto) */}
+
               <CarouselPrevious 
                 className="absolute left-4 md:-left-12 top-1/2 -translate-y-1/2 z-10 h-10 w-10 md:h-12 md:w-12 bg-white/20 hover:bg-white/40 md:bg-white md:hover:bg-gray-100 border-none md:border text-white md:text-black backdrop-blur-sm transition-all" 
               />

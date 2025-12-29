@@ -7,7 +7,7 @@ import { Button } from "@/app/ui/button"
 import Link from "next/link"
 import Image from "next/image"
 
-// 🧩 Helper para formatear precios
+
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("es-AR", {
     style: "currency",
@@ -17,24 +17,18 @@ const formatPrice = (price: number) =>
 
 export default function DropdownCart() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  
-  // 1. Estado para controlar la hidratación
   const [isMounted, setIsMounted] = useState(false)
-  
   const dropdownRef = useRef<HTMLDivElement>(null)
-
   const { items, removeItem, incrementQuantity, decrementQuantity, getTotalItems, getTotalPrice } = useCartStore()
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen)
   }
 
-  // 2. Efecto para marcar que ya estamos en el cliente
   useEffect(() => {
     setIsMounted(true)
   }, [])
 
-  // Cerrar dropdown al hacer click fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -48,8 +42,6 @@ export default function DropdownCart() {
     }
   }, [])
 
-  // Si no está montado (servidor), retornamos una versión "vacía" o simple para que coincida con el HTML estático
-  // O simplemente retornamos null si prefieres que no se vea el carrito hasta cargar
   if (!isMounted) {
       return (
         <div className="relative">
@@ -84,7 +76,6 @@ export default function DropdownCart() {
               </Button>
             </div>
           </div>
-
           <div className="p-4 max-h-96 overflow-y-auto bg-white">
             {items.length === 0 ? (
               <div className="text-center text-gray-500 py-8">

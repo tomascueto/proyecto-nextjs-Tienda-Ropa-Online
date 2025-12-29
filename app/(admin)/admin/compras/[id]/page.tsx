@@ -6,13 +6,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ArrowLeft } from "lucide-react";
 
 export default async function PurchaseDetailsPage({ params }: { params: { id: string } }) {
-  // 1. Obtenemos el ID de la URL
   const purchaseId = params.id;
-
-  // 2. Buscamos los datos en la DB
   const details = await fetchPurchaseDetails(purchaseId);
-
-  // Helper para precio (igual que en tu otra página)
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("es-AR", {
       style: "currency",
@@ -20,14 +15,12 @@ export default async function PurchaseDetailsPage({ params }: { params: { id: st
       minimumFractionDigits: 2,
     }).format(price);
 
-  // Calculamos el total de esta vista sumando los items (opcional, visual)
   const totalAmount = details.reduce((acc, item) => acc + (Number(item.itemprice) * item.quantity), 0);
 
   return (
     <div className="space-y-6">
-      {/* Encabezado con botón de volver */}
       <div className="flex items-center gap-4">
-        <Link href="/admin/compras"> {/* Ajusta esta ruta a donde está tu lista */}
+        <Link href="/admin/compras">
           <Button variant="outline" size="sm">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Volver
@@ -66,7 +59,6 @@ export default async function PurchaseDetailsPage({ params }: { params: { id: st
                 <TableBody>
                   {details.map((item) => (
                     <TableRow key={item.detaliid}> 
-                      {/* Nota: Revisa si tu DB devuelve 'productName' o 'productname' (postgres suele devolver minusculas) */}
                       <TableCell className="font-medium">{item.productname || item.productname}</TableCell>
                       <TableCell className="text-center">{item.quantity}</TableCell>
                       <TableCell className="text-right">{formatPrice(Number(item.itemprice || item.itemprice))}</TableCell>

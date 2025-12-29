@@ -18,14 +18,12 @@ export default function DeleteCategoryButton({ id, cloudinary_public_id, name }:
   const handleDelete = () => {
     setShowConfirm(false)
     startTransition(async () => {
-        // Manejo seguro del string vacío
         await deleteCategory(id, cloudinary_public_id || ""); 
     })
   }
 
   return (
     <>
-      {/* TRIGGER */}
       <Button 
         variant="outline" 
         size="sm" 
@@ -36,8 +34,6 @@ export default function DeleteCategoryButton({ id, cloudinary_public_id, name }:
       >
         <Trash2 className="h-4 w-4" />
       </Button>
-
-      {/* MODAL DE CONFIRMACIÓN */}
       {showConfirm && !isPending && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white p-6 rounded-xl shadow-2xl max-w-md w-full mx-4">
@@ -71,8 +67,6 @@ export default function DeleteCategoryButton({ id, cloudinary_public_id, name }:
           </div>
         </div>
       )}
-
-      {/* PANTALLA DE CARGA */}
       {isPending && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-all animate-in fade-in">
             <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center gap-4 text-center max-w-sm mx-4">

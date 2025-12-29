@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
+const BASE_URL = process.env.BASE_URL
 
 /* -------------------------------------------------------------------------- */
 /*                          API /api/products/[brand]                          */
@@ -12,12 +12,9 @@ test.describe('API /api/products/[brand]', () => {
     const response = await request.get(
       `${BASE_URL}/api/products/Nike`
     )
-
     expect(response.status()).toBe(200)
-
     const body = await response.json()
     expect(Array.isArray(body)).toBe(true)
-
     if (body.length > 0) {
       expect(body[0]).toHaveProperty('name')
       expect(body[0]).toHaveProperty('brand_name')
@@ -29,9 +26,7 @@ test.describe('API /api/products/[brand]', () => {
     const response = await request.get(
       `${BASE_URL}/api/products/MARCA_INEXISTENTE_123`
     )
-
     expect(response.status()).toBe(200)
-
     const body = await response.json()
     expect(Array.isArray(body)).toBe(true)
     expect(body.length).toBe(0)
@@ -46,13 +41,10 @@ test.describe('API /api/products/exists', () => {
 
   test('exists = true cuando el producto existe', async ({ request }) => {
     const PRODUCT_NAME = 'Air Jordan 4 Retro Cozy Girl'
-
     const response = await request.get(
       `${BASE_URL}/api/products/exists?name=${encodeURIComponent(PRODUCT_NAME)}`
     )
-
     expect(response.status()).toBe(200)
-
     const body = await response.json()
     expect(body).toHaveProperty('exists')
     expect(body.exists).toBe(true)
@@ -62,9 +54,7 @@ test.describe('API /api/products/exists', () => {
     const response = await request.get(
       `${BASE_URL}/api/products/exists?name=PRODUCTO_INEXISTENTE_123456`
     )
-
     expect(response.status()).toBe(200)
-
     const body = await response.json()
     expect(body).toHaveProperty('exists')
     expect(body.exists).toBe(false)
@@ -81,9 +71,7 @@ test.describe('API /api/products/search', () => {
     const response = await request.get(
       `${BASE_URL}/api/products/search?query=Zapatilla`
     )
-
     expect(response.status()).toBe(200)
-
     const body = await response.json()
     expect(Array.isArray(body)).toBe(true)
   })
@@ -92,9 +80,7 @@ test.describe('API /api/products/search', () => {
     const response = await request.get(
       `${BASE_URL}/api/products/search?query=XYZ_NO_EXISTE`
     )
-
     expect(response.status()).toBe(200)
-
     const body = await response.json()
     expect(Array.isArray(body)).toBe(true)
     expect(body.length).toBe(0)
@@ -104,9 +90,7 @@ test.describe('API /api/products/search', () => {
     const response = await request.get(
       `${BASE_URL}/api/products/search`
     )
-
     expect(response.status()).toBe(400)
-
     const body = await response.json()
     expect(body).toHaveProperty('error')
   })

@@ -72,7 +72,6 @@ export default function CheckoutPage() {
         <h1 className="text-4xl font-bold mb-8">Carrito de compras</h1>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             {items.map((item) => (
               <Card key={item.id}>
@@ -141,7 +140,6 @@ export default function CheckoutPage() {
             ))}
           </div>
 
-          {/* Order Summary */}
           <div className="lg:col-span-1">
             <Card className="sticky top-4">
               <CardContent className="p-6">

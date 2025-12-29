@@ -19,7 +19,6 @@ export async function waitForProductToExist(
       }
     }
 
-    // Esperamos un poco antes de volver a consultar
     await new Promise((r) => setTimeout(r, 300))
   }
 

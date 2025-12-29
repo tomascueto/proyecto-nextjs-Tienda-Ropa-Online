@@ -1,5 +1,3 @@
-// app/lib/placeholder-data.js
-
 const users = [
     {
       email: 'admin@admin.com',
@@ -144,7 +142,6 @@ const products = [
         brandid :  brands[0].id,
         categoryid : categories[1].id,
         categoryname : categories[1].name,
-        // OFERTA: Precio real 10000, oferta 8500
         originalPrice : 10000,
         price : 8500,
         image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766084121/Jordan_Air_Jordan_11_Retro_RA_egocvw.webp',
@@ -183,7 +180,6 @@ const products = [
         brandid :  brands[1].id,
         categoryid : categories[0].id,
         categoryname : categories[0].name,
-        // OFERTA: Precio real 15000, oferta 12000
         originalPrice : 15000,
         price : 12000,
         image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766084487/Nike_Legend_10_Elite_FG_mvhwwk.webp',

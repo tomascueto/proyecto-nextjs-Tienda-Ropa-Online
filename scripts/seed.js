@@ -12,7 +12,6 @@ const bcrypt = require('bcrypt');
 async function seedUsers(client) {
     try {
         await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-        // Create the "users" table if it doesn't exist
         const createTable = await client.sql`
             CREATE TABLE IF NOT EXISTS users (
             email TEXT NOT NULL UNIQUE,
@@ -20,8 +19,6 @@ async function seedUsers(client) {
             );
         `;
         console.log(`Created "users" table`);
-  
-        // Insert data into the "users" table
         const insertedUsers = await Promise.all(
             users.map(async (user) => {
             const hashedPassword = await bcrypt.hash(user.password, 10);
@@ -47,7 +44,6 @@ async function seedUsers(client) {
 async function seedCategories(client){
     try {
         await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-        // Create the "categories" table if it doesn't exist
         const createTable = await client.sql`
           CREATE TABLE IF NOT EXISTS categories (
             id SERIAL PRIMARY KEY,
@@ -57,11 +53,8 @@ async function seedCategories(client){
             cloudinary_public_id TEXT
           );
         `;
-    
         console.log(`Created "categories" table`);
-    
-        // Insert data into the "categories" table
-        const insertedCategories= await Promise.all(
+            const insertedCategories= await Promise.all(
           categories.map(async (category) => {
             return client.sql`
             INSERT INTO categories (name,description,image,cloudinary_public_id)
@@ -90,18 +83,14 @@ async function seedCategories(client){
 async function seedBrands(client){
     try {
         await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-        // Create the "brands" table if it doesn't exist
         const createTable = await client.sql`
           CREATE TABLE IF NOT EXISTS brands (
             id SERIAL PRIMARY KEY,
             name VARCHAR(255) NOT NULL
           );
         `;
-    
         console.log(`Created "brands" table`);
-    
-        // Insert data into the "brands" table
-        const insertedBrands= await Promise.all(
+            const insertedBrands= await Promise.all(
           brands.map(async (brand) => {
             return client.sql`
             INSERT INTO brands (name)
@@ -125,11 +114,7 @@ async function seedBrands(client){
 async function seedProducts(client){
     try {
         await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-        
-        // BORRAMOS la tabla anterior para recrearla con la nueva estructura
-        // OJO: Esto borrará tus productos actuales.
         await client.sql`DROP TABLE IF EXISTS products CASCADE`;
-
         const createTable = await client.sql`
           CREATE TABLE IF NOT EXISTS products (
             id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -167,9 +152,7 @@ async function seedProducts(client){
           `;
           }),
         );
-  
         console.log(`Seeded ${insertedProducts.length} products`);
-    
         return {
           createTable,
           products: insertedProducts,
@@ -196,7 +179,6 @@ async function createPurchaseTable(client){
     return {
       createPurchaseTable
     };
-
   }
   catch(error){
     console.log("Error creating the historial of purchase");
@@ -217,7 +199,6 @@ async function createPurchasesDetailTable(client){
        itemPrice DECIMAL(10, 2) NOT NULL
       );
     `;
-
     console.log("Table detailsPurchase created.");
     return {
       createPurchaseDetailTable

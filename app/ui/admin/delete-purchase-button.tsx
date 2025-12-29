@@ -14,7 +14,6 @@ import {
 } from "@/app/ui/admin/alert-dialog";
 
 export default function DeletePurchaseButton({ id }: { id: string }) {
-  // Preparamos la Server Action con el ID
   const deletePurchaseWithId = deletePurchase.bind(null, id);
 
   return (
@@ -33,8 +32,6 @@ export default function DeletePurchaseButton({ id }: { id: string }) {
 
         <div className="flex gap-3 justify-end mt-4">
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-
-          {/* Formulario conectado a la Server Action */}
           <form action={deletePurchaseWithId}>
             <AlertDialogAction type="submit" className="bg-red-600 hover:bg-red-700 text-white">
               Eliminar

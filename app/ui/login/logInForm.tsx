@@ -11,15 +11,12 @@ export function Login() {
 
   return (
     <form className="space-y-5" action={dispatch}>
-      {/* Email Field */}
       <div className="space-y-2">
         <label htmlFor="email" className="block text-sm font-medium text-foreground">
           Email
         </label>
         <Input type="email" id="email" name="email" placeholder="tu@email.com" required className="w-full" />
       </div>
-
-      {/* Password Field */}
       <div className="space-y-2">
         <label htmlFor="password" className="block text-sm font-medium text-foreground">
           Contraseña
@@ -53,8 +50,6 @@ export function Login() {
           "Inicia Sesión"
         )}
       </Button>
-
-      {/* Forgotten Password Link */}
       <div className="text-center">
         <a href="#" className="text-xs text-primary hover:underline font-medium">
           ¿Olvidaste tu contraseña?

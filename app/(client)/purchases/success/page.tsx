@@ -9,7 +9,6 @@ export default function SuccessPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-16">
       <div className="w-full max-w-3xl">
-        {/* Header */}
         <div className="text-center mb-12">
           <div className="flex justify-center mb-4">
             <CheckCircle className="h-20 w-20 text-green-500" />
@@ -19,8 +18,6 @@ export default function SuccessPage() {
             Gracias por tu compra. Estamos procesando tu pedido.
           </p>
         </div>
-
-        {/* Main card */}
         <Card>
           <CardContent className="p-8">
             <div className="space-y-6 text-center">

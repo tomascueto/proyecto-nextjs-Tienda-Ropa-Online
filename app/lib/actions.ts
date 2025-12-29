@@ -180,9 +180,7 @@ export async function createProduct(prevState: State, formData: FormData) {
   } = validatedFields.data
 
   const dbOfferPrice = (offerPrice && offerPrice > 0) ? offerPrice : null;
-  
-  // Subida de imagen
-  const arrayImage = await image.arrayBuffer()
+    const arrayImage = await image.arrayBuffer()
   const buffer = new Uint8Array(arrayImage)
 
   let imageUrl = ""
@@ -276,14 +274,11 @@ export async function updateProduct(
     inStock: validatedInStock,
   } = validatedFields.data
 
-  // LÓGICA DE PRECIOS (Igual que en create):
   const dbOfferPrice = (offerPrice && offerPrice > 0) ? offerPrice : null;
-
   const image = formData.get("image") as File
   let imageUrl: string | undefined = undefined
   let newPublicId: string | undefined = undefined
 
-  // Solo subir nueva imagen si se seleccionó una
   if (image && image.size > 0) {
     if (oldPublicId) {
        await cloudinary.uploader.destroy(oldPublicId)
@@ -564,7 +559,7 @@ export async function payment(cartItems: CartItem[]) {
 
       const currentPrice = dbProduct.price ?? dbProduct.original_price
       const priceDifference = Math.abs(currentPrice - item.unitCost)
-      const MARGIN_OF_ERROR = 1.0 // Permitir 1 peso de diferencia por redondeo
+      const MARGIN_OF_ERROR = 1.0
 
       if (priceDifference > MARGIN_OF_ERROR) {
         throw new Error(

@@ -28,7 +28,6 @@ export default async function ProductsPage({
     let brands: any[] = [];
 
     try {
-      // Lanzamos las peticiones en paralelo para mejor performance
       const [
         fetchedTotalPages,
         fetchedProducts,
@@ -51,8 +50,6 @@ export default async function ProductsPage({
     } 
     catch (error: any) {
       console.log("Error detectado en ProductsPage:", error);
-
-      // Buscamos el código de error en la raíz, en el cause o en el sourceError (específico de Neon/undici)
       const errorCode = error.code || error.cause?.code || error.sourceError?.code || error.sourceError?.cause?.code;
       const errorMessage = (error.message || "").toLowerCase();
       
@@ -65,7 +62,6 @@ export default async function ProductsPage({
       ) {
         isTimeout = true;
       } else {
-        // Al relanzar el error el Service Worker NO cacheará una respuesta fallida (vacía) con status 200.
         notFound();
       }
     }

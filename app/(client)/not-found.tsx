@@ -7,11 +7,7 @@ import { useEffect } from 'react'
 
 export default function NotFound() {
   useEffect(() => {
-    // Registro de error 404 para análisis posterior
     console.error(`[404 Not Found] path: ${window.location.pathname}`);
-    
-    // Aquí se podría enviar a un servicio de logging como Sentry o una API propia
-    // fetch('/api/log/error', { method: 'POST', body: JSON.stringify({ url: window.location.href, type: '404' }) });
   }, []);
 
   return (

@@ -37,7 +37,6 @@ export async function clearEditProductField(
       break
 
     case 'image':
-      // No cargamos archivo → fuerza validación si la imagen es requerida
       break
   }
 }

@@ -13,7 +13,6 @@ export default async function CategoriesPage() {
 
   return (
     <div>
-      {/* ENCABEZADO */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 mb-8">
         <div className="space-y-1 w-full sm:w-auto">
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">Categorías</h1>
@@ -37,7 +36,6 @@ export default async function CategoriesPage() {
             <Table className="w-full">
               <TableHeader className="bg-gray-50/50">
                 <TableRow>
-                  {/* TODOS LOS ENCABEZADOS CON text-center */}
                   <TableHead className="w-[100px] min-w-[100px] text-center">Acciones</TableHead>
                   <TableHead className="min-w-[150px] text-center font-semibold text-gray-900">Nombre</TableHead>
                   <TableHead className="min-w-[200px] text-center text-gray-500">Descripción</TableHead>
@@ -47,8 +45,6 @@ export default async function CategoriesPage() {
               <TableBody>
                 {categories.map((category) => (
                   <TableRow key={category.id} className="hover:bg-gray-50/50 transition-colors">
-                    
-                    {/* ACCIONES (Centradas) */}
                     <TableCell>
                       <div className="flex justify-center gap-2">
                         <EditCategoryButton id={category.id} />
@@ -59,18 +55,12 @@ export default async function CategoriesPage() {
                         />
                       </div>
                     </TableCell>
-
-                    {/* NOMBRE (Centrado) */}
                     <TableCell className="font-medium text-gray-900 text-center">
                         {category.name}
                     </TableCell>
-
-                    {/* DESCRIPCIÓN (Centrada) */}
                     <TableCell className="text-gray-500 truncate max-w-[300px] text-center" title={category.description}>
                         {category.description || "-"}
                     </TableCell>
-
-                    {/* ID (Centrado) */}
                     <TableCell>
                         <div className="flex justify-center">
                             <ProductIdCell id={category.id} />

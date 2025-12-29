@@ -7,7 +7,7 @@ import { clearEditProductField } from '@/tests/helpers/clearEditProductField'
 
 test.describe('Creación de un producto', () => {
 
-  // 🔐 Login antes de cada test
+  // Login antes de cada test
   test.beforeEach(async ({ page }) => {
     await page.goto('/login');
     await page.fill('input[name="email"]', process.env.TEST_ADMIN_EMAIL || '');
@@ -16,26 +16,16 @@ test.describe('Creación de un producto', () => {
     await page.waitForURL(/.*admin/);
   });
 
-  // ==========================================
-  // 🟢 1. HAPPY PATH (Éxito)
-  // ==========================================
   test('Debe CREAR un producto exitosamente y existir en la base de datos', async ({ page, request }) => {
 
     await page.goto('/admin/products/create');
-
     const uniqueName = `Zapa Test ${Date.now()}`;
-
-    // ------------------------
-    // Crear producto vía UI
-    // ------------------------
     await page.fill('input[name="productName"]', uniqueName);
     await page.fill('textarea[name="description"]', 'Descripción completa');
     await page.fill('input[name="originalPrice"]', '20000');
     await page.getByPlaceholder('Característica 1').fill('Suela antideslizante');
-
     await page.locator('select[name="brandName"]').selectOption({ index: 1 });
     await page.locator('select[name="categoryName"]').selectOption({ index: 1 });
-
     await page.setInputFiles(
       'input[type="file"]',
       path.join(__dirname, 'placeholder.jpg')
@@ -48,37 +38,24 @@ test.describe('Creación de un producto', () => {
       page.click('button[type="submit"]'),
     ]);
 
-    // 2. Check redirect status
+
     expect(response.status()).toBe(303);
-
     await page.waitForURL(/\/admin\/products/)
-
-    // ------------------------
-    // Verificación vía API (KEY POINT)
-    // ------------------------
+    // Verificación vía API
     const exists = await waitForProductToExist(request, uniqueName)
-
     expect(
       exists,
       `El producto "${uniqueName}" no apareció en la base de datos`
     ).toBe(true)
   });
 
-
-
-  // ==========================================
-  // 🔴 2. VALIDACIONES CAMPO POR CAMPO
-  // ==========================================
+  // Validaciones por campos.
 
   test('Falla si falta el NOMBRE (Product Name)', async ({ page }) => {
     await page.goto('/admin/products/create');
     await fillBaseProductForm(page, { skipName: true });
-
     await page.click('button[type="submit"]');
-
-    // Verificación: No redirige + Mensaje de error
     await expect(page).toHaveURL(/.*create/);
-    // Ajusta el texto al mensaje real de tu Zod, ej: "El nombre es obligatorio"
     await expect(page.locator('#productname-error'))
     .toContainText('Poner un nombre');
   });
@@ -87,7 +64,6 @@ test.describe('Creación de un producto', () => {
     await page.goto('/admin/products/create');
     await fillBaseProductForm(page, { skipDescription: true });
     await page.click('button[type="submit"]');
-
     await expect(page).toHaveURL(/.*create/);
      await expect(page.locator('#description-error'))
     .toContainText('Poner una descripción');
@@ -106,7 +82,6 @@ test.describe('Creación de un producto', () => {
     await page.goto('/admin/products/create');
     await fillBaseProductForm(page, { skipBrand: true });
     await page.click('button[type="submit"]');
-
     await expect(page).toHaveURL(/.*create/);
     await expect(page.locator('#brand-error')).toBeVisible();  
   });
@@ -115,7 +90,6 @@ test.describe('Creación de un producto', () => {
     await page.goto('/admin/products/create');
     await fillBaseProductForm(page, { skipCategory: true });
     await page.click('button[type="submit"]');
-
     await expect(page).toHaveURL(/.*create/);
     await expect(page.locator('#category-error'))
       .toContainText('Seleccionar una categoría');  
@@ -131,35 +105,22 @@ test.describe('Creación de un producto', () => {
       .toContainText('Por favor, subir una imagen')  
   });
 
-  // ==========================================
-  // 🧠 3. VALIDACIÓN DE LÓGICA DE NEGOCIO
-  // ==========================================
-
   test('Falla si el precio oferta es mayor al original', async ({ page }) => {
     await page.goto('/admin/products/create');
-
     await fillBaseProductForm(page, {
       originalPrice: '1000',
       price: '2000',
     });
-
-
-
     await page.click('button[type="submit"]');
-
     await expect(page).toHaveURL(/.*create/);
-    // Mensaje de error esperado
     await expect(page.locator('#price-error'))
     .toContainText('El precio de oferta debe ser menor al precio base');  });
-
-
-
 });
 
 test.describe('Eliminación de un producto', () => {
 
 
-    // 🔐 Login antes de cada test
+    // Login antes de cada test
   test.beforeEach(async ({ page }) => {
     await page.goto('/login');
     await page.fill('input[name="email"]', process.env.TEST_ADMIN_EMAIL || '');
@@ -167,10 +128,7 @@ test.describe('Eliminación de un producto', () => {
     await page.click('button[type="submit"]');
     await page.waitForURL(/.*admin/);
   });
-  // ==========================================
-  // 🗑️ 4. EDICIÓN Y BORRADO (Básicos)
-  // ==========================================
-  
+
   test('Debe permitir BORRAR un producto', async ({ page, request }) => {
     await page.goto('/admin/products');
 
@@ -202,16 +160,13 @@ test.describe('Eliminación de un producto', () => {
         timeout: 10000,
         intervals: [1000, 2000, 2000],
     });
-
     const exists = await waitForProductToExist(request, productName);
     expect(exists).toBe(false);
-
   });
-
 });
 
 test.describe('Editar producto', () => {
-    // 🔐 Login antes de cada test
+    // Login antes de cada test
   test.beforeEach(async ({ page }) => {
     await page.goto('/login');
     await page.fill('input[name="email"]', process.env.TEST_ADMIN_EMAIL || '');
@@ -221,46 +176,32 @@ test.describe('Editar producto', () => {
   });
 
   test('Debe editar un producto exitosamente y redirigir al listado', async ({ page }) => {
-    // 1️⃣ Ir al listado
     await page.goto('/admin/products');
-
-    // 2️⃣ Click en editar del primer producto
     const firstRow = page.locator('table tbody tr').first();
 
     await firstRow
       .locator('button')
-      .first() // 👉 EditProductButton
+      .first() // EditProductButton
       .click();
-
-    // 3️⃣ Esperar que cargue el formulario de edición
     await page.waitForURL(/\/admin\/products\/.*\/edit$/);
-
-    // 4️⃣ Editar campos
     const editedName = `Producto Editado ${Date.now()}`;
 
     await page.fill('input[name="productName"]', editedName);
     await page.fill('textarea[name="description"]', 'Descripción editada desde Playwright');
     await page.fill('input[name="originalPrice"]', '25000');
-
-    // Cambiar imagen (opcional)
     await page.setInputFiles(
       'input[name="image"]',
       path.join(__dirname, 'placeholder2.jpg')
     );
 
-    // 5️⃣ SUBMIT + CAPTURA DEL POST /edit
     const [response] = await Promise.all([
       page.waitForResponse(res =>
         res.request().method() === 'POST' &&
         res.url().includes('/edit')
       ),
-      page.click('button[type="submit"]'), // 👈 reemplaza al click suelto
+      page.click('button[type="submit"]'), //reemplaza al click suelto
     ]);
-
-    // 6️⃣ Check status
     expect(response.status()).toBe(303);
-
-    // 7️⃣ Redirect al listado
     await page.waitForURL('/admin/products');
   });
 
@@ -276,8 +217,6 @@ test.describe('Editar producto', () => {
     for (const { field, error } of cases) {
       test(`Debe mostrar error si falta ${field}`, async ({ page }) => {
         await page.goto('/admin/products')
-
-        // 2️⃣ Click en editar del primer producto
         const firstRow = page.locator('table tbody tr').first();
 
         await firstRow

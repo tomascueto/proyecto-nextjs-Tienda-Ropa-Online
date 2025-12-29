@@ -9,7 +9,6 @@ export default function FailurePage() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-16">
       <div className="w-full max-w-3xl">
-        {/* Header */}
         <div className="text-center mb-12">
           <div className="flex justify-center mb-4">
             <XCircle className="h-20 w-20 text-red-500" />
@@ -19,8 +18,6 @@ export default function FailurePage() {
             Rechazado por error general.
           </p>
         </div>
-
-        {/* Main card */}
         <Card>
           <CardContent className="p-8">
             <div className="space-y-6 text-center">

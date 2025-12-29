@@ -87,28 +87,23 @@ export async function fetchProductsByBrand(brand:string) {
   let whereClauses: string[] = [];
   let params: any[] = [];
 
-  // Búsqueda por query
   if (query) {
     whereClauses.push(`(products.name ILIKE $${params.length + 1} OR products.brand_name ILIKE $${params.length + 1} OR products.category_name ILIKE $${params.length + 1})`);
     params.push(`%${query}%`);
   }
 
-  // Filtro por marca
   if (brand) {
     whereClauses.push(`products.brand_name = $${params.length + 1}`);
     params.push(brand);
   }
 
-  // Filtro por categoría
   if (category) {
     whereClauses.push(`products.category_name = $${params.length + 1}`);
     params.push(category);
   }
 
-  // Construyo el WHERE
   const where = whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
 
-  // Query final
   const result = await sql.query(
     `
       SELECT

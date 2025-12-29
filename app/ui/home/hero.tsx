@@ -40,8 +40,6 @@ export default function Hero({ carouselImages, categories }: Props) {
     <>
       <main className="container mx-auto px-4 md:px-6 py-8 md:py-12">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          
-          {/* COLUMNA IZQUIERDA: Carousel */}
           <div className="relative order-2 lg:order-1">
             <div className="relative aspect-[4/5] md:aspect-square rounded-3xl overflow-hidden bg-gray-100 shadow-2xl">
               <Image

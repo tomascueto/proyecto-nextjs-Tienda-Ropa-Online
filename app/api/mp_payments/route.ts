@@ -7,15 +7,12 @@ export async function POST(req: Request) {
 
     console.log("📩 Webhook recibido:", body)
 
-    // Si no trae lo típico, ignoramos
     if (!body || !body.data || !body.data.id) {
       console.log("❗ Webhook sin data.id")
       return NextResponse.json({ status: "ignored" }, { status: 200 })
     }
 
     const paymentId = body.data.id
-
-    // 1️⃣ Consultar el pago en MP
     const res = await fetch(
       `https://api.mercadopago.com/v1/payments/${paymentId}`,
       {

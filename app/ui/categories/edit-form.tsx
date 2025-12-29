@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useFormState, useFormStatus } from "react-dom" // <--- Importamos useFormStatus
+import { useFormState, useFormStatus } from "react-dom"
 import Link from "next/link"
 import Image from "next/image"
 import { updateCategory } from "@/app/lib/actions"
@@ -10,9 +10,8 @@ import { Button } from "@/app/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/ui/products/card"
 import { Input } from "@/app/ui/products/input"
 import { Label } from "@/app/ui/products/label"
-import { Upload, Loader2 } from "lucide-react" // <--- Importamos Loader2
+import { Upload, Loader2 } from "lucide-react"
 
-// --- COMPONENTES AUXILIARES ---
 function SubmitButton() {
   const { pending } = useFormStatus()
   
@@ -54,10 +53,8 @@ function LoadingOverlay() {
     </div>
   )
 }
-// -----------------------------
 
 export default function EditCategoryForm({ category }: { category: Category }) {
-  // Bind de argumentos para la server action
   const updateCategoryWithId = updateCategory.bind(null, category.id, category.cloudinary_public_id)
   const initialState = { message: "", errors: {} }
   const [state, dispatch] = useFormState(updateCategoryWithId, initialState)
@@ -71,12 +68,8 @@ export default function EditCategoryForm({ category }: { category: Category }) {
 
   return (
     <form action={dispatch}>
-      {/* OVERLAY DE CARGA */}
       <LoadingOverlay />
-
       <div className="grid gap-6">
-        
-        {/* Imagen Actual (Preview) */}
         <Card>
           <CardHeader>
             <CardTitle>Imagen Actual</CardTitle>
@@ -98,8 +91,6 @@ export default function EditCategoryForm({ category }: { category: Category }) {
             <CardTitle>Editar Información</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            
-            {/* Nombre */}
             <div className="space-y-2">
               <Label htmlFor="categoryName">Nombre</Label>
               <Input
@@ -119,8 +110,6 @@ export default function EditCategoryForm({ category }: { category: Category }) {
                   ))}
               </div>
             </div>
-
-            {/* Descripción */}
             <div className="space-y-2">
               <Label htmlFor="description">Descripción Breve</Label>
               <div className="relative">
@@ -145,8 +134,6 @@ export default function EditCategoryForm({ category }: { category: Category }) {
                   ))}
               </div>
             </div>
-
-            {/* Nueva Imagen */}
             <div className="space-y-2">
               <Label htmlFor="image">Cambiar Imagen (Opcional)</Label>
               <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-gray-400 transition-colors bg-white">
@@ -180,14 +167,10 @@ export default function EditCategoryForm({ category }: { category: Category }) {
 
           </CardContent>
         </Card>
-
-        {/* Botones */}
         <div className="flex justify-end gap-4">
           <Link href="/admin/categories">
             <Button type="button" variant="outline">Cancelar</Button>
           </Link>
-          
-          {/* USAMOS EL NUEVO BOTÓN */}
           <SubmitButton />
         </div>
 

@@ -5,9 +5,7 @@ const CATEGORY_IMAGE = path.join(__dirname, 'placeholderCategoria1.jpg');
 
 test.describe('CRUD Categorías', () => {
 
-  /* =========================
-     LOGIN
-  ========================== */
+  //Log in antes de cada test.
   test.beforeEach(async ({ page }) => {
     await page.goto('/login');
 
@@ -18,9 +16,6 @@ test.describe('CRUD Categorías', () => {
     await page.waitForURL(/admin/);
   });
 
-  /* =========================
-     CREAR CATEGORÍA - HAPPY PATH
-  ========================== */
   test('Debe crear una categoría correctamente', async ({ page }) => {
     await page.goto('/admin/categories/create');
 
@@ -40,37 +35,25 @@ test.describe('CRUD Categorías', () => {
     await page.waitForURL('/admin/categories');
   });
 
-  /* =========================
-     CREAR CATEGORÍA - VALIDACIONES
-  ========================== */
   test('Debe mostrar errores si faltan campos obligatorios al crear', async ({ page }) => {
     await page.goto('/admin/categories/create');
-
     await page.getByRole('button', { name: 'Crear Categoría' }).click();
-
     await expect(page.locator('#categoryname-error')).toBeVisible();
     await expect(page.locator('#description-error')).toBeVisible();
     await expect(page.locator('#image-error')).toBeVisible();
   });
 
-  /* =========================
-     EDITAR CATEGORÍA - HAPPY PATH
-  ========================== */
   test('Debe editar una categoría correctamente', async ({ page }) => {
     await page.goto('/admin/categories');
-
-    // Click en botón editar por aria-label
     await page
       .getByRole('button', { name: /Editar categoría/i })
       .first()
       .click();
 
     await page.waitForURL(/\/admin\/categories\/.*\/edit$/);
-
     await page.fill('input[name="categoryName"]', 'Categoría Editada');
     await page.fill('input[name="description"]', 'Descripción Editada');
     await page.setInputFiles('input[name="image"]', CATEGORY_IMAGE);
-
     const [response] = await Promise.all([
       page.waitForResponse(res =>
         res.request().method() === 'POST' &&
@@ -83,36 +66,25 @@ test.describe('CRUD Categorías', () => {
     await page.waitForURL('/admin/categories');
   });
 
-  /* =========================
-     EDITAR CATEGORÍA - VALIDACIONES
-  ========================== */
   test('Debe mostrar errores si se vacían campos obligatorios al editar', async ({ page }) => {
     await page.goto('/admin/categories');
-
     await page
       .getByRole('button', { name: /Editar categoría/i })
       .first()
       .click();
 
     await page.waitForURL(/\/admin\/categories\/.*\/edit$/);
-
     await page.fill('input[name="categoryName"]', '');
     await page.fill('input[name="description"]', '');
-
     await page.getByRole('button', { name: 'Guardar Cambios' }).click();
-
     await expect(page.locator('#categoryname-error')).toBeVisible();
     await expect(page.locator('#description-error')).toBeVisible();
   });
 
-  /* =========================
-     ELIMINAR CATEGORÍA
-  ========================== */
+
   test('Debe eliminar una categoría correctamente', async ({ page }) => {
     await page.goto('/admin/categories');
-
     page.once('dialog', dialog => dialog.accept());
-
     await page
       .getByRole('button', { name: /Eliminar categoría/i })
       .first()
@@ -120,12 +92,10 @@ test.describe('CRUD Categorías', () => {
 
     await expect(page.getByText('¿Eliminar categoría?')).toBeVisible();
     await page.getByRole('button', { name: 'Eliminar', exact: true }).click();
-
     const response = await page.waitForResponse(res =>
       res.request().method() === 'POST' &&
       res.url().includes('/categories')
     );
-
     expect(response.status()).toBe(200);
     await page.waitForURL('/admin/categories');
   });

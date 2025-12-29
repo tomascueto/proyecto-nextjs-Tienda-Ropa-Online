@@ -2,7 +2,7 @@
 
 import { Input } from "@/app/ui/home/input"
 import { Button } from "@/app/ui/button"
-import { useSearchParams, useRouter } from 'next/navigation'; // Ya no necesitamos usePathname
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
 import { useState, useEffect } from "react";
 import { Search as SearchIcon } from "lucide-react";
@@ -10,7 +10,6 @@ import { Search as SearchIcon } from "lucide-react";
 export default function Search() {
 
   const searchParams = useSearchParams();
-  // const pathname = usePathname(); // Borramos esto, ya no lo usamos
   const { replace } = useRouter();
   const [searchOpen, setSearchOpen] = useState(false)
 
@@ -49,7 +48,6 @@ export default function Search() {
               onChange={(e) => {
                 handleSearch(e.target.value);
               }}
-              // Usamos defaultValue para que si recargas la página, el texto siga ahí
               defaultValue={searchParams.get('query')?.toString()}
               className="w-48 pl-4 pr-10 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white shadow-lg"
               autoFocus
