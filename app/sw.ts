@@ -1,6 +1,6 @@
 declare const self: any;
 
-import { Serwist, NetworkFirst, NetworkOnly, StaleWhileRevalidate, ExpirationPlugin, CacheableResponsePlugin } from "serwist";
+import { Serwist, NetworkFirst, NetworkOnly, ExpirationPlugin, CacheableResponsePlugin, CacheFirst, StaleWhileRevalidate } from "serwist";
 
 const OFFLINE_HTML = `<!DOCTYPE html> 
                         <html lang="es"> 
@@ -238,13 +238,15 @@ const SERVER_ERROR = `<!DOCTYPE html>
                 </body> 
                 </html>`;
 const serwist = new Serwist({
-  precacheEntries: self.__SW_MANIFEST,
+  precacheEntries: [
+    ...(self.__SW_MANIFEST || []), 
+    { url: "/", revision: Date.now().toString() }, // Forzar cacheo
+  ],
   skipWaiting: true,
   clientsClaim: true,
-  navigationPreload: true,
   runtimeCaching: [
 
-    {
+    { 
       matcher: ({url}) => url.pathname.startsWith("/admin") || url.pathname.startsWith("/login"),
       handler: new NetworkOnly({
         plugins: [
@@ -257,23 +259,28 @@ const serwist = new Serwist({
                 });
 
                 return new Response(SERVER_ERROR, {
+                  status: 503,
+                  statusText: "Service Unavailable",
                   headers: { "Content-Type": "text/html" },
                 });
               } 
               catch (err) {
               return new Response(OFFLINE_HTML, {
+                status: 503,
+                statusText: "Offline",
                 headers: { "Content-Type": "text/html" },
               });
               }
             }
-          
-        }
+          }
         ]
       })
     },
 
     {
-      matcher: ({ url }) => url.pathname.startsWith('/_next/image'),
+      matcher: ({ url }) => 
+        url.pathname.startsWith('/_next/image') ||
+        url.pathname.match(/\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/),
       handler: new StaleWhileRevalidate({
         cacheName: "UND-Images",
         plugins: [
@@ -282,99 +289,153 @@ const serwist = new Serwist({
           }),
           new ExpirationPlugin({
             maxEntries: 100,
-            maxAgeSeconds: 60 * 60 * 24 * 30, // 30 días
+            maxAgeSeconds: 60 * 60 * 24 * 30, 
           }),
         ],
       })
     },
 
-   /* {
-      matcher: ({ url }) => 
-        url.pathname.endsWith('.png') || 
-        url.pathname.endsWith('.jpg') || 
-        url.pathname.endsWith('.jpeg') || 
-        url.pathname.endsWith('.svg') || 
-        url.pathname.endsWith('.ico'),
-      handler: new StaleWhileRevalidate({
-        cacheName: "UND-Static-Assets",
-        plugins: [
-          new CacheableResponsePlugin({
-            statuses: [0, 200],
-          }),
-          new ExpirationPlugin({
-            maxEntries: 50,
-            maxAgeSeconds: 60 * 60 * 24 * 30, // 30 días
-          }),
-        ],
-      })
-    },*/
-
-    {
-      matcher: ({ request}) => request.destination === "document",
-      handler: new NetworkFirst({
-        cacheName: "UND-HTML",
+     { 
+      matcher: ({url})=>
+        url.pathname.startsWith("/checkout"),
+        handler:  new NetworkFirst({
+        cacheName: "UND-CheckoutRsc",
         plugins: [
           new CacheableResponsePlugin({statuses: [200],}),
           new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 }),
+          {
+            cacheKeyWillBeUsed: async ({ request }) => {
+              const url = new URL(request.url);
+              url.searchParams.delete('_rsc'); // Quitamos el token dinámico
+
+              // Detectamos si es un prefetch parcial de Next.js
+              const isPrefetch = request.headers.get('Next-Router-Prefetch') === '1';
+
+              if (isPrefetch) {
+                // Guardamos los prefetches con un sufijo para que NO pisen a la navegación real
+                return url.toString() + '?next-prefetch=true';
+              }
+
+              // Navegación real (Full RSC Payload)
+              return url.toString();
+            }
+          },
           {
             handlerDidError: async () => {
               try {
-              const response =  await fetch("https://1.1.1.1/cdn-cgi/trace", {
-                mode: "no-cors",
-                cache: "no-store",
-              });
-
-              return new Response(SERVER_ERROR, {
-                headers: { "Content-Type": "text/html" },
-              });
-            } 
-            catch (err) {
-              return new Response(OFFLINE_HTML, {
-                headers: { "Content-Type": "text/html" },
-              });
+                const response =  await fetch("https://1.1.1.1/cdn-cgi/trace", {
+                  mode: "no-cors",
+                  cache: "no-store",
+                });
+                return new Response(null, {
+                  status: 503,
+                  statusText: "Service Unavailable",
+                  headers: { "Content-Type": "text/html" },
+                });
+              } 
+              catch (err) {
+                return new Response(null, {
+                  status: 503,
+                  statusText: "Offline",
+                  headers: { "Content-Type": "text/html" },
+                });
+              }
             }
-            },
           }
-        ]
+        ],
       })
     },
-    
-    /*
+
     {
-      matcher: ({url, request}) =>  
-          url.pathname.includes('_rsc') || 
-          url.searchParams.has('_rsc') ||
-          request.headers.get('RSC') === '1',
+      matcher: ({ request}) =>
+          request.destination === "document",
+          handler: new NetworkFirst({
+            cacheName: "UND-HTML",
+            plugins: [
+              new CacheableResponsePlugin({statuses: [200],}),
+              new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 }),
+              
+              {
+                handlerDidError: async () => {
+                  try {
+                    const response =  await fetch("https://1.1.1.1/cdn-cgi/trace", {
+                      mode: "no-cors",
+                      cache: "no-store",
+                    });
+                    return new Response(SERVER_ERROR, {
+                      status: 503,
+                      statusText: "Service Unavailable",
+                      headers: { "Content-Type": "text/html" },
+                    });
+                  } 
+                  catch (err) {
+                    return new Response(OFFLINE_HTML, {
+                      status: 503,
+                      statusText: "Offline",
+                      headers: { "Content-Type": "text/html" },
+                    });
+                  }
+                }
+              },
+
+            ]
+          })
+    },
+
+   
+
+
+    {
+      matcher: ({ request }) => 
+      request.headers.get("Rsc") === "1" &&
+      !request.url.startsWith("/checkout"),
       handler: new NetworkFirst({
-        cacheName: "UND-RSC",
+        cacheName: "UND-Rsc",
         plugins: [
           new CacheableResponsePlugin({statuses: [200],}),
           new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 }),
           {
+            cacheKeyWillBeUsed: async ({ request }) => {
+              const url = new URL(request.url);
+              url.searchParams.delete('_rsc'); // Quitamos el token dinámico
+
+              // Detectamos si es un prefetch parcial de Next.js
+              const isPrefetch = request.headers.get('Next-Router-Prefetch') === '1';
+
+              if (isPrefetch) {
+                // Guardamos los prefetches con un sufijo para que NO pisen a la navegación real
+                return url.toString() + '?next-prefetch=true';
+              }
+
+              // Navegación real (Full RSC Payload)
+              return url.toString();
+            }
+          },
+          {
             handlerDidError: async () => {
-              // Para RSC (React Server Components), no debemos devolver el HTML de error u offline
-              // porque rompería el parser de Next.js en el cliente.
-              // Devolvemos un status 503 para que el router de Next.js detecte el fallo y pueda
-              // intentar una recarga completa o mostrar un error boundary.
-              return new Response(null, {
-                status: 503,
-                statusText: "Service Unavailable (Offline)",
-              });
-            },
-          }
+              try {
+                    const response =  await fetch("https://1.1.1.1/cdn-cgi/trace", {
+                      mode: "no-cors",
+                      cache: "no-store",
+                    });
+                    return new Response(SERVER_ERROR, {
+                      status: 503,
+                      statusText: "Service Unavailable",
+                      headers: { "Content-Type": "text/html" },
+                    });
+                  } 
+                  catch (err) {
+                    return new Response(OFFLINE_HTML, {
+                      status: 503,
+                      statusText: "Offline",
+                      headers: { "Content-Type": "text/html" },
+                    });
+                  }
+                }
+          },
         ],
-      }),
-    },*/
-    {
-      matcher: (request) => true, 
-      handler: new NetworkFirst({
-        cacheName: "UND-General",
-        plugins: [
-          new CacheableResponsePlugin({statuses: [200],}),
-          new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 }),
-        ],
-      }),
-    },
+      })
+    }
   ],
 });
 

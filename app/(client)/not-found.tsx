@@ -21,11 +21,14 @@ export default function NotFound() {
       </div>
       
       <h1 className="mb-2 text-4xl font-bold text-gray-900">
-        404 - Página no encontrada
+        404 - Página no encontrada.
       </h1>
       
       <p className="mb-8 max-w-md text-gray-600">
-        Lo sentimos, no pudimos encontrar la página que buscas. Verificá la URL o intentá navegando por nuestros productos.
+        Lo sentimos, no pudimos encontrar la página que buscas. 
+      </p>
+      <p className="mb-8 max-w-md text-gray-600">
+        Puede que el producto que intentas acceder ya no esté disponible.
       </p>
 
       <div className="flex flex-col gap-4 sm:flex-row">
