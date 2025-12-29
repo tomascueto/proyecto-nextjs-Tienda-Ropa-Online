@@ -12,30 +12,30 @@ const categories = [
         id : 1,
         name : 'Fútbol',
         description: 'Conquista el campo',
-        image: 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1766083299/Category-Futbol_xmlfeg.jpg',
-        cloudinary_public_id: 'Category-Futbol_xmlfeg'
+        image: 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1767013817/Category-Futbol_o1f2gx.jpg',
+        cloudinary_public_id: 'Category-Futbol_o1f2gx'
 
     },
     {
         id : 2,
         name : 'Lifestyle',
         description: 'Estilo urbano',
-        image: 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1766083411/Category-Lifestyle_uw96wy.png',
-        cloudinary_public_id: 'Category-Lifestyle_uw96wy'      
+        image: 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1767013857/Category-Lifestyle_zlomfb.png',
+        cloudinary_public_id: 'Category-Lifestyle_zlomfb'      
     },
     {
         id : 3,
         name : 'Básquet',
         description: 'Domina la cancha',
-        image: 'https://res.cloudinary.com/dch0yp6xx/image/upload/v1754161325/Dise%C3%B1o_sin_t%C3%ADtulo_d3h0mb.png',
-        cloudinary_public_id: 'Dise%C3%B1o_sin_t%C3%ADtulo_d3h0mb'        
+        image: 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1767013906/Category-Basquet_sb8l6y.png',
+        cloudinary_public_id: 'Category-Basquet_sb8l6y'        
     },
     {
         id : 4,
         name : 'Crossfit',
         description: 'Entrenamiento intenso',
-        image: 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_fill,w_600,h_685/v1754160677/X9o2jTSbMJkxYCaySZWycD_ma7ciy.jpg',
-        cloudinary_public_id: 'X9o2jTSbMJkxYCaySZWycD_ma7ciy'        
+        image: 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_crop,w_3144,h_3144/v1766718381/Category-Crossfit_mwtita.jpg',
+        cloudinary_public_id: 'Category-Crossfit_mwtita'        
     }
 ]
 
@@ -70,11 +70,10 @@ const products = [
         brandid :  brands[0].id,
         categoryid : categories[1].id,
         categoryname : categories[1].name,
-        // OFERTA: Precio real 2000, oferta 1500
         originalPrice : 2000,
         price : 1500,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766083870/Jordan_AJ_1_Retro_High_OG_V3_wyq5ow.webp',
-        cloudinary_public_id : 'Jordan_AJ_1_Retro_High_OG_V3_wyq5ow',
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1767013956/Jordan_AJ_1_Retro_High_OG_V3_pqiuhy.webp',
+        cloudinary_public_id : 'Jordan_AJ_1_Retro_High_OG_V3_pqiuhy',
         features : [
             'Cuero premium',
             'Amortiguación Air-Sole',
@@ -92,8 +91,8 @@ const products = [
         // SIN OFERTA: price es null
         originalPrice : 4000,
         price : null,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766083915/Jordan_AJ_3_Medium_Olive_w8zq3b.webp',
-        cloudinary_public_id : 'Jordan_AJ_3_Medium_Olive_w8zq3b',
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1767014050/Jordan_AJ_3_Medium_Olive_qqqugd.webp',
+        cloudinary_public_id : 'Jordan_AJ_3_Medium_Olive_qqqugd',
         features : [
             'Cuero premium',
             'Verde oliva distintivo',
@@ -110,8 +109,8 @@ const products = [
         categoryname : categories[1].name,
         originalPrice : 6000,
         price : null,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766083977/Jordan_AJ_1_Retro_High_OG_Jordan_Air_Jordan_1_Low_SE_pbd58x.webp',
-        cloudinary_public_id : 'Jordan_AJ_1_Retro_High_OG_Jordan_Air_Jordan_1_Low_SE_pbd58x',
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766718521/Jordan_AJ_1_Retro_High_OG_Jordan_Air_Jordan_1_Low_SE_y60bwr.webp',
+        cloudinary_public_id : 'Jordan_AJ_1_Retro_High_OG_Jordan_Air_Jordan_1_Low_SE_y60bwr',
         features : [
             'Cuero premium',
             'Colores de los Chicago Bulls',
@@ -128,8 +127,8 @@ const products = [
         categoryname : categories[1].name,
         originalPrice : 4000,
         price : null,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766084029/Jordan_Air_Jordan_4_Retro_Cozy_Girl_i2ssue.webp',
-        cloudinary_public_id : 'Jordan_Air_Jordan_4_Retro_Cozy_Girl_i2ssue',
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766718572/Jordan_Air_Jordan_4_Retro_Cozy_Girl_ssx3il.webp',
+        cloudinary_public_id : 'Jordan_Air_Jordan_4_Retro_Cozy_Girl_ssx3il',
         features : [
             'Cuero premium',
             'Colores suaves y acogedores',
@@ -147,8 +146,8 @@ const products = [
         // OFERTA: Precio real 10000, oferta 8500
         originalPrice : 10000,
         price : 8500,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766084121/Jordan_Air_Jordan_11_Retro_RA_egocvw.webp',
-        cloudinary_public_id : 'JJordan_Air_Jordan_11_Retro_RA_egocvw'
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/v1766084121/Jordan_Air_Jordan_11_Retro_RA_egocvw.webp',
+        cloudinary_public_id : 'Jordan_Air_Jordan_11_Retro_RA_egocvw'
         ,
         features: [
             'Suela con tracción duradera',
@@ -166,8 +165,8 @@ const products = [
         categoryname : categories[0].name,
         originalPrice : 15000,
         price : null,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766084165/Nike_Phantom_Luna_II_Elite_FG_pwnzzf.webp',
-        cloudinary_public_id : 'Nike_Phantom_Luna_II_Elite_FG_pwnzzf'    
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766718621/Nike_Phantom_Luna_II_Elite_FG_ctbnqt.webp',
+        cloudinary_public_id : 'Nike_Phantom_Luna_II_Elite_FG_ctbnqt'    
         ,
         features: [
             'Corte alto y ceñido (Flyknit)',
@@ -186,8 +185,8 @@ const products = [
         // OFERTA: Precio real 15000, oferta 12000
         originalPrice : 15000,
         price : 12000,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766084487/Nike_Legend_10_Elite_FG_mvhwwk.webp',
-        cloudinary_public_id : 'Nike_Legend_10_Elite_FG_mvhwwk'      
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766718674/Nike_Legend_10_Elite_FG_xu887x.webp',
+        cloudinary_public_id : 'Nike_Legend_10_Elite_FG_xu887x'      
         ,
         features: [
             'Corte Flyknit para ajuste dinámico',
@@ -205,8 +204,8 @@ const products = [
         categoryname : categories[0].name,
         originalPrice : 22000,
         price : null,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766084549/Adidas_Originals_Handball_Spezial_dnlde9.webp',
-        cloudinary_public_id : 'Adidas_Originals_Handball_Spezial_dnlde9'      
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766718728/Adidas_Originals_Handball_Spezial_bjnvlr.webp',
+        cloudinary_public_id : 'Adidas_Originals_Handball_Spezial_bjnvlr'      
         ,
         features: [
             'Gamuza premium.',
@@ -224,8 +223,8 @@ const products = [
         categoryname : categories[0].name,
         originalPrice : 35000,
         price : null,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765218806/Adidas_Predator_League_FG_wu5051.webp',
-        cloudinary_public_id : 'Adidas_Predator_League_FG_wu5051'     
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766718772/Adidas_Predator_League_FG_f6etqi.webp',
+        cloudinary_public_id : 'Adidas_Predator_League_FG_f6etqi'     
         ,
         features: [
             'Corte ajustado para control',
@@ -243,8 +242,8 @@ const products = [
         categoryname : categories[0].name,
         originalPrice : 12000,
         price : null,
-        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1765219032/Adidas_F50_League_FG_udoly2.webp',
-        cloudinary_public_id : 'Adidas_F50_League_FG_udoly2'   
+        image : 'https://res.cloudinary.com/dch0yp6xx/image/upload/c_pad,ar_3:4/v1766718835/Adidas_F50_League_FG_ngwief.webp',
+        cloudinary_public_id : 'Adidas_F50_League_FG_ngwief'   
         ,
         features: [
             'Exterior Fiberskin con Sprintgrid',
